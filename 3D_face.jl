@@ -61,12 +61,21 @@ using LinearAlgebra
 using SparseArrays
 
 function e(i,n)
-    A = Matrix{Float64}(I,n,n)
-    return A[:,i]
+    # A = Matrix{Float64}(I,n,n)
+    A = spzeros(n)
+    A[i] = 1
+    return A
+end
+
+function e_t(i,n)
+    A = spzeros(1,n)
+    A[i] = 1
+    return A
 end
 
 function eyes(n)
-    return Matrix{Float64}(I,n,n)
+    # return Matrix{Float64}(I,n,n)
+    return sparse(I,n,n)
 end
 
 
@@ -77,36 +86,79 @@ end
 
 
 function get_bottom_face(Nx,Ny,Nz)
-    mat = kron(e(1,Nz)',sparse(eyes(Nx)),sparse(eyes(Ny)))
+    # mat = kron(e(1,Nz)',sparse(eyes(Nx)),sparse(eyes(Ny)))
+    # mat = kron(sparse(e(1,Nz)'),eyes(Nx),eyes(Ny))
+    mat = kron(e_t(1,Nz),eyes(Nx),eyes(Ny))
     return mat
+end
+
+function get_bottom_face(A)
+    Nx,Ny,Nz = size(A)
+    return get_bottom_face(Nx,Ny,Nz)*A[:]
 end
 
 function get_top_face(Nx,Ny,Nz)
-    mat = kron(e(Nz,Nz)',sparse(eyes(Nx)),sparse(eyes(Ny)))
+    # mat = kron(e(Nz,Nz)',sparse(eyes(Nx)),sparse(eyes(Ny)))
+    mat = kron(e_t(Nz,Nz),eyes(Nx),eyes(Ny))
     return mat
+end
+
+function get_top_face(A)
+    Nx,Ny,Nz = size(A)
+    return get_top_face(Nx,Ny,Nz)*A[:]
 end
 
 function get_left_face(Nx,Ny,Nz)
-    mat = kron(sparse(eyes(Nz)),e(1,Ny)',sparse(eyes(Nx)))
+    # mat = kron(sparse(eyes(Nz)),e(1,Ny)',sparse(eyes(Nx)))
+    mat = kron(eyes(Nz),e_t(1,Ny),eyes(Nx))
     return mat
 end
 
+function get_left_face(A)
+    Nx,Ny,Nz = size(A)
+    return get_left_face(Nx,Ny,Nz)*A[:]
+end
 
 function get_right_face(Nx,Ny,Nz)
-    mat = kron(sparse(eyes(Nz)),e(Ny,Ny)',sparse(eyes(Nx)))
+    # mat = kron(sparse(eyes(Nz)),e(Ny,Ny)',sparse(eyes(Nx)))
+    mat = kron(eyes(Nz),e_t(Ny,Ny),eyes(Nx))
     return mat
+end
+
+function get_right_face(A)
+    Nx,Ny,Nz = size(A)
+    return get_right_face(Nx,Ny,Nz)*A[:]
 end
 
 function get_front_face(Nx,Ny,Nz)
-    mat = kron(sparse(eyes(Ny)),sparse(eyes(Nz)),sparse(e(1,Nx)'))
+    # mat = kron(sparse(eyes(Ny)),sparse(eyes(Nz)),sparse(e(1,Nx)'))
+    mat = kron(eyes(Ny),eyes(Nz),e_t(1,Nx))
     return mat
 end
 
+function get_front_face(A)
+    Nx,Ny,Nz = size(A)
+    return get_front_face(Nx,Ny,Nz)*A[:]
+end
 
-function get_back_face(Nx,Ny,Nz)
-    mat = kron(sparse(eyes(Ny)),sparse(eyes(Nz)),sparse(e(Nx,Nx)'))
+function get_end_face(Nx,Ny,Nz)
+    # mat = kron(sparse(eyes(Ny)),sparse(eyes(Nz)),e(Nx,Nx)')
+    mat = kron(eyes(Ny),eyes(Nz),e_t(Nx,Nx))
     return mat
 end
+
+function get_end_face(A)
+    Nx,Ny,Nz = size(A)
+    return get_back_face(Nx,Ny,Nz)*A[:]
+end
+
+
 
 
 test_matrix = randn(2,3,4)
+get_bottom_face(test_matrix)
+get_top_face(test_matrix)
+get_front_face(test_matrix)
+get_back_face(test_matrix)
+get_left_face(test_matrix)
+get_right_face(test_matrix)
