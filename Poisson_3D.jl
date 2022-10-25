@@ -21,7 +21,7 @@ using BenchmarkTools
 using Plots
 
 p = 2
-i = j = k = 3
+i = j = k = 2
 h_list_x = [1/2^2, 1/2^3, 1/2^4, 1/2^5, 1/2^6, 1/2^7, 1/2^8,1/2^9,1/2^10]
 h_list_y = [1/2^2, 1/2^3, 1/2^4, 1/2^5, 1/2^6, 1/2^7, 1/2^8,1/2^9,1/2^10]
 h_list_z = [1/2^2, 1/2^3, 1/2^4, 1/2^5, 1/2^6, 1/2^7, 1/2^8,1/2^9,1/2^10]
@@ -163,7 +163,7 @@ SAT_End_r = tau_x * HI_Bottom * BS_End * End_operator'
 
 
 # Analytical solutions
-(analy_sol_3D,x_ex,y_ex,z_ex) = form_analy_sol(;N=2^4)
+(analy_sol_3D,x_ex,y_ex,z_ex) = form_analy_sol(;N=N_x)
 plot(x_ex,y_ex,analy_sol_3D[:,:,end],st=:surface)
 
 
@@ -187,5 +187,8 @@ numerical_sol = A\b
 
 numerical_sol_3D = reshape(numerical_sol,N_x+1,N_y+1,N_z+1)
 analy_sol_3D
+
+plot(x_ex,y_ex,numerical_sol_3D[:,:,end],st=:surface)
+
 
 norm(numerical_sol_3D-analy_sol_3D)
