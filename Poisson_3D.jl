@@ -106,19 +106,26 @@ e_Nz = e(N_z + 1,N_z + 1)
 
 # HI_Front = kron(I_Nx,HIy,HIz)
 # HI_End = kron(I_Nx,HIy,HIz)
-HI_Front = kron(HIy,HIz,I_Nx)
-HI_End = kron(HIy,HIz,I_Nx)
+# HI_Front = kron(HIy,HIz,I_Nx)
+# HI_End = kron(HIy,HIz,I_Nx)
+
+HI_Front = kron(I_Ny,I_Nz,HIx)
+HI_End = kron(I_Ny,I_Nz,HIx)
 
 # HI_Left = kron(HIz,I_Ny,HIx)
 # HI_Right = kron(HIz,I_Ny,HIx)
-HI_Left = kron(HIz,I_Ny,HIx)
-HI_Right = kron(HIz,I_Ny,HIx)
+# HI_Left = kron(HIz,I_Ny,HIx)
+# HI_Right = kron(HIz,I_Ny,HIx)
+HI_Left = kron(I_Nz,HIy,I_Nx)
+HI_Right = kron(I_Nz,HIy,I_Nx)
 
 # HI_Bottom = kron(HIx,HIy,I_Nz)
 # HI_Top = kron(HIx,HIy,I_Nz)
+# HI_Bottom = kron(I_Nz,HIx,HIy)
+# HI_Top = kron(I_Nz,HIx,HIy)
 
-HI_Bottom = kron(I_Nz,HIx,HIy)
-HI_Top = kron(I_Nz,HIx,HIy)
+HI_Bottom = kron(HIz,I_Nx,I_Ny)
+HI_Top = kron(HIz,I_Nx,I_Ny)
 
 # BS_Front = kron(BSx,I_Ny,I_Nz)
 # BS_End = kron(BSx,I_Ny,I_Nz)
