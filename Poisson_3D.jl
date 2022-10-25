@@ -21,7 +21,7 @@ using BenchmarkTools
 using Plots
 
 p = 2
-i = j = k = 2
+i = j = k = 1
 h_list_x = [1/2^2, 1/2^3, 1/2^4, 1/2^5, 1/2^6, 1/2^7, 1/2^8,1/2^9,1/2^10]
 h_list_y = [1/2^2, 1/2^3, 1/2^4, 1/2^5, 1/2^6, 1/2^7, 1/2^8,1/2^9,1/2^10]
 h_list_z = [1/2^2, 1/2^3, 1/2^4, 1/2^5, 1/2^6, 1/2^7, 1/2^8,1/2^9,1/2^10]
@@ -119,9 +119,10 @@ BS_End = kron(BSx,I_Ny,I_Nz)
 BS_Left = kron(I_Nz,BSy,I_Nx)
 BS_Right = kron(I_Nz,BSy,I_Nx)
 
-BS_Bottom = kron(I_Nx,I_Ny,BSz)
-BS_Top = kron(I_Nx,I_Ny,BSz)
-
+# BS_Bottom = kron(I_Nx,I_Ny,BSz)
+# BS_Top = kron(I_Nx,I_Ny,BSz)
+BS_Bottom = kron(BSz,I_Nx,I_Ny)
+BS_Top = kron(BSz,I_Nx,I_Ny)
 
 Front_operator = get_front_face(N_x+1,N_y+1,N_z+1)
 End_operator = get_end_face(N_x+1,N_y+1,N_z+1)
