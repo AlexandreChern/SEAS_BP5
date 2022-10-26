@@ -193,12 +193,12 @@ for level = 2:6
     # plot(x_ex,y_ex,analy_sol_3D[:,:,end],st=:surface)
 
 
-    G_Left = [sin(π*i  + π*k) for i ∈ x_ex, k ∈ z_ex][:]
-    G_Right = [-sin(π*i  + π*k) for i ∈ x_ex, k ∈ z_ex][:]
-    G_Bottom = [-π*cos(π*i + π*j) for i ∈ x_ex, j ∈ y_ex][:] # norm vector
-    G_Top = [π*cos(π*i + π*j + π) for i ∈ x_ex, j ∈ y_ex][:] # sin(pi) = -1
-    G_Front = [π*cos(π*j + π*k + π) for j ∈ y_ex, k ∈ z_ex][:]
-    G_End = [-π*cos(π*j + π*k) for j ∈ y_ex, k ∈ z_ex][:]
+    G_Left = [sin(π*i  + π*k) for i ∈ x_ex, k ∈ z_ex][:] # Dirichlet
+    G_Right = [-sin(π*i  + π*k) for i ∈ x_ex, k ∈ z_ex][:] # Dirichlet
+    G_Bottom = [-π*cos(π*i + π*j) for i ∈ x_ex, j ∈ y_ex][:] # norm vector -1 Neumann
+    G_Top = [π*cos(π*i + π*j + π) for i ∈ x_ex, j ∈ y_ex][:] # sin(pi) = -1 Neumann
+    G_Front = [π*cos(π*j + π*k + π) for j ∈ y_ex, k ∈ z_ex][:] # Neumann
+    G_End = [-π*cos(π*j + π*k) for j ∈ y_ex, k ∈ z_ex][:] # Neumann
 
     # source Terms
     source_terms = 3π^2 * analy_sol_3D;
