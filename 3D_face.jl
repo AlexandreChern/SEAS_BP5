@@ -149,7 +149,7 @@ end
 
 function get_end_face(A)
     Nx,Ny,Nz = size(A)
-    return get_back_face(Nx,Ny,Nz)*A[:]
+    return get_end_face(Nx,Ny,Nz)*A[:]
 end
 
 
@@ -159,6 +159,6 @@ test_matrix = randn(2,3,4)
 get_bottom_face(test_matrix)
 get_top_face(test_matrix)
 get_front_face(test_matrix)
-get_back_face(test_matrix)
+get_end_face(test_matrix)
 get_left_face(test_matrix)
 get_right_face(test_matrix)

@@ -21,7 +21,7 @@ using BenchmarkTools
 using Plots
 
 p = 2
-i = j = k = 1
+i = j = k = 3
 h_list_x = [1/2^1, 1/2^2, 1/2^3, 1/2^4, 1/2^5, 1/2^6, 1/2^7, 1/2^8,1/2^9,1/2^10]
 h_list_y = [1/2^1, 1/2^2, 1/2^3, 1/2^4, 1/2^5, 1/2^6, 1/2^7, 1/2^8,1/2^9,1/2^10]
 h_list_z = [1/2^1, 1/2^2, 1/2^3, 1/2^4, 1/2^5, 1/2^6, 1/2^7, 1/2^8,1/2^9,1/2^10]
@@ -83,9 +83,12 @@ I_Nz = eyes(N_z+1)
 
 # Forming 3D operators
 
-D2_x = kron(D2x,I_Ny,I_Ny)
-D2_y = kron(I_Ny,D2y,I_Ny)
-D2_z = kron(I_Ny,I_Ny,D2z)
+# D2_x = kron(D2x,I_Ny,I_Ny)
+# D2_y = kron(I_Ny,D2y,I_Ny)
+# D2_z = kron(I_Ny,I_Ny,D2z)
+D2_x = kron(I_Ny,I_Nz,D2x)
+D2_y = kron(I_Nz,D2y,I_Nx)
+D2_z = kron(D2z,I_Nx,I_Ny)
 
 # e_1x = sparse(e(1,N_x+1))
 # e_1y = sparse(e(1,N_y+1))
@@ -161,22 +164,22 @@ beta = -1
 SAT_Left = tau_y * HI_Left * Left_operator'* Left_operator + beta * HI_Left * BS_Left' * Left_operator'*Left_operator
 SAT_Right = tau_y * HI_Right * Right_operator'* Right_operator + beta * HI_Right * BS_Right' * Right_operator'*Right_operator
 
-SAT_Top = tau_z * HI_Top * BS_Top * Top_operator' * Top_operator 
-SAT_Bottom = tau_z * HI_Bottom * BS_Bottom * Bottom_operator' * Bottom_operator
+SAT_Top = tau_z * HI_Top  * Top_operator' * Top_operator * BS_Top
+SAT_Bottom = tau_z * HI_Bottom  * Bottom_operator' * Bottom_operator * BS_Bottom
 
-SAT_Front = tau_x * HI_Top * BS_Front * Front_operator' * Front_operator
-SAT_End = tau_x * HI_Bottom * BS_End * End_operator' * End_operator
+SAT_Front = tau_x * HI_Top * Front_operator' * Front_operator * BS_Front
+SAT_End = tau_x * HI_Bottom * End_operator' * End_operator * BS_End
 
 
 ## To Be Completed
 SAT_Left_r = tau_y * HI_Left * Left_operator' + beta * HI_Left * BS_Left' * Left_operator'
 SAT_Right_r = tau_y * HI_Right * Right_operator'+ beta * HI_Right * BS_Right' * Right_operator'
 
-SAT_Top_r = tau_z * HI_Top * BS_Top * Top_operator' 
-SAT_Bottom_r = tau_z * HI_Bottom * BS_Bottom * Bottom_operator'
+SAT_Top_r = tau_z * HI_Top  * Top_operator' 
+SAT_Bottom_r = tau_z * HI_Bottom * Bottom_operator'
 
-SAT_Front_r = tau_x * HI_Top * BS_Front * Front_operator'
-SAT_End_r = tau_x * HI_Bottom * BS_End * End_operator'
+SAT_Front_r = tau_x * HI_Top * Front_operator'
+SAT_End_r = tau_x * HI_Bottom * End_operator'
 
 
 
@@ -210,3 +213,18 @@ plot(x_ex,y_ex,numerical_sol_3D[:,:,end],st=:surface)
 
 
 norm(numerical_sol_3D-analy_sol_3D)
+
+
+numerical_laplacian = -(D2_x + D2_y + D2_z)*analy_sol_3D[:]
+
+extrema(numerical_laplacian - source_terms[:])
+
+Front_LHS = SAT_Front * analy_sol_3D[:]
+Front_RHS = SAT_Front_r * G_Front
+
+
+Bottom_LHS = SAT_Bottom * analy_sol_3D[:]
+Bottom_RHS = SAT_Bottom_r * G_Bottom
+
+HI_Bottom * Bottom_operator'* Bottom_operator * BS_Bottom *  analy_sol_3D[:]
+HI_Bottom * Bottom_operator' * G_Bottom
