@@ -91,7 +91,7 @@ for level = 2:6
     # D2_x = kron(D2x,I_Ny,I_Ny)
     # D2_y = kron(I_Ny,D2y,I_Ny)
     # D2_z = kron(I_Ny,I_Ny,D2z)
-    D2_x = kron(I_Ny,I_Nz,D2x)
+    D2_x = kron(I_Nz,I_Ny,D2x)
     D2_y = kron(I_Nz,D2y,I_Nx)
     D2_z = kron(D2z,I_Nx,I_Ny)
 
@@ -217,7 +217,7 @@ for level = 2:6
     # plot(x_ex,y_ex,numerical_sol_3D[:,:,end],st=:surface)
 
 
-    error_norm = norm((numerical_sol-analy_sol_3D[:])'*H_tilde*(numerical_sol-analy_sol_3D[:]))
+    error_norm = sqrt((numerical_sol-analy_sol_3D[:])'*H_tilde*(numerical_sol-analy_sol_3D[:]))
     append!(error_norms,error_norm)
 
     # numerical_laplacian = -(D2_x + D2_y + D2_z)*analy_sol_3D[:]
