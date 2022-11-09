@@ -36,6 +36,10 @@ N_x = Integer(x_list[i]);
 N_y = Integer(y_list[j]);
 N_z = Integer(z_list[k]);
 
+Nx = N_x + 1
+Ny = N_y + 1
+Nz = N_z + 1
+
 (D1x, HIx, H1x, r1x) = diagonal_sbp_D1(p,N_x,xc=(0,1));
 (D2x, S0x, SNx, HI2x, H2x, r2x) = diagonal_sbp_D2(p,N_x,xc=(0,1));
 
@@ -143,12 +147,20 @@ G_End = [-π*cos(π*j + π*k) for j ∈ y_ex, k ∈ z_ex][:] # Neumann
 source_terms = 3π^2 * analy_sol_3D;
 
 
-A = -(D2_x + D2_y + D2_z) + SAT_Front + SAT_End + SAT_Left + SAT_Right + SAT_Bottom + SAT_Top
+# A = -(D2_x + D2_y + D2_z) + SAT_Front + SAT_End + SAT_Left + SAT_Right + SAT_Bottom + SAT_Top
 
-b = source_terms[:] + SAT_Front_r * G_Front + SAT_End_r * G_End + SAT_Left_r * G_Left + SAT_Right_r * G_Right + SAT_Bottom_r * G_Bottom + SAT_Top_r * G_Top
+# b = source_terms[:] + SAT_Front_r * G_Front + SAT_End_r * G_End + SAT_Left_r * G_Left + SAT_Right_r * G_Right + SAT_Bottom_r * G_Bottom + SAT_Top_r * G_Top
 
 
-numerical_sol = A\b
+# numerical_sol = A\b
 
-numerical_sol_3D = reshape(numerical_sol,N_x+1,N_y+1,N_z+1)
-analy_sol_3D
+# numerical_sol_3D = reshape(numerical_sol,N_x+1,N_y+1,N_z+1)
+# analy_sol_3D
+
+u1_filter = get_u1(Nx,Ny,Nz)
+u2_filter = get_u2(Nx,Ny,Nz)
+u3_filter = get_u3(Nx,Ny,Nz)
+
+
+numerical_sol = zeros(3*Nx*Ny*Nz)
+

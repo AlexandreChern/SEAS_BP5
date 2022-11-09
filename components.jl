@@ -24,3 +24,5 @@ function get_u3(Nx,Ny,Nz)
     e1[2] = 1
     return kron(output,e1)   
 end
+
+

@@ -8,6 +8,10 @@
 #  /
 # 1
 #
+# Face 1: Front, Face 2: End
+# Face 3: Left, Face 4: Right
+# Face 5: Bottom, Face 6: Top 
+#
 # Example: julia> test_3D
 # 3×3×3 Array{Float64, 3}:
 # [:, :, 1] =
