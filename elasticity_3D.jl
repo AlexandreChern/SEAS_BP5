@@ -1,8 +1,7 @@
-
-
 include("diagonal_sbp.jl")
 include("3D_face.jl")
 include("analy_sol.jl")
+include("components.jl")
 
 using LinearAlgebra
 using IterativeSolvers
