@@ -2,6 +2,7 @@ include("diagonal_sbp.jl")
 include("3D_face.jl")
 include("analy_sol.jl")
 include("components.jl")
+include("coefficients.jl")
 
 using LinearAlgebra
 using IterativeSolvers
@@ -163,4 +164,59 @@ u3_filter = get_u3(Nx,Ny,Nz)
 
 
 numerical_sol = zeros(3*Nx*Ny*Nz)
+
+for i in eachindex(numerical_sol)
+    numerical_sol[i] = rem(i,3)
+end
+
+u1 = u1_filter * numerical_sol
+u2 = u2_filter * numerical_sol
+u3 = u3_filter * numerical_sol
+
+
+# First order derivatives
+p_px = kron(I_Nz,I_Ny,D1x)
+p_py = kron(I_Nz,D1y,I_Nx)
+p_pz = kron(D1z,I_Ny,I_Nx)
+
+# Second order derivatives
+p2_px2 = kron(I_Nz,I_Ny,D2x)
+p2_py2 = kron(I_Nz,D2y,I_Nx)
+p2_pz2 = kron(D2z,I_Ny,I_Nx)
+
+# crossterms
+
+p2_pypx = kron(I_Nz,D1y,D1x) # equivalent to p_py * p_px
+p2_pxpy = kron(I_Nz,D1y,D1x)
+
+p2_pzpy = kron(D1z,D1y,I_Nx)
+p2_pypz = kron(D1z,D1y,I_Nx)
+
+p2_pxpz = kron(D1z,I_Ny,D1x)
+p2_pzpx = kron(D1z,I_Ny,D1x)
+
+# Express σ tensors as operators on u vector (u1, u2, u3 stacked)
+sigma_11 = (K - 2/3*μ) * (p_px * u1_filter + p_py * u2_filter + p_pz * u3_filter) + 2 * μ * p_px * u1_filter
+sigma_12 = μ*(p_py*u1_filter + p_px*u2_filter)
+sigma_13 = μ*(p_pz*u1_filter + p_px*u3_filter)
+
+
+sigma_21 = μ*(p_px*u2_filter + p_py*u1_filter) 
+sigma_22 = (K - 2/3*μ) * (p_px * u1_filter + p_py * u2_filter + p_pz * u3_filter) + 2 * μ * p_py * u2_filter
+sigma_23 = μ * (p_pz * u2_filter + p_py * u3_filter)
+
+sigma_31 = μ * (p_px * u3_filter + p_pz * u1_filter)
+sigma_32 = μ * (p_py * u3_filter + p_pz * u2_filter)
+sigma_33 = (K - 2/3 * μ) * (p_px * u1_filter + p_py * u2_filter + p_pz * u3_filter) + 2 * μ * p_pz * u3_filter
+
+
+# Deriving equation for u1 as operators on u vector (u1, u2, u3 stacked)
+u1_operator = p_px * sigma_11 + p_py * sigma_12 + p_pz * sigma_13
+
+# Deriving equation for u2 as operators on u vector (u1, u2, u3 stacked)
+u2_operator = p_px * sigma_21 + p_py * sigma_22 + p_pz * sigma_13
+
+# Deriving equation for u3 as operators on u vector (u1, u2, u3 stacked)
+u3_operator = p_px * sigma_31 + p_py * sigma_32 + p_pz * sigma_33
+
 

@@ -3,7 +3,7 @@ function u(x,y,z)
     return a
 end
 
-function u2(x,y,z)
+function u_new(x,y,z)
     a = [sin(π*i + 2π*j + 3π*k) for i ∈ x, j ∈ y, k ∈ z]
     return a
 end
