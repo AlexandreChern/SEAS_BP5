@@ -163,15 +163,20 @@ u2_filter = get_u2(Nx,Ny,Nz)
 u3_filter = get_u3(Nx,Ny,Nz)
 
 
-numerical_sol = zeros(3*Nx*Ny*Nz)
+analy_sol = zeros(3*Nx*Ny*Nz)
 
 for i in eachindex(numerical_sol)
-    numerical_sol[i] = rem(i,3)
+    analy_sol[i] = rem(i,3)
 end
 
-u1 = u1_filter * numerical_sol
-u2 = u2_filter * numerical_sol
-u3 = u3_filter * numerical_sol
+# setting values for u1 u2 u3
+analy_sol[1:3:end] = analy_sol_3D[:] 
+analy_sol[2:3:end] = analy_sol_3D[:]
+analy_sol[3:3:end] = analy_sol_3D[:] 
+
+u1 = u1_filter * analy_sol
+u2 = u2_filter * analy_sol
+u3 = u3_filter * analy_sol
 
 
 # First order derivatives
@@ -220,3 +225,56 @@ u2_operator = p_px * sigma_21 + p_py * sigma_22 + p_pz * sigma_13
 u3_operator = p_px * sigma_31 + p_py * sigma_32 + p_pz * sigma_33
 
 
+# Assembling source source_terms
+
+source_u1 = u1_filter' * u1_operator * analy_sol
+source_u2 = u2_filter' * u2_operator * analy_sol
+source_u3 = u3_filter' * u3_operator * analy_sol
+
+# Assembling boundary conditions
+# Getting boundary values
+
+# u1
+u1_Front = Front_operator' * u_Front(y,z)[:] # Dirichlet Conditions
+u1_End = End_operator' * u_End(y,z)[:] # Dirichlet Conditions
+
+u1_Top = Top_operator' * u_Top(x,y)[:] # Dirichlet Conditions
+u1_Bottom = Bottom_operator' * u_Bottom(x,y)[:] # Dirichlet Conditions
+
+u1_Left = Left_operator' * u_y_Left(x,z)[:] # Neumann Conditions
+u1_Right = Right_operator' * u_y_Right(x,z)[:]
+
+# u2
+u2_Front = Front_operator' * u_Front(y,z)[:] # Dirichlet Conditions
+u2_End = End_operator' * u_End(y,z)[:] # Dirichlet Conditions
+
+u2_Top = Top_operator' * u_Top(x,y)[:] # Dirichlet Conditions
+u2_Bottom = Bottom_operator' * u_Bottom(x,y)[:] # Dirichlet Conditions
+
+u2_Left = Left_operator' * u_y_Left(x,z)[:] # Neumann Conditions
+u2_Right = Right_operator' * u_y_Right(x,z)[:]
+
+# u3
+u3_Front = Front_operator' * u_Front(y,z)[:] # Dirichlet Conditions
+u3_End = End_operator' * u_End(y,z)[:] # Dirichlet Conditions
+
+u3_Top = Top_operator' * u_Top(x,y)[:] # Dirichlet Conditions
+u3_Bottom = Bottom_operator' * u_Bottom(x,y)[:] # Dirichlet Conditions
+
+u3_Left = Left_operator' * u_y_Left(x,z)[:] # Neumann Conditions
+u3_Right = Right_operator' * u_y_Right(x,z)[:]
+
+
+
+# Assembling left hand side
+
+A1 = (u1_filter' * u1_operator)
+
+A2 = (u2_filter' * u2_operator)
+
+A3 = (u3_filter' * u3_operator)
+
+A = A1 + A2 + A3
+
+# Assembling right hand side
+source = source_u1 + source_u2 + source_u3
