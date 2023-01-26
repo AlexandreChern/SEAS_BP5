@@ -129,14 +129,14 @@ u3_filter = get_u3(Nx,Ny,Nz)
 
 analy_sol = zeros(3*Nx*Ny*Nz)
 
-for i in eachindex(numerical_sol)
-    analy_sol[i] = rem(i,3)
-end
+# for i in eachindex(numerical_sol)
+#     analy_sol[i] = rem(i,3)
+# end
 
-# setting values for u1 u2 u3
-analy_sol[1:3:end] = analy_sol_3D[:] 
-analy_sol[2:3:end] = analy_sol_3D[:]
-analy_sol[3:3:end] = analy_sol_3D[:] 
+# # setting values for u1 u2 u3
+# analy_sol[1:3:end] = analy_sol_3D[:] 
+# analy_sol[2:3:end] = analy_sol_3D[:]
+# analy_sol[3:3:end] = analy_sol_3D[:] 
 
 u1 = u1_filter * analy_sol
 u2 = u2_filter * analy_sol
