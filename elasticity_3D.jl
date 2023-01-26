@@ -57,6 +57,7 @@ BSy = sparse(SNy - S0y);
 BSz = sparse(SNz - S0z);
 
 H_tilde = kron(H1x,H1y,H1z)
+HI_tilde = kron(HIx, HIy, HIz)
 
 I_Nx = eyes(N_x+1)
 I_Ny = eyes(N_y+1)
@@ -74,21 +75,33 @@ e_Nx = e(N_x + 1,N_x + 1)
 e_Ny = e(N_y + 1,N_y + 1)
 e_Nz = e(N_z + 1,N_z + 1)
 
-HI_Front = kron(I_Ny,I_Nz,HIx)
-HI_End = kron(I_Ny,I_Nz,HIx)
+# H and HI Operators for End and Front
+# Size: N^3 by N^3
+HI_Front = kron(I_Nz,I_Ny,HIx)
+HI_End = kron(I_Nz,I_Ny,HIx)
+H_Front = kron(I_Nz, I_Ny, H1x)
+H_End = kron(I_Nz, I_Ny, H1x)
 
+# H and HI operators for Left and Right
+# Size: N^3 by N^3
 HI_Left = kron(I_Nz,HIy,I_Nx)
 HI_Right = kron(I_Nz,HIy,I_Nx)
+H_Left = kron(I_Nz, H1y, I_Nx)
+H_Right = kron(I_Nz, H1y, I_Nx)
 
+# H and HI operators for Bottom and Top
+# Size : N^3 by N^3
 HI_Bottom = kron(HIz,I_Nx,I_Ny)
 HI_Top = kron(HIz,I_Nx,I_Ny)
+H_Bottom = kron(H1z, I_Ny, I_Nx)
+H_Top = kron(H1z, I_Ny, I_Nx)
 
+# BS operators for 6 faces
+# Size: N^3 by N^3
 BS_Front = kron(I_Ny,I_Nz,BSx)
 BS_End = kron(I_Ny,I_Nz,BSx)
-
 BS_Left = kron(I_Nz,BSy,I_Nx)
 BS_Right = kron(I_Nz,BSy,I_Nx)
-
 # BS_Bottom = kron(I_Nx,I_Ny,BSz)
 # BS_Top = kron(I_Nx,I_Ny,BSz)
 BS_Bottom = kron(BSz,I_Nx,I_Ny)
@@ -242,3 +255,15 @@ A = A1 + A2 + A3
 
 # Assembling right hand side
 source = source_u1 + source_u2 + source_u3
+
+
+### Assembling SBP terms according to the note
+
+
+e_3T = Left_operator
+
+T_11_3 = - μ * p_py * u1_filter
+T_12_3 = - μ * p_px * u2_filter
+
+
+SAT_1 = -HI_tilde * []
