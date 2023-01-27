@@ -75,26 +75,31 @@ e_Nx = e(N_x + 1,N_x + 1)
 e_Ny = e(N_y + 1,N_y + 1)
 e_Nz = e(N_z + 1,N_z + 1)
 
+
 # H and HI Operators for End and Front
-# Size: N^3 by N^3
-HI_Front = kron(I_Nz,I_Ny,HIx)
-HI_End = kron(I_Nz,I_Ny,HIx)
-H_Front = kron(I_Nz, I_Ny, H1x)
-H_End = kron(I_Nz, I_Ny, H1x)
+# Size: N^2 by N^2
+H_1 = kron(H1z,H1y)
+HI_1 = kron(HIz,HIy)
+
+H_2 = kron(H1z, H1y)
+HI_2 = kron(HIz, HIy)
 
 # H and HI operators for Left and Right
-# Size: N^3 by N^3
-HI_Left = kron(I_Nz,HIy,I_Nx)
-HI_Right = kron(I_Nz,HIy,I_Nx)
-H_Left = kron(I_Nz, H1y, I_Nx)
-H_Right = kron(I_Nz, H1y, I_Nx)
+# Size: N^2 by N^2
+H_3 = kron(H1z, H1x)
+HI_3 = kron(HIz, HIx)
+
+H_4 = kron(H1z, H1x)
+HI_4 = kron(HIz, HIx)
 
 # H and HI operators for Bottom and Top
-# Size : N^3 by N^3
-HI_Bottom = kron(HIz,I_Nx,I_Ny)
-HI_Top = kron(HIz,I_Nx,I_Ny)
-H_Bottom = kron(H1z, I_Ny, I_Nx)
-H_Top = kron(H1z, I_Ny, I_Nx)
+# Size: N^2 by N^2
+
+H_5 = kron(H1y, H1x)
+HI_5 = kron(HIy,HIx)
+
+H_6 = kron(H1y, H1x)
+HI_6 = kron(HIy,HIx)
 
 # BS operators for 6 faces
 # Size: N^3 by N^3
@@ -154,6 +159,7 @@ analy_sol = zeros(3*Nx*Ny*Nz)
 u1 = u1_filter * analy_sol
 u2 = u2_filter * analy_sol
 u3 = u3_filter * analy_sol
+
 
 
 # First order derivatives
@@ -260,10 +266,16 @@ source = source_u1 + source_u2 + source_u3
 ### Assembling SBP terms according to the note
 
 
+e_3 = Left_operator'
 e_3T = Left_operator
-
 T_11_3 = - μ * p_py * u1_filter
 T_12_3 = - μ * p_px * u2_filter
+T_13_3 = 0 # Face 1
 
 
-SAT_1 = -HI_tilde * []
+
+SAT_1 = -HI_tilde * (e_3 * (H_3 * (e_3T * ((T_11_3 + T_12_3 .+ T_13_3) * analy_sol))))
+
+e_3 * H_3 * (e_3T * ((T_11_3 + T_12_3) * analy_sol))
+
+e_3 * (H_3 * (e_3T * ((T_11_3 + T_12_3) * analy_sol)))
