@@ -249,15 +249,15 @@ u3_Right = Right_operator' * u_y_Right(x,z)[:]
 
 
 
-# Assembling left hand side
+# # Assembling left hand side
 
-A1 = (u1_filter' * u1_operator)
+# A1 = (u1_filter' * u1_operator)
 
-A2 = (u2_filter' * u2_operator)
+# A2 = (u2_filter' * u2_operator)
 
-A3 = (u3_filter' * u3_operator)
+# A3 = (u3_filter' * u3_operator)
 
-A = A1 + A2 + A3
+# A = A1 + A2 + A3
 
 # Assembling right hand side
 source = source_u1 + source_u2 + source_u3
@@ -267,8 +267,65 @@ source = source_u1 + source_u2 + source_u3
 
 ### Assembling components of stress tensors and boundary operators
 ### Face 1
+e_1 = End_operator'
+e_1T = End_operator
+
+T_11_1 = - K * p_px * u1_filter
+T_12_1 = - (K - 2 * μ) * p_pz * u2_filter # Not quite sure 
+T_13_1 = - (K - 2 * μ) * p_py * u3_filter
+
+T_21_1 = - μ * p_px * u1_filter
+T_22_1 = - μ * p_py * u2_filter
+T_23_1 = 0
+
+T_31_1 = - μ * p_pz * u1_filter
+T_32_1 = 0
+T_33_1 = - μ * p_px * u3_filter
+
+
+Z_11_1 = - (K * β / H1x[1]) * u1_filter
+Z_12_1 = - ((K - 2 * μ) * β/ H1x[1]) * u2_filter
+Z_13_1 = - ((K - 2 * μ) * β/ H1x[1]) * u3_filter
+
+Z_21_1 = - (μ * β / H1x[1]) * u1_filter
+Z_22_1 = - (μ * β / H1x[1]) * u2_filter
+Z_23_1 = - (μ * β / H1x[1]) * u3_filter ## 0 ?
+
+Z_31_1 = - (μ * β / H1x[1]) * u1_filter
+Z_32_1 = 0
+Z_33_1 = - (μ * β / H1x[1]) * u3_filter
+
 
 ### Face 2
+e_2 = Front_operator'
+e_2T = Front_operator
+
+T_11_2 = K * p_px * u1_filter
+T_12_2 = (K - 2 * μ) * p_pz * u2_filter # Not quite sure 
+T_13_2 = (K - 2 * μ) * p_py * u3_filter
+
+T_21_2 = μ * p_px * u1_filter
+T_22_2 = μ * p_py * u2_filter
+T_23_2 = 0
+
+T_31_2 = μ * p_pz * u1_filter
+T_32_2 = 0
+T_33_2 = μ * p_px * u3_filter
+
+Z_11_2 = (K * β / H1x[1]) * u1_filter
+Z_12_2 = ((K - 2 * μ) * β/ H1x[1]) * u2_filter
+Z_13_2 = ((K - 2 * μ) * β/ H1x[1]) * u3_filter
+
+Z_21_2 = (μ * β / H1x[1]) * u1_filter
+Z_22_2 = (μ * β / H1x[1]) * u2_filter
+Z_23_2 = (μ * β / H1x[1]) * u3_filter ## 0 ?
+
+Z_31_2 = (μ * β / H1x[1]) * u1_filter
+Z_32_2 = 0
+Z_33_2 = (μ * β / H1x[1]) * u3_filter
+
+
+
 
 ### Face 3
 e_3 = Left_operator'
@@ -365,3 +422,6 @@ SAT_3_LHS = - HI_tilde * (
     +   e_5 * H_5 * e_5T * (T_31_5 .+ T_32_5 .+ T_33_5)
     +   e_6 * H_6 * e_6T * (T_31_6 .+ T_32_6 .+ T_33_6)
 )
+
+
+### Assembling SBP terms for Dirichlet 
