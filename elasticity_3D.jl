@@ -265,17 +265,63 @@ source = source_u1 + source_u2 + source_u3
 
 ### Assembling SBP terms according to the note
 
+### Assembling components of stress tensors and boundary operators
+### Face 1
 
+### Face 2
+
+### Face 3
 e_3 = Left_operator'
 e_3T = Left_operator
+
 T_11_3 = - μ * p_py * u1_filter
 T_12_3 = - μ * p_px * u2_filter
 T_13_3 = 0 # Face 1
 
+T_21_3 = - (K - 2 * μ) * p_px * u1_filter
+T_22_3 = - (K - 2 * μ) * p_py * u2_filter
+T_23_3 = - (K - 2 * μ) * p_pz * u3_filter
 
+T_31_3 = 0
+T_32_3 = - μ * p_pz * u2_filter
+T_33_3 = - μ * p_py * u3_filter
 
-SAT_1 = -HI_tilde * (e_3 * (H_3 * (e_3T * ((T_11_3 + T_12_3 .+ T_13_3) * analy_sol))))
+### Face 4
+e_4 = Right_operator'
+e_4T = Right_operator
+
+T_11_4 = μ * p_py * u1_filter
+T_12_4 = μ * p_px * u2_filter
+T_13_4 = 0
+
+### Face 5
+e_5 = Bottom_operator'
+e_5T = Bottom_operator
+T_11_5 = - μ * p_pz * u1_filter
+T_12_5 = - μ * p_px * u3_filter
+T_13_5 = 0
+
+### Face 6
+e_6 = Top_operator'
+e_6T = Top_operator
+T_11_6 = μ * p_pz * u1_filter
+T_12_6 = 0
+T_13_6 = μ * p_px * u3_filter
+
+SAT_1 = -HI_tilde * (
+    #  (e_3 * (H_3 * (e_3T * ((T_11_3 + T_12_3 .+ T_13_3))))) * analy_sol
+    # +(e_4 * (H_4 * (e_4T * ((T_11_4 + T_12_4 .+ T_13_4))))) * analy_sol
+    # +(e_5 * (H_5 * (e_5T * ((T_11_5 + T_12_5 .+ T_13_5))))) * analy_sol
+    e_3 * H_3 * e_3T * (T_11_3 .+ T_12_3 .+ T_13_3) * analy_sol
+    + e_4 * H_4 * e_4T * (T_11_4 .+ T_12_4 .+ T_13_4) * analy_sol
+    + e_5 * H_5 * e_5T * (T_11_5 .+ T_12_5 .+ T_13_5) * analy_sol
+    + e_6
+)
+
 
 e_3 * H_3 * (e_3T * ((T_11_3 + T_12_3) * analy_sol))
 
-e_3 * (H_3 * (e_3T * ((T_11_3 + T_12_3) * analy_sol)))
+e_3 * (H_3 * (e_3T * ((T_11_3 + T_12_3)))) * analy_sol
+
+
+(e_3 * (H_3 * (e_3T * ((T_11_3 + T_12_3 .+ T_13_3)))))  == e_3 * H_3 * e_3T * (T_11_3 + T_12_3 .+ T_13_3)
