@@ -2,68 +2,74 @@ include("elasticity_3D.jl")
 
 
 SAT_1_LHS = (
-        u1_filter' * (- HI_tilde *  (   e_3 * H_3 * e_3T * T_11_3 
-                                    .+  e_4 * H_4 * e_4T * T_11_4
-                                    .+  e_5 * H_5 * e_5T * T_11_5
-                                    .+  e_6 * H_6 * e_6T * T_11_6) * u1_filter)
+        u1_filter' * (- HI_tilde *  (   
+                e_3 * H_3 * e_3T * T_11_3 
+            .+  e_4 * H_4 * e_4T * T_11_4
+            .+  e_5 * H_5 * e_5T * T_11_5
+            .+  e_6 * H_6 * e_6T * T_11_6 #) * u1_filter)
+        )) * u1_filter
 
-    +   u2_filter' * (- HI_tilde *  (   e_3 * H_3 * e_3T * T_12_3
-                                    .+  e_4 * H_4 * e_4T * T_12_4
-                                    .+  e_5 * H_5 * e_5T * T_12_5
-                                    .+  e_6 * H_6 * e_6T * T_12_6) * u2_filter)
+    +   u2_filter' * (- HI_tilde *  (   
+                e_3 * H_3 * e_3T * T_12_3
+            .+  e_4 * H_4 * e_4T * T_12_4
+            .+  e_5 * H_5 * e_5T * T_12_5
+            .+  e_6 * H_6 * e_6T * T_12_6 #) * u2_filter)
+        )) * u2_filter
 
-    +   u3_filter' * (- HI_tilde *  (   e_3 * H_3 * e_3T * T_13_3
-                                    .+  e_4 * H_4 * e_4T * T_13_4
-                                    .+  e_5 * H_5 * e_5T * T_13_5
-                                    .+  e_6 * H_6 * e_6T * T_13_6) * u3_filter)
+    +   u3_filter' * (- HI_tilde *  (   
+                e_3 * H_3 * e_3T * T_13_3
+            .+  e_4 * H_4 * e_4T * T_13_4
+            .+  e_5 * H_5 * e_5T * T_13_5
+            .+  e_6 * H_6 * e_6T * T_13_6 #) * u3_filter)
+        )) * u3_filter
 ) 
 
 
 SAT_2_LHS = (
-        u1_filter' * (- HI_tilde *  
-        (   e_3 * H_3 * e_3T * T_21_3 
-        .+  e_4 * H_4 * e_4T * T_21_4
-        .+  e_5 * H_5 * e_5T * T_21_5
-        .+  e_6 * H_6 * e_6T * T_21_6) # * u1_filter
-        ) * u1_filter
+        u1_filter' * (- HI_tilde *  (   
+                e_3 * H_3 * e_3T * T_21_3 
+            .+  e_4 * H_4 * e_4T * T_21_4
+            .+  e_5 * H_5 * e_5T * T_21_5
+            .+  e_6 * H_6 * e_6T * T_21_6 #) # * u1_filter
+        )) * u1_filter
 
     +   u2_filter' * (- HI_tilde *  
-                (   e_3 * H_3 * e_3T * T_22_3
-                .+  e_4 * H_4 * e_4T * T_22_4
-                .+  e_5 * H_5 * e_5T * T_22_5
-                .+  e_6 * H_6 * e_6T * T_22_6) #* u2_filter
-                ) * u2_filter                  
+            (   e_3 * H_3 * e_3T * T_22_3
+            .+  e_4 * H_4 * e_4T * T_22_4
+            .+  e_5 * H_5 * e_5T * T_22_5
+            .+  e_6 * H_6 * e_6T * T_22_6 #) #* u2_filter
+        )) * u2_filter                  
 
-    +   u3_filter' * (- HI_tilde *  
-                (   e_3 * H_3 * e_3T * T_23_3
-                .+  e_4 * H_4 * e_4T * T_23_4
-                .+  e_5 * H_5 * e_5T * T_23_5
-                .+  e_6 * H_6 * e_6T * T_23_6) #* u3_filter
-                ) * u3_filter
+    +   u3_filter' * (- HI_tilde *  (   
+            e_3 * H_3 * e_3T * T_23_3
+            .+  e_4 * H_4 * e_4T * T_23_4
+            .+  e_5 * H_5 * e_5T * T_23_5
+            .+  e_6 * H_6 * e_6T * T_23_6 #) * u3_filter
+        )) * u3_filter
 ) 
 
 
 SAT_2_LHS = (
-        u1_filter' * (- HI_tilde *  
-                (   e_3 * H_3 * e_3T * T_31_3 
-                .+  e_4 * H_4 * e_4T * T_31_4
-                .+  e_5 * H_5 * e_5T * T_31_5
-                .+  e_6 * H_6 * e_6T * T_31_6) #* u1_filter
-                ) * u1_filter
+        u1_filter' * (- HI_tilde *  (   
+                e_3 * H_3 * e_3T * T_31_3 
+            .+  e_4 * H_4 * e_4T * T_31_4
+            .+  e_5 * H_5 * e_5T * T_31_5
+            .+  e_6 * H_6 * e_6T * T_31_6
+        )) * u1_filter
 
-    +   u2_filter' * (- HI_tilde *  
-                (   e_3 * H_3 * e_3T * T_32_3
-                .+  e_4 * H_4 * e_4T * T_32_4
-                .+  e_5 * H_5 * e_5T * T_32_5
-                .+  e_6 * H_6 * e_6T * T_32_6) #* u2_filter
-                ) * u2_filter
+    +   u2_filter' * (- HI_tilde *  (   
+                e_3 * H_3 * e_3T * T_32_3
+            .+  e_4 * H_4 * e_4T * T_32_4
+            .+  e_5 * H_5 * e_5T * T_32_5
+            .+  e_6 * H_6 * e_6T * T_32_6 #) * u2_filter
+        )) * u2_filter
 
-    +   u3_filter' * (- HI_tilde *  
-                (   e_3 * H_3 * e_3T * T_33_3
-                .+  e_4 * H_4 * e_4T * T_33_4
-                .+  e_5 * H_5 * e_5T * T_33_5
-                .+  e_6 * H_6 * e_6T * T_33_6) #* u3_filter
-                ) * u3_filter
+    +   u3_filter' * (- HI_tilde *  (   
+                e_3 * H_3 * e_3T * T_33_3
+            .+  e_4 * H_4 * e_4T * T_33_4
+            .+  e_5 * H_5 * e_5T * T_33_5
+            .+  e_6 * H_6 * e_6T * T_33_6 # ) * u3_filter
+        )) * u3_filter
 ) 
 
 
@@ -127,3 +133,13 @@ SAT_tilde_2_LHS = (
             .+  (T_33_2 .- Z_33_2)' * (e_2 * H_2 * e_2T)
         )) * u3_filter
 )
+
+
+
+## Forming RHS of the SAT terms
+
+
+
+## Forming governing equations
+
+
