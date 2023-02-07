@@ -333,65 +333,65 @@ Z_33_2 = (d * β / H1x[1]) * (K + 4/3 * μ + 2 * μ) #* u3_filter
 e_3 = Left_operator'
 e_3T = Left_operator
 
-T_11_3 = - μ * p_py * u1_filter
-T_12_3 = - μ * p_px * u2_filter
+T_11_3 = - μ * p_py #* u1_filter
+T_12_3 = - μ * p_px #* u2_filter
 T_13_3 = 0 # Face 1
 
-T_21_3 = - (K - 2/3 * μ) * p_px * u1_filter
-T_22_3 = - (K + 4/3 ) * p_py * u2_filter
-T_23_3 = - (K - 2/3 * μ) * p_pz * u3_filter
+T_21_3 = - (K - 2/3 * μ) * p_px #* u1_filter
+T_22_3 = - (K + 4/3 ) * p_py #* u2_filter
+T_23_3 = - (K - 2/3 * μ) * p_pz #* u3_filter
 
 T_31_3 = 0
-T_32_3 = - μ * p_pz * u2_filter
-T_33_3 = - μ * p_py * u3_filter
+T_32_3 = - μ * p_pz #* u2_filter
+T_33_3 = - μ * p_py #* u3_filter
 
 ### Face 4
 e_4 = Right_operator'
 e_4T = Right_operator
 
-T_11_4 = μ * p_py * u1_filter
-T_12_4 = μ * p_px * u2_filter
+T_11_4 = μ * p_py #* u1_filter
+T_12_4 = μ * p_px #* u2_filter
 T_13_4 = 0
 
-T_21_4 = (K - 2/3 * μ) * p_px * u1_filter
-T_22_4 = (K + 4/3) * p_py * u2_filter
-T_23_4 = (K - 2/3 * μ) * p_pz * u3_filter
+T_21_4 = (K - 2/3 * μ) * p_px #* u1_filter
+T_22_4 = (K + 4/3) * p_py #* u2_filter
+T_23_4 = (K - 2/3 * μ) #* p_pz * u3_filter
 
 T_31_4 = 0
-T_32_4 = μ * p_pz * u2_filter
-T_33_4 = μ * p_py * u3_filter
+T_32_4 = μ * p_pz #* u2_filter
+T_33_4 = μ * p_py #* u3_filter
 
 ### Face 5
 e_5 = Bottom_operator'
 e_5T = Bottom_operator
 
-T_11_5 = - μ * p_pz * u1_filter
+T_11_5 = - μ * p_pz #* u1_filter
 T_12_5 = 0
-T_13_5 = - μ * p_px * u3_filter
+T_13_5 = - μ * p_px #* u3_filter
 
 T_21_5 = 0
-T_22_5 = - μ * p_pz * u2_filter
-T_23_5 = - μ * p_py * u3_filter
+T_22_5 = - μ * p_pz #* u2_filter
+T_23_5 = - μ * p_py #* u3_filter
 
-T_31_5 = - (K - 2/3 * μ) * p_px * u1_filter
-T_32_5 = - (K - 2/3 * μ) * p_py * u2_filter
-T_33_5 = - (K + 4/3) * p_pz * u3_filter
+T_31_5 = - (K - 2/3 * μ) * p_px #* u1_filter
+T_32_5 = - (K - 2/3 * μ) * p_py #* u2_filter
+T_33_5 = - (K + 4/3) * p_pz #* u3_filter
 
 ### Face 6
 e_6 = Top_operator'
 e_6T = Top_operator
 
-T_11_6 = μ * p_pz * u1_filter
+T_11_6 = μ * p_pz #* u1_filter
 T_12_6 = 0
-T_13_6 = μ * p_px * u3_filter
+T_13_6 = μ * p_px #* u3_filter
 
 T_21_6 = 0
-T_22_6 = μ * p_pz * u2_filter
-T_23_6 = μ * p_py * u3_filter
+T_22_6 = μ * p_pz #* u2_filter
+T_23_6 = μ * p_py #* u3_filter
 
-T_31_6 = (K - 2/3 * μ) * p_px * u1_filter
-T_32_6 = (K - 2/3 * μ) * p_py * u2_filter
-T_33_6 = (K + 4/3) * p_pz * u3_filter
+T_31_6 = (K - 2/3 * μ) * p_px #* u1_filter
+T_32_6 = (K - 2/3 * μ) * p_py #* u2_filter
+T_33_6 = (K + 4/3) * p_pz #* u3_filter
 
 ### Assembling SBP terms for left-hand-side LHS
 
@@ -399,11 +399,11 @@ SAT_1_LHS = -HI_tilde * (
     #  (e_3 * (H_3 * (e_3T * ((T_11_3 + T_12_3 .+ T_13_3))))) * analy_sol
     # +(e_4 * (H_4 * (e_4T * ((T_11_4 + T_12_4 .+ T_13_4))))) * analy_sol
     # +(e_5 * (H_5 * (e_5T * ((T_11_5 + T_12_5 .+ T_13_5))))) * analy_sol
-        e_3 * H_3 * e_3T * (T_11_3 .+ T_12_3 .+ T_13_3)
-    +   e_4 * H_4 * e_4T * (T_11_4 .+ T_12_4 .+ T_13_4)
-    +   e_5 * H_5 * e_5T * (T_11_5 .+ T_12_5 .+ T_13_5)
-    +   e_6 * H_6 * e_6T * (T_11_6 .+ T_12_6 .+ T_13_6)
-) * analy_sol
+        e_3 * H_3 * e_3T * (T_11_3 * u1_filter .+ T_12_3 * u2_filter .+ T_13_3 * u3_filter)
+    +   e_4 * H_4 * e_4T * (T_11_4 * u2_filter .+ T_12_4 * u2_filter .+ T_13_4 * u3_filter)
+    +   e_5 * H_5 * e_5T * (T_11_5 * u1_filter .+ T_12_5 * u2_filter .+ T_13_5 * u3_filter)
+    +   e_6 * H_6 * e_6T * (T_11_6 * u1_filter .+ T_12_6 * u2_filter .+ T_13_6 * u3_filter)
+) 
 
 
 # e_3 * H_3 * (e_3T * ((T_11_3 + T_12_3) * analy_sol))
@@ -411,18 +411,18 @@ SAT_1_LHS = -HI_tilde * (
 # (e_3 * (H_3 * (e_3T * ((T_11_3 + T_12_3 .+ T_13_3)))))  == e_3 * H_3 * e_3T * (T_11_3 + T_12_3 .+ T_13_3)
 
 SAT_2_LHS = - HI_tilde * (
-        e_3 * H_3 * e_3T * (T_21_3 .+ T_22_3 .+ T_23_3)
-    +   e_4 * H_4 * e_4T * (T_21_4 .+ T_22_4 .+ T_23_4)
-    +   e_5 * H_5 * e_5T * (T_21_5 .+ T_22_5 .+ T_23_5)
-    +   e_6 * H_5 * e_6T * (T_21_6 .+ T_22_6 .+ T_23_6)
-)
+        e_3 * H_3 * e_3T * (T_21_3 * u1_filter .+ T_22_3 * u2_filter .+ T_23_3 * u3_filter)
+    +   e_4 * H_4 * e_4T * (T_21_4 * u1_filter .+ T_22_4 * u2_filter .+ T_23_4 * u3_filter)
+    +   e_5 * H_5 * e_5T * (T_21_5 * u1_filter .+ T_22_5 * u2_filter .+ T_23_5 * u3_filter)
+    +   e_6 * H_5 * e_6T * (T_21_6 * u1_filter .+ T_22_6 * u2_filter .+ T_23_6 * u3_filter)
+) 
 
 
 SAT_3_LHS = - HI_tilde * (
-        e_3 * H_3 * e_3T * (T_31_3 .+ T_32_3 .+ T_33_3)
-    +   e_4 * H_4 * e_4T * (T_31_4 .+ T_32_4 .+ T_33_4)
-    +   e_5 * H_5 * e_5T * (T_31_5 .+ T_32_5 .+ T_33_5)
-    +   e_6 * H_6 * e_6T * (T_31_6 .+ T_32_6 .+ T_33_6)
+        e_3 * H_3 * e_3T * (T_31_3 * u1_filter .+ T_32_3 * u2_filter .+ T_33_3 * u3_filter)
+    +   e_4 * H_4 * e_4T * (T_31_4 * u1_filter .+ T_32_4 * u2_filter .+ T_33_4 * u3_filter)
+    +   e_5 * H_5 * e_5T * (T_31_5 * u1_filter .+ T_32_5 * u2_filter .+ T_33_5 * u3_filter)
+    +   e_6 * H_6 * e_6T * (T_31_6 * u1_filter .+ T_32_6 * u2_filter .+ T_33_6 * u3_filter)
 )
 
 
@@ -446,7 +446,7 @@ SAT_tilde_2_LHS = - HI_tilde * (
     +   (T_32_2 .- Z_32_2)' * (e_2 * H_2 * (e_2T)) * u3_filter
 )
 
-SAT_tilde_2_LHS = - HI_tilde * (
+SAT_tilde_3_LHS = - HI_tilde * (
         (T_13_1 .- Z_13_1)' * (e_1 * H_1 * (e_1T)) * u1_filter
     +   (T_23_1 .- Z_23_1)' * (e_1 * H_1 * (e_1T)) * u2_filter
     +   (T_33_1 .- Z_33_1)' * (e_1 * H_1 * (e_1T)) * u3_filter
@@ -458,4 +458,9 @@ SAT_tilde_2_LHS = - HI_tilde * (
 # e_1 * H_1 * (e_1T ) * u1_filter
 # T_11_1'
 # HI_tilde 
+
+# forming A
+
+
+
 
