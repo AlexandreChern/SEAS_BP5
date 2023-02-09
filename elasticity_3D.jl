@@ -198,14 +198,21 @@ sigma_32 = μ * (p_py * u3_filter + p_pz * u2_filter)
 sigma_33 = (K - 2/3 * μ) * (p_px * u1_filter + p_py * u2_filter + p_pz * u3_filter) + 2 * μ * p_pz * u3_filter
 
 
-# Deriving equation for u1 as operators on u vector (u1, u2, u3 stacked)
-u1_operator = p_px * sigma_11 + p_py * sigma_12 + p_pz * sigma_13
+# # Deriving equation for u1 as operators on u vector (u1, u2, u3 stacked)
+# u1_operator = p_px * sigma_11 + p_py * sigma_12 + p_pz * sigma_13
 
-# Deriving equation for u2 as operators on u vector (u1, u2, u3 stacked)
-u2_operator = p_px * sigma_21 + p_py * sigma_22 + p_pz * sigma_13
+# # Deriving equation for u2 as operators on u vector (u1, u2, u3 stacked)
+# u2_operator = p_px * sigma_21 + p_py * sigma_22 + p_pz * sigma_13
 
-# Deriving equation for u3 as operators on u vector (u1, u2, u3 stacked)
-u3_operator = p_px * sigma_31 + p_py * sigma_32 + p_pz * sigma_33
+# # Deriving equation for u3 as operators on u vector (u1, u2, u3 stacked)
+# u3_operator = p_px * sigma_31 + p_py * sigma_32 + p_pz * sigma_33
+
+# # TO DO: Need to rewrite this part 
+
+# Equations for u1
+
+
+
 
 
 # Assembling source source_terms
@@ -428,32 +435,32 @@ SAT_3_LHS = - HI_tilde * (
 
 ### Assembling SBP terms for Dirichlet 
 
-SAT_tilde_1_LHS = - HI_tilde * (
-        (T_11_1 .- Z_11_1)' * (e_1 * H_1 * (e_1T)) * u1_filter
-    +   (T_21_1 .- Z_21_1)' * (e_1 * H_1 * (e_1T)) * u2_filter
-    +   (T_31_1 .- Z_31_1)' * (e_1 * H_1 * (e_1T)) * u3_filter
-    +   (T_11_1 .- Z_11_1)' * (e_2 * H_2 * (e_2T)) * u1_filter
-    +   (T_21_1 .- Z_21_1)' * (e_2 * H_2 * (e_2T)) * u2_filter
-    +   (T_31_1 .- Z_31_1)' * (e_2 * H_2 * (e_2T)) * u3_filter
-)
+# SAT_tilde_1_LHS = - HI_tilde * (
+#         (T_11_1 .- Z_11_1)' * (e_1 * H_1 * (e_1T)) * u1_filter
+#     +   (T_21_1 .- Z_21_1)' * (e_1 * H_1 * (e_1T)) * u2_filter
+#     +   (T_31_1 .- Z_31_1)' * (e_1 * H_1 * (e_1T)) * u3_filter
+#     +   (T_11_1 .- Z_11_1)' * (e_2 * H_2 * (e_2T)) * u1_filter
+#     +   (T_21_1 .- Z_21_1)' * (e_2 * H_2 * (e_2T)) * u2_filter
+#     +   (T_31_1 .- Z_31_1)' * (e_2 * H_2 * (e_2T)) * u3_filter
+# )
 
-SAT_tilde_2_LHS = - HI_tilde * (
-        (T_12_1 .- Z_12_1)' * (e_1 * H_1 * (e_1T)) * u1_filter
-    +   (T_22_1 .- Z_22_1)' * (e_1 * H_1 * (e_1T)) * u2_filter
-    +   (T_32_1 .- Z_32_1)' * (e_1 * H_1 * (e_1T)) * u3_filter
-    +   (T_12_2 .- Z_12_2)' * (e_2 * H_2 * (e_2T)) * u1_filter
-    +   (T_22_2 .- Z_22_2)' * (e_2 * H_2 * (e_2T)) * u2_filter
-    +   (T_32_2 .- Z_32_2)' * (e_2 * H_2 * (e_2T)) * u3_filter
-)
+# SAT_tilde_2_LHS = - HI_tilde * (
+#         (T_12_1 .- Z_12_1)' * (e_1 * H_1 * (e_1T)) * u1_filter
+#     +   (T_22_1 .- Z_22_1)' * (e_1 * H_1 * (e_1T)) * u2_filter
+#     +   (T_32_1 .- Z_32_1)' * (e_1 * H_1 * (e_1T)) * u3_filter
+#     +   (T_12_2 .- Z_12_2)' * (e_2 * H_2 * (e_2T)) * u1_filter
+#     +   (T_22_2 .- Z_22_2)' * (e_2 * H_2 * (e_2T)) * u2_filter
+#     +   (T_32_2 .- Z_32_2)' * (e_2 * H_2 * (e_2T)) * u3_filter
+# )
 
-SAT_tilde_3_LHS = - HI_tilde * (
-        (T_13_1 .- Z_13_1)' * (e_1 * H_1 * (e_1T)) * u1_filter
-    +   (T_23_1 .- Z_23_1)' * (e_1 * H_1 * (e_1T)) * u2_filter
-    +   (T_33_1 .- Z_33_1)' * (e_1 * H_1 * (e_1T)) * u3_filter
-    +   (T_13_2 .- Z_13_2)' * (e_2 * H_2 * (e_2T)) * u1_filter
-    +   (T_23_2 .- Z_23_2)' * (e_2 * H_2 * (e_2T)) * u2_filter
-    +   (T_33_2 .- Z_33_2)' * (e_2 * H_2 * (e_2T)) * u3_filter
-)
+# SAT_tilde_3_LHS = - HI_tilde * (
+#         (T_13_1 .- Z_13_1)' * (e_1 * H_1 * (e_1T)) * u1_filter
+#     +   (T_23_1 .- Z_23_1)' * (e_1 * H_1 * (e_1T)) * u2_filter
+#     +   (T_33_1 .- Z_33_1)' * (e_1 * H_1 * (e_1T)) * u3_filter
+#     +   (T_13_2 .- Z_13_2)' * (e_2 * H_2 * (e_2T)) * u1_filter
+#     +   (T_23_2 .- Z_23_2)' * (e_2 * H_2 * (e_2T)) * u2_filter
+#     +   (T_33_2 .- Z_33_2)' * (e_2 * H_2 * (e_2T)) * u3_filter
+# )
 
 # e_1 * H_1 * (e_1T ) * u1_filter
 # T_11_1'
