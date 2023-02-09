@@ -75,7 +75,7 @@ u3_source = expand_derivatives(
 
 
 Dx_broadcast = Differential.(x_s)
-Dxx_expand = expand_derivatives(Dx_broadcast.(cos.(π_s .* x_s)))
+Dxx_expand = expand_derivatives(Dx_broadcast(cos.(π_s * x_s)))
 
 substitute(Dxx_expand, Dict(π_s=>π,x_s=>[0,1]))
 
