@@ -52,33 +52,35 @@ u1_source = expand_derivatives(
     +   μ * (Dzz(u3) + Dzx(u3))
 )
 
-substitute(u1_source, Dict(K_s=>1,μ_s=>1,x_s=>x)) # how to substitute symbolics with real values
+substitute(u1_source, Dict(K_s=>1,μ_s=>1)) # how to substitute symbolics with real values
 
 u2_source = expand_derivatives(
-        μ * (Dxx(u2) + Dxy(u1))
-    +   (K - 2//3 * μ) * (Dyx(u1) + Dyy(u2) + Dyz(u3))
-    +   2 * μ * (Dyy(u2))
-    +   μ * (Dzz(u2) + Dzy(u3))
+        μ * (Dxx(u2_s) + Dxy(u1_s))
+    +   (K - 2//3 * μ) * (Dyx(u1_s) + Dyy(u2_s) + Dyz(u3_s))
+    +   2 * μ * (Dyy(u2_s))
+    +   μ * (Dzz(u2_s) + Dzy(u3_s))
 )
 
 substitute(u2_source, Dict(K=>1,μ=>1))
 
 u3_source = expand_derivatives(
-        μ * (Dxx(u3) + Dxz(u1))
-    +   μ * (Dyy(u3) + Dyz(u2))
-    +   (K - 2//3 * μ) * (Dzx(u1) + Dzy(u2) + Dzz(u3))
-    +   2 * μ * (Dzz(u3))
+        μ * (Dxx(u3_s) + Dxz(u1_s))
+    +   μ * (Dyy(u3_s) + Dyz(u2_s))
+    +   (K - 2//3 * μ) * (Dzx(u1_s) + Dzy(u2_s) + Dzz(u3_s))
+    +   2 * μ * (Dzz(u3_s))
 )
 
 
 # substitute((K_s - 2//3 * μ_s) * (Dxx(u1_s) + Dxy(u2_s) + Dxz(u3_s)),Dict(K_s=>1, μ_s=>1,π_s => π, x_s=>x))
 
 
-Dx_broadcast = Differential.(x_s)
-Dxx_expand = expand_derivatives(Dx_broadcast(cos.(π_s * x_s)))
-
-substitute(Dxx_expand, Dict(π_s=>π,x_s=>[0,1]))
-
 # Testing symbolics vector
-# @syms x_test[]
-# substitute(cos.(x_test), Dict(x_test=>[0,1])) # this is working
+@syms x_test[]
+substitute(cos.(x_test), Dict(x_test=>[0,π/2,π])) # this is working
+
+
+@syms x_s_new[] 
+Dx_broadcast = Differential.(x_s_new)
+Dxx_expand = expand_derivatives(Dx_broadcast(cos.(π_s .* x_s_new)))
+
+substitute(Dxx_expand, Dict(π_s=>π,x_s_new=>[0,1]))
