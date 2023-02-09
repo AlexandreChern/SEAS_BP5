@@ -23,9 +23,9 @@ hx = h_list_x[i];
 hy = h_list_y[j];
 hz = h_list_z[k];
 
-x = range(0,step=hx,1);
-y = range(0,step=hy,1);
-z = range(0,step=hz,1);
+x = collect(range(0,step=hx,1));
+y = collect(range(0,step=hy,1));
+z = collect(range(0,step=hz,1));
 
 x_list = 1 ./h_list_x;
 y_list = 1 ./h_list_y;

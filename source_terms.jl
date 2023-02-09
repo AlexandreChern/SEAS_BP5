@@ -1,6 +1,6 @@
 using Symbolics
 
-@variables x_s y_s z_s
+@syms x_s y_s z_s
 @variables K_s μ_s
 @variables π_s # = Symbolics.pi
 
@@ -52,7 +52,7 @@ u1_source = expand_derivatives(
     +   μ * (Dzz(u3) + Dzx(u3))
 )
 
-substitute(u1_source, Dict(K=>1,μ=>1)) # how to substitute symbolics with real values
+substitute(u1_source, Dict(K_s=>1,μ_s=>1,x_s=>x)) # how to substitute symbolics with real values
 
 u2_source = expand_derivatives(
         μ * (Dxx(u2) + Dxy(u1))
@@ -69,3 +69,16 @@ u3_source = expand_derivatives(
     +   (K - 2//3 * μ) * (Dzx(u1) + Dzy(u2) + Dzz(u3))
     +   2 * μ * (Dzz(u3))
 )
+
+
+# substitute((K_s - 2//3 * μ_s) * (Dxx(u1_s) + Dxy(u2_s) + Dxz(u3_s)),Dict(K_s=>1, μ_s=>1,π_s => π, x_s=>x))
+
+
+Dx_broadcast = Differential.(x_s)
+Dxx_expand = expand_derivatives(Dx_broadcast.(cos.(π_s .* x_s)))
+
+substitute(Dxx_expand, Dict(π_s=>π,x_s=>[0,1]))
+
+# Testing symbolics vector
+# @syms x_test[]
+# substitute(cos.(x_test), Dict(x_test=>[0,1])) # this is working
