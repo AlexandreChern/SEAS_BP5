@@ -8,11 +8,11 @@ function u_new(x,y,z)
     return a
 end
 
-x_ex = 0:0.25:1
-y_ex = 0:0.25:1
-z_ex = 0:0.25:1
+# x_ex = 0:0.25:1
+# y_ex = 0:0.25:1
+# z_ex = 0:0.25:1
 
-ex_analy_sol = u(x_ex,y_ex,z_ex)
+# ex_analy_sol = u(x_ex,y_ex,z_ex)
 
 
 function form_analy_sol(;u=u,N = 2^3)
@@ -91,4 +91,3 @@ function u_z_Bottom(x,y)
     a = -π * [cos(π*i + π*j) for i ∈ x, j ∈ y] # -1 normal direction
     return a 
 end
-

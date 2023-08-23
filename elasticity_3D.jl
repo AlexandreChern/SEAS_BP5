@@ -160,12 +160,6 @@ u3_filter = get_u3(Nx,Ny,Nz)
 # u2 = u2_filter * analy_sol
 # u3 = u3_filter * analy_sol
 
-u1 = form_analy_sol(;N = N_x)[1][:] # u1 is the only non-zero component
-u2 = zeros(Nx*Ny*Nz)
-u3 = zeros(Nx*Ny*Nz)
-
-u_analy = u1_filter' * u1 + u2_filter' * u2 + u3_filter' * u3
-
 
 # First order derivatives
 p_px = kron(I_Nz,I_Ny,D1x)
@@ -218,61 +212,6 @@ u3_operator = p_px * sigma_31 + p_py * sigma_32 + p_pz * sigma_33
 
 
 
-
-
-# Assembling source source_terms
-
-source_u1 = u1_filter' * u1_operator * analy_sol
-source_u2 = u2_filter' * u2_operator * analy_sol
-source_u3 = u3_filter' * u3_operator * analy_sol
-
-# Assembling boundary conditions
-# Getting boundary values
-
-# u1
-u1_Front = Front_operator' * u_Front(y,z)[:] # Dirichlet Conditions
-u1_End = End_operator' * u_End(y,z)[:] # Dirichlet Conditions
-
-u1_Top = Top_operator' * u_Top(x,y)[:] # Dirichlet Conditions
-u1_Bottom = Bottom_operator' * u_Bottom(x,y)[:] # Dirichlet Conditions
-
-u1_Left = Left_operator' * u_y_Left(x,z)[:] # Neumann Conditions
-u1_Right = Right_operator' * u_y_Right(x,z)[:]
-
-# u2
-u2_Front = Front_operator' * u_Front(y,z)[:] # Dirichlet Conditions
-u2_End = End_operator' * u_End(y,z)[:] # Dirichlet Conditions
-
-u2_Top = Top_operator' * u_Top(x,y)[:] # Dirichlet Conditions
-u2_Bottom = Bottom_operator' * u_Bottom(x,y)[:] # Dirichlet Conditions
-
-u2_Left = Left_operator' * u_y_Left(x,z)[:] # Neumann Conditions
-u2_Right = Right_operator' * u_y_Right(x,z)[:]
-
-# u3
-u3_Front = Front_operator' * u_Front(y,z)[:] # Dirichlet Conditions
-u3_End = End_operator' * u_End(y,z)[:] # Dirichlet Conditions
-
-u3_Top = Top_operator' * u_Top(x,y)[:] # Dirichlet Conditions
-u3_Bottom = Bottom_operator' * u_Bottom(x,y)[:] # Dirichlet Conditions
-
-u3_Left = Left_operator' * u_y_Left(x,z)[:] # Neumann Conditions
-u3_Right = Right_operator' * u_y_Right(x,z)[:]
-
-
-
-# # Assembling left hand side
-
-# A1 = (u1_filter' * u1_operator)
-
-# A2 = (u2_filter' * u2_operator)
-
-# A3 = (u3_filter' * u3_operator)
-
-# A = A1 + A2 + A3
-
-# Assembling right hand side
-source = source_u1 + source_u2 + source_u3
 
 
 ### Assembling SBP terms according to the note
@@ -467,12 +406,75 @@ SAT_tilde_3_LHS = - HI_tilde * (
     +   (T_33_2 .- Z_33_2)' * (e_2 * H_2 * (e_2T)) * u3_filter
 )
 
-# e_1 * H_1 * (e_1T ) * u1_filter
-# T_11_1'
-# HI_tilde 
 
-# forming A
 
+# Forming analytical solutions
+u1 = form_analy_sol(;N = N_x)[1][:] # u1 is the only non-zero component
+u2 = zeros(Nx*Ny*Nz) # u2 = 0 for the test case
+u3 = zeros(Nx*Ny*Nz) # u3 = 0 for the test case
+
+analy_sol = u1_filter' * u1 + u2_filter' * u2 + u3_filter' * u3
 
 
 SAT_1_LHS * u_analy
+SAT_2_LHS * u_analy
+SAT_3_LHS * u_analy
+
+SAT_tilde_1_LHS * u_analy
+SAT_tilde_2_LHS * u_analy
+SAT_tilde_3_LHS * u_analy
+
+
+
+# Assembling source source_terms
+source_u1 = u1_filter' * u1_operator * analy_sol
+source_u2 = u2_filter' * u2_operator * analy_sol
+source_u3 = u3_filter' * u3_operator * analy_sol
+
+# Assembling boundary conditions
+# Getting boundary values
+
+# u1
+u1_Front = Front_operator' * u_Front(y,z)[:] # Dirichlet Conditions
+u1_End = End_operator' * u_End(y,z)[:] # Dirichlet Conditions
+
+u1_Top = Top_operator' * u_Top(x,y)[:] # Dirichlet Conditions
+u1_Bottom = Bottom_operator' * u_Bottom(x,y)[:] # Dirichlet Conditions
+
+u1_Left = Left_operator' * u_y_Left(x,z)[:] # Neumann Conditions
+u1_Right = Right_operator' * u_y_Right(x,z)[:]
+
+# u2
+u2_Front = Front_operator' * u_Front(y,z)[:] # Dirichlet Conditions
+u2_End = End_operator' * u_End(y,z)[:] # Dirichlet Conditions
+
+u2_Top = Top_operator' * u_Top(x,y)[:] # Dirichlet Conditions
+u2_Bottom = Bottom_operator' * u_Bottom(x,y)[:] # Dirichlet Conditions
+
+u2_Left = Left_operator' * u_y_Left(x,z)[:] # Neumann Conditions
+u2_Right = Right_operator' * u_y_Right(x,z)[:]
+
+# u3
+u3_Front = Front_operator' * u_Front(y,z)[:] # Dirichlet Conditions
+u3_End = End_operator' * u_End(y,z)[:] # Dirichlet Conditions
+
+u3_Top = Top_operator' * u_Top(x,y)[:] # Dirichlet Conditions
+u3_Bottom = Bottom_operator' * u_Bottom(x,y)[:] # Dirichlet Conditions
+
+u3_Left = Left_operator' * u_y_Left(x,z)[:] # Neumann Conditions
+u3_Right = Right_operator' * u_y_Right(x,z)[:]
+
+
+
+# # Assembling left hand side
+
+# A1 = (u1_filter' * u1_operator)
+
+# A2 = (u2_filter' * u2_operator)
+
+# A3 = (u3_filter' * u3_operator)
+
+# A = A1 + A2 + A3
+
+# Assembling right hand side
+source = source_u1 + source_u2 + source_u3
