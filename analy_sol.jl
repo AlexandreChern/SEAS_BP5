@@ -81,26 +81,26 @@ function u_y_Left(x,z)
 end
 
 function u_x_Left(x,z)
-    a = -π * [cos(π*i + π*k) for i ∈ x, k ∈ z]
+    a = -π * [cos(π*i + π*k) for i ∈ x, k ∈ z] # -1 normal direction
 end
 
 function u_y_Right(x,z)
-    a = π * [cos(π*i + π + π*k) for i ∈ x, k ∈ z] # -1 normal direction
+    a = π * [cos(π*i + π + π*k) for i ∈ x, k ∈ z] # +1 normal direction
     return a 
 end
 
 function u_x_Right(x,z)
-    a = π * [cos(π*i + π + π*k) for i ∈ y, k ∈ z] # -1 normal direction
+    a = π * [cos(π*i + π + π*k) for i ∈ y, k ∈ z] # +1 normal direction
     return a 
 end
 
 function u_z_Top(x,y)
-    a = π * [cos(π*i + π*j + π) for i ∈ x, j ∈ y] # -1 normal direction
+    a = π * [cos(π*i + π*j + π) for i ∈ x, j ∈ y] # +1 normal direction
     return a 
 end
 
 function u_x_Top(x,y)
-    a = π * [cos(π*i + π*j + π) for i ∈ x, j ∈ y] # -1 normal direction
+    a = π * [cos(π*i + π*j + π) for i ∈ x, j ∈ y] # +1 normal direction
     return a 
 end
 

@@ -368,7 +368,7 @@ SAT_1_LHS = -HI_tilde * (
     # +(e_4 * (H_4 * (e_4T * ((T_11_4 + T_12_4 .+ T_13_4))))) * analy_sol
     # +(e_5 * (H_5 * (e_5T * ((T_11_5 + T_12_5 .+ T_13_5))))) * analy_sol
         e_3 * H_3 * e_3T * (T_11_3 * u1_filter .+ T_12_3 * u2_filter .+ T_13_3 * u3_filter)
-    +   e_4 * H_4 * e_4T * (T_11_4 * u2_filter .+ T_12_4 * u2_filter .+ T_13_4 * u3_filter)
+    +   e_4 * H_4 * e_4T * (T_11_4 * u1_filter .+ T_12_4 * u2_filter .+ T_13_4 * u3_filter)
     +   e_5 * H_5 * e_5T * (T_11_5 * u1_filter .+ T_12_5 * u2_filter .+ T_13_5 * u3_filter)
     +   e_6 * H_6 * e_6T * (T_11_6 * u1_filter .+ T_12_6 * u2_filter .+ T_13_6 * u3_filter)
 ) 
@@ -432,20 +432,16 @@ u3 = zeros(Nx*Ny*Nz) # u3 = 0 for the test case
 analy_sol = u1_filter' * u1 + u2_filter' * u2 + u3_filter' * u3
 
 
-SAT_1_LHS * u_analy
-SAT_2_LHS * u_analy
-SAT_3_LHS * u_analy
+# SAT_1_LHS * u_analy
+# SAT_2_LHS * u_analy
+# SAT_3_LHS * u_analy
 
-SAT_tilde_1_LHS * u_analy
-SAT_tilde_2_LHS * u_analy
-SAT_tilde_3_LHS * u_analy
+# SAT_tilde_1_LHS * u_analy
+# SAT_tilde_2_LHS * u_analy
+# SAT_tilde_3_LHS * u_analy
 
 
 
-# Assembling source source_terms
-source_u1 = u1_filter' * H_tilde * u1_operator * analy_sol
-source_u2 = u2_filter' * H_tilde * u2_operator * analy_sol
-source_u3 = u3_filter' * H_tilde * u3_operator * analy_sol
 
 # Assembling boundary conditions
 # Getting boundary values
@@ -493,7 +489,19 @@ A3 = (u3_filter' * H_tilde * u3_operator)
 A = A1 + A2 + A3
 
 # Assembling right hand side
-# source term
+# Assembling source source_terms
+# source_u1 = u1_filter' * H_tilde * u1_operator * analy_sol
+# source_u2 = u2_filter' * H_tilde * u2_operator * analy_sol
+# source_u3 = u3_filter' * H_tilde * u3_operator * analy_sol
+source_u1 = u1_filter' * H_tilde * ((K_v - 2/3 * μ_v) * (-π^2 * u(x,y,z)[:]) 
+            + 2 * μ_v *  (-π^2 * u(x,y,z)[:])
+            + μ_v * (-π^2 * u(x,y,z)[:]) + μ_v * (-π^2 * u(x,y,z)[:]))
+
+source_u2 = u2_filter' * H_tilde * (μ_v * (-π^2 * u(x,y,z)[:])
+            + (K_v - 2/3 * μ_v) * (-π^2 * u(x,y,z)[:]))
+
+source_u3 = u3_filter' * H_tilde * (μ_v * (-π^2 * u(x,y,z)[:])
+            + (K_v - 2/3 * μ_v) * (-π^2 * u(x,y,z)[:]))
 source = source_u1 + source_u2 + source_u3
 
 # Assembling boundary data
@@ -508,42 +516,42 @@ g₂² = zeros(Ny,Nz)
 g₃² = zeros(Ny,Nz)
 
 # Face 3: Neumann
-g₁³ = -μ_v .* u_y_Left(x,z)
-g₂³ = -(K_v - 2/3 * μ_v) .* u_x_Left(x,z)
+g₁³ = u_y_Left(x,z)
+g₂³ = u_x_Left(x,z)
 g₃³ = zeros(Nx,Nz)
 
 # Face 4: Neumann
-g₁⁴ = μ_v .* u_y_Right(x,z)
-g₂⁴ = (K_v - 2/3 * μ_v) .* u_x_Right(x,z)
+g₁⁴ = u_y_Right(x,z)
+g₂⁴ = u_x_Right(x,z)
 g₃⁴ = zeros(Nx,Nz)
 
 # Face 5: Neumann
-g₁⁵ = -μ_v .* u_z_Bottom(x,y)
+g₁⁵ = u_z_Bottom(x,y)
 g₂⁵ = zeros(Nx,Ny)
-g₃⁵ = -(K_v - 2/3 * μ_v) .* u_x_Bottom(x,y)
+g₃⁵ = u_x_Bottom(x,y)
 
 # Face 6: Neumann
-g₁⁶ = μ_v .* u_z_Top(x,y)
+g₁⁶ = u_z_Top(x,y)
 g₂⁶ = zeros(Nx,Ny) 
-g₃⁶ = (K_v - 2/3 * μ_v) * u_x_Top(x,y)
+g₃⁶ = u_x_Top(x,y)
 
 
 ### Assembling SBP terms for right-hand-side (RHS) traction condition
-SAT_1_RHS = -HI_tilde * (
+SAT_1_RHS = - HI_tilde * (
         e_3 * H_3 * g₁³[:]
     +   e_4 * H_4 * g₁⁴[:]
     +   e_5 * H_5 * g₁⁵[:]
     +   e_6 * H_6 * g₁⁶[:]
 )
 
-SAT_2_RHS = -HI_tilde * (
+SAT_2_RHS = - HI_tilde * (
         e_3 * H_3 * g₂³[:]
     +   e_4 * H_4 * g₂⁴[:]
     +   e_5 * H_5 * g₂⁵[:]
     +   e_6 * H_6 * g₂⁶[:]
 )
 
-SAT_3_RHS = -HI_tilde * (
+SAT_3_RHS = - HI_tilde * (
         e_3 * H_3 * g₃³[:]
     +   e_4 * H_4 * g₃⁴[:]
     +   e_5 * H_5 * g₃⁵[:]
