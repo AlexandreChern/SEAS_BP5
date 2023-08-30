@@ -394,27 +394,6 @@ SAT_3_LHS = - HI_tilde * (
 )
 
 
-### Assembling SBP terms for right-hand-side (RHS) traction condition
-SAT_1_RHS = -HI_tilde * (
-        e_3 * H_3 * g₁³[:]
-    +   e_4 * H_4 * g₁⁴[:]
-    +   e_5 * H_5 * g₁⁵[:]
-    +   e_6 * H_6 * g₁⁶[:]
-)
-
-SAT_2_RHS = -HI_tilde * (
-        e_3 * H_3 * g₂³[:]
-    +   e_4 * H_4 * g₂⁴[:]
-    +   e_5 * H_5 * g₂⁵[:]
-    +   e_6 * H_6 * g₂⁶[:]
-)
-
-SAT_3_RHS = -HI_tilde * (
-        e_3 * H_3 * g₃³[:]
-    +   e_4 * H_4 * g₃⁴[:]
-    +   e_5 * H_5 * g₃⁵[:]
-    +   e_6 * H_6 * g₄⁶[:]
-)
 
 ### Assembling SBP terms for left-hand-side (LHS) Dirichlet condition
 
@@ -444,14 +423,6 @@ SAT_tilde_3_LHS = - HI_tilde * (
     +   (T_23_2 .- Z_23_2)' * (e_2 * H_2 * (e_2T)) * u2_filter
     +   (T_33_2 .- Z_33_2)' * (e_2 * H_2 * (e_2T)) * u3_filter
 )
-
-### Assembling SBP terms for right-hand-side (RHS) Dirichlet condition
-SAT_tilde_1_RHS = - HI_tilde * (
-        T_11_1 .- Z_11_1)' * e_1 * H_1 
-    +   T_21_1 .- Z_21_1)' * (e_1 * H_1
-)
-
-
 
 # Forming analytical solutions
 u1 = form_analy_sol(;N = N_x)[1][:] # u1 is the only non-zero component
@@ -555,3 +526,56 @@ g₃⁵ = -(K_v - 2/3 * μ_v) .* u_x_Bottom(x,y)
 g₁⁶ = μ_v .* u_z_Top(x,y)
 g₂⁶ = zeros(Nx,Ny) 
 g₃⁶ = (K_v - 2/3 * μ_v) * u_x_Top(x,y)
+
+
+### Assembling SBP terms for right-hand-side (RHS) traction condition
+SAT_1_RHS = -HI_tilde * (
+        e_3 * H_3 * g₁³[:]
+    +   e_4 * H_4 * g₁⁴[:]
+    +   e_5 * H_5 * g₁⁵[:]
+    +   e_6 * H_6 * g₁⁶[:]
+)
+
+SAT_2_RHS = -HI_tilde * (
+        e_3 * H_3 * g₂³[:]
+    +   e_4 * H_4 * g₂⁴[:]
+    +   e_5 * H_5 * g₂⁵[:]
+    +   e_6 * H_6 * g₂⁶[:]
+)
+
+SAT_3_RHS = -HI_tilde * (
+        e_3 * H_3 * g₃³[:]
+    +   e_4 * H_4 * g₃⁴[:]
+    +   e_5 * H_5 * g₃⁵[:]
+    +   e_6 * H_6 * g₃⁶[:]
+)
+
+
+
+### Assembling SBP terms for right-hand-side (RHS) Dirichlet condition
+SAT_tilde_1_RHS = - HI_tilde * (
+        (T_11_1 .- Z_11_1)' * (e_1 * H_1 * g₁¹[:])
+    +   (T_21_1 .- Z_21_1)' * (e_1 * H_1 * g₂¹[:])
+    +   (T_31_1 .- Z_31_1)' * (e_1 * H_1 * g₃¹[:])
+    +   (T_11_1 .- Z_11_1)' * (e_2 * H_2 * g₁²[:])
+    +   (T_21_1 .- Z_21_1)' * (e_2 * H_2 * g₂²[:])
+    +   (T_31_1 .- Z_31_1)' * (e_2 * H_2 * g₃²[:])
+)
+
+SAT_tilde_2_RHS = - HI_tilde * (
+        (T_12_1 .- Z_12_1)' * (e_1 * H_1 * g₁¹[:])
+    +   (T_22_1 .- Z_22_1)' * (e_1 * H_1 * g₂¹[:])
+    +   (T_32_1 .- Z_32_1)' * (e_1 * H_1 * g₃¹[:])
+    +   (T_12_1 .- Z_12_1)' * (e_2 * H_2 * g₁²[:])
+    +   (T_22_1 .- Z_22_1)' * (e_2 * H_2 * g₂²[:])
+    +   (T_32_1 .- Z_31_1)' * (e_2 * H_2 * g₃²[:])
+)
+
+SAT_tilde_3_RHS = - HI_tilde * (
+        (T_13_1 .- Z_13_1)' * (e_1 * H_1 * g₁¹[:])
+    +   (T_23_1 .- Z_23_1)' * (e_1 * H_1 * g₂¹[:])
+    +   (T_33_1 .- Z_33_1)' * (e_1 * H_1 * g₃¹[:])
+    +   (T_13_1 .- Z_13_1)' * (e_2 * H_2 * g₁²[:])
+    +   (T_23_1 .- Z_23_1)' * (e_2 * H_2 * g₂²[:])
+    +   (T_33_1 .- Z_33_1)' * (e_2 * H_2 * g₃²[:])
+)
