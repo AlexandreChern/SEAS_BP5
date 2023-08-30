@@ -579,3 +579,15 @@ SAT_tilde_3_RHS = - HI_tilde * (
     +   (T_23_1 .- Z_23_1)' * (e_2 * H_2 * g₂²[:])
     +   (T_33_1 .- Z_33_1)' * (e_2 * H_2 * g₃²[:])
 )
+
+
+# Assembling LHS of the linear system
+
+LHS = (A + u1_filter' * SAT_1_LHS + u2_filter' * SAT_2_LHS + u3_filter' * SAT_3_LHS 
+    + u1_filter' * SAT_tilde_1_LHS +  u2_filter' * SAT_tilde_2_LHS +  u3_filter' * SAT_tilde_3_LHS)
+
+RHS = (source + u1_filter' * SAT_1_RHS + u2_filter' * SAT_2_RHS + u3_filter' * SAT_3_RHS
+    + u1_filter' * SAT_tilde_1_RHS + u2_filter' * SAT_tilde_2_RHS + u3_filter' * SAT_tilde_3_RHS)
+
+
+LHS \ RHS
