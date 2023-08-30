@@ -197,16 +197,33 @@ sigma_32 = μ_v * (p_py * u3_filter + p_pz * u2_filter)
 sigma_33 = (K_v - 2/3 * μ_v) * (p_px * u1_filter + p_py * u2_filter + p_pz * u3_filter) + 2 * μ_v * p_pz * u3_filter
 
 
-# # Deriving equation for u1 as operators on u vector (u1, u2, u3 stacked)
-u1_operator = p_px * sigma_11 + p_py * sigma_12 + p_pz * sigma_13
+# # # Deriving equation for u1 as operators on u vector (u1, u2, u3 stacked)
+# u1_operator = p_px * sigma_11 + p_py * sigma_12 + p_pz * sigma_13 # should rewrite explicitly using p2_px2
 
-# # Deriving equation for u2 as operators on u vector (u1, u2, u3 stacked)
-u2_operator = p_px * sigma_21 + p_py * sigma_22 + p_pz * sigma_13
+# # # Deriving equation for u2 as operators on u vector (u1, u2, u3 stacked)
+# u2_operator = p_px * sigma_21 + p_py * sigma_22 + p_pz * sigma_13
 
-# # Deriving equation for u3 as operators on u vector (u1, u2, u3 stacked)
-u3_operator = p_px * sigma_31 + p_py * sigma_32 + p_pz * sigma_33
+# # # Deriving equation for u3 as operators on u vector (u1, u2, u3 stacked)
+# u3_operator = p_px * sigma_31 + p_py * sigma_32 + p_pz * sigma_33
 
 # # TO DO: Need to rewrite this part 
+u1_operator =  ( (K_v - 2/3 * μ_v) * (p2_px2 * u1_filter + p2_pxpy * u2_filter + p2_pxpz * u3_filter) 
+            + 2 * μ_v * p2_px2 * u1_filter 
+            + μ_v * (p2_py2 * u1_filter + p2_pxpy * u2_filter)
+            + μ_v * (p2_pz2 * u1_filter + p2_pxpz * u3_filter)
+)
+
+u2_operator = ( μ_v * (p2_px2 * u2_filter + p2_pxpy * u1_filter)
+            + (K_v - 2/3 * μ_v) * (p2_pxpy * u1_filter + p2_py2 * u2_filter + p2_pypz * u3_filter)
+            + 2 * μ_v * p2_py2 * u2_filter
+            + μ_v * (p2_pz2 * u2_filter + p2_pypz * u3_filter)
+)
+
+u3_operator = ( μ_v * (p2_px2 * u3_filter + p2_pxpz * u1_filter)
+            + μ_v * (p2_py2 * u3_filter + p2_pypz * u2_filter)
+            + (K_v - 2/3 * μ_v) * (p2_pxpz * u1_filter + p2_pypz * u2_filter + p2_pz2 * u3_filter)
+            + 2 * μ_v * p2_pz2 * u3_filter
+)
 
 # Equations for u1
 
@@ -344,7 +361,7 @@ T_31_6 = (K_v - 2/3 * μ_v) * p_px #* u1_filter
 T_32_6 = (K_v - 2/3 * μ_v) * p_py #* u2_filter
 T_33_6 = (K_v + 4/3) * p_pz #* u3_filter
 
-### Assembling SBP terms for left-hand-side LHS
+### Assembling SBP terms for left-hand-side (LHS) traction condition
 
 SAT_1_LHS = -HI_tilde * (
     #  (e_3 * (H_3 * (e_3T * ((T_11_3 + T_12_3 .+ T_13_3))))) * analy_sol
@@ -377,7 +394,29 @@ SAT_3_LHS = - HI_tilde * (
 )
 
 
-### Assembling SBP terms for Dirichlet 
+### Assembling SBP terms for right-hand-side (RHS) traction condition
+SAT_1_RHS = -HI_tilde * (
+        e_3 * H_3 * g₁³[:]
+    +   e_4 * H_4 * g₁⁴[:]
+    +   e_5 * H_5 * g₁⁵[:]
+    +   e_6 * H_6 * g₁⁶[:]
+)
+
+SAT_2_RHS = -HI_tilde * (
+        e_3 * H_3 * g₂³[:]
+    +   e_4 * H_4 * g₂⁴[:]
+    +   e_5 * H_5 * g₂⁵[:]
+    +   e_6 * H_6 * g₂⁶[:]
+)
+
+SAT_3_RHS = -HI_tilde * (
+        e_3 * H_3 * g₃³[:]
+    +   e_4 * H_4 * g₃⁴[:]
+    +   e_5 * H_5 * g₃⁵[:]
+    +   e_6 * H_6 * g₄⁶[:]
+)
+
+### Assembling SBP terms for left-hand-side (LHS) Dirichlet condition
 
 SAT_tilde_1_LHS = - HI_tilde * (
         (T_11_1 .- Z_11_1)' * (e_1 * H_1 * (e_1T)) * u1_filter
@@ -406,6 +445,12 @@ SAT_tilde_3_LHS = - HI_tilde * (
     +   (T_33_2 .- Z_33_2)' * (e_2 * H_2 * (e_2T)) * u3_filter
 )
 
+### Assembling SBP terms for right-hand-side (RHS) Dirichlet condition
+SAT_tilde_1_RHS = - HI_tilde * (
+        T_11_1 .- Z_11_1)' * e_1 * H_1 
+    +   T_21_1 .- Z_21_1)' * (e_1 * H_1
+)
+
 
 
 # Forming analytical solutions
@@ -427,9 +472,9 @@ SAT_tilde_3_LHS * u_analy
 
 
 # Assembling source source_terms
-source_u1 = u1_filter' * u1_operator * analy_sol
-source_u2 = u2_filter' * u2_operator * analy_sol
-source_u3 = u3_filter' * u3_operator * analy_sol
+source_u1 = u1_filter' * H_tilde * u1_operator * analy_sol
+source_u2 = u2_filter' * H_tilde * u2_operator * analy_sol
+source_u3 = u3_filter' * H_tilde * u3_operator * analy_sol
 
 # Assembling boundary conditions
 # Getting boundary values
@@ -468,13 +513,45 @@ u3_Right = Right_operator' * u_y_Right(x,z)[:]
 
 # # Assembling left hand side
 
-# A1 = (u1_filter' * u1_operator)
+A1 = (u1_filter' * H_tilde * u1_operator)
 
-# A2 = (u2_filter' * u2_operator)
+A2 = (u2_filter' * H_tilde * u2_operator)
 
-# A3 = (u3_filter' * u3_operator)
+A3 = (u3_filter' * H_tilde * u3_operator)
 
-# A = A1 + A2 + A3
+A = A1 + A2 + A3
 
 # Assembling right hand side
+# source term
 source = source_u1 + source_u2 + source_u3
+
+# Assembling boundary data
+# Face 1: Dirichlet
+g₁¹ = u_End(y,z)
+g₂¹ = zeros(Ny,Nz)
+g₃¹ = zeros(Ny,Nz)
+
+# Face 2: Dirichlet
+g₁² = u_Front(y,z)
+g₂² = zeros(Ny,Nz)
+g₃² = zeros(Ny,Nz)
+
+# Face 3: Neumann
+g₁³ = -μ_v .* u_y_Left(x,z)
+g₂³ = -(K_v - 2/3 * μ_v) .* u_x_Left(x,z)
+g₃³ = zeros(Nx,Nz)
+
+# Face 4: Neumann
+g₁⁴ = μ_v .* u_y_Right(x,z)
+g₂⁴ = (K_v - 2/3 * μ_v) .* u_x_Right(x,z)
+g₃⁴ = zeros(Nx,Nz)
+
+# Face 5: Neumann
+g₁⁵ = -μ_v .* u_z_Bottom(x,y)
+g₂⁵ = zeros(Nx,Ny)
+g₃⁵ = -(K_v - 2/3 * μ_v) .* u_x_Bottom(x,y)
+
+# Face 6: Neumann
+g₁⁶ = μ_v .* u_z_Top(x,y)
+g₂⁶ = zeros(Nx,Ny) 
+g₃⁶ = (K_v - 2/3 * μ_v) * u_x_Top(x,y)
