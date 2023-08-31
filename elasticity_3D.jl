@@ -364,19 +364,11 @@ T_33_6 = (K_v + 4/3) * p_pz #* u3_filter
 ### Assembling SBP terms for left-hand-side (LHS) traction condition
 
 SAT_1_LHS = -HI_tilde * (
-    #  (e_3 * (H_3 * (e_3T * ((T_11_3 + T_12_3 .+ T_13_3))))) * analy_sol
-    # +(e_4 * (H_4 * (e_4T * ((T_11_4 + T_12_4 .+ T_13_4))))) * analy_sol
-    # +(e_5 * (H_5 * (e_5T * ((T_11_5 + T_12_5 .+ T_13_5))))) * analy_sol
         e_3 * H_3 * e_3T * (T_11_3 * u1_filter .+ T_12_3 * u2_filter .+ T_13_3 * u3_filter)
     +   e_4 * H_4 * e_4T * (T_11_4 * u1_filter .+ T_12_4 * u2_filter .+ T_13_4 * u3_filter)
     +   e_5 * H_5 * e_5T * (T_11_5 * u1_filter .+ T_12_5 * u2_filter .+ T_13_5 * u3_filter)
     +   e_6 * H_6 * e_6T * (T_11_6 * u1_filter .+ T_12_6 * u2_filter .+ T_13_6 * u3_filter)
 ) 
-
-
-# e_3 * H_3 * (e_3T * ((T_11_3 + T_12_3) * analy_sol))
-# e_3 * (H_3 * (e_3T * ((T_11_3 + T_12_3)))) * analy_sol
-# (e_3 * (H_3 * (e_3T * ((T_11_3 + T_12_3 .+ T_13_3)))))  == e_3 * H_3 * e_3T * (T_11_3 + T_12_3 .+ T_13_3)
 
 SAT_2_LHS = - HI_tilde * (
         e_3 * H_3 * e_3T * (T_21_3 * u1_filter .+ T_22_3 * u2_filter .+ T_23_3 * u3_filter)
@@ -517,23 +509,23 @@ g₃² = zeros(Ny,Nz)
 
 # Face 3: Neumann
 g₁³ = u_y_Left(x,z)
-g₂³ = u_x_Left(x,z)
+g₂³ = (K_v - 2/3 * μ_v) * u_x_Left(x,z)
 g₃³ = zeros(Nx,Nz)
 
 # Face 4: Neumann
 g₁⁴ = u_y_Right(x,z)
-g₂⁴ = u_x_Right(x,z)
+g₂⁴ = (K_v - 2/3 * μ_v) * u_x_Right(x,z)
 g₃⁴ = zeros(Nx,Nz)
 
 # Face 5: Neumann
 g₁⁵ = u_z_Bottom(x,y)
 g₂⁵ = zeros(Nx,Ny)
-g₃⁵ = u_x_Bottom(x,y)
+g₃⁵ = (K_v - 2/3 * μ_v) * u_x_Bottom(x,y)
 
 # Face 6: Neumann
 g₁⁶ = u_z_Top(x,y)
 g₂⁶ = zeros(Nx,Ny) 
-g₃⁶ = u_x_Top(x,y)
+g₃⁶ = (K_v - 2/3 * μ_v) * u_x_Top(x,y)
 
 
 ### Assembling SBP terms for right-hand-side (RHS) traction condition
