@@ -136,7 +136,7 @@ end
 
 function get_front_face(Nx,Ny,Nz)
     # mat = kron(sparse(eyes(Ny)),sparse(eyes(Nz)),sparse(e(1,Nx)'))
-    mat = kron(eyes(Ny),eyes(Nz),e_t(1,Nx))
+    mat = kron(eyes(Ny),eyes(Nz),e_t(Nx,Nx))
     return mat
 end
 
@@ -147,7 +147,7 @@ end
 
 function get_end_face(Nx,Ny,Nz)
     # mat = kron(sparse(eyes(Ny)),sparse(eyes(Nz)),e(Nx,Nx)')
-    mat = kron(eyes(Ny),eyes(Nz),e_t(Nx,Nx))
+    mat = kron(eyes(Ny),eyes(Nz),e_t(1,Nx))
     return mat
 end
 
