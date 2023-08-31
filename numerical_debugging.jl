@@ -197,13 +197,38 @@ s44 = reshape((T_12_2 .- Z_12_2)' * (e_2 * H_2 * g₁²[:]), Nx, Ny, Nz)
 s45 = reshape((T_22_2 .- Z_22_2)' * (e_2 * H_2 * (e_2T)) * u2_filter * u_analy, Nx, Ny, Nz)
 s46 = reshape((T_22_2 .- Z_22_2)' * (e_2 * H_2 * g₂²[:]), Nx, Ny, Nz)
 
-s47
-s48
-
-
+s47 = reshape((T_33_2 .- Z_33_2)' * (e_2 * H_2 * (e_2T)) * u3_filter * u_analy, Nx, Ny, Nz)
+s48 = reshape((T_32_2 .- Z_31_2)' * (e_2 * H_2 * g₃²[:]), Nx, Ny, Nz)
 
 
 # SAT_tilde_3 
+s49 = reshape((T_13_1 .- Z_13_1)' * (e_1 * H_1 * (e_1T)) * u1_filter * u_analy, Nx, Ny, Nz)
+s50 = reshape((T_13_1 .- Z_13_1)' * (e_1 * H_1 * g₁¹[:]), Nx, Ny, Nz)
+
+s51 = reshape((T_23_1 .- Z_23_1)' * (e_1 * H_1 * (e_1T)) * u2_filter * u_analy, Nx, Ny, Nz)
+s52 = reshape((T_23_1 .- Z_23_1)' * (e_1 * H_1 * g₂¹[:]), Nx, Ny, Nz)
+
+s53 = reshape((T_33_1 .- Z_33_1)' * (e_1 * H_1 * (e_1T)) * u3_filter * u_analy, Nx, Ny, Nz)
+s54 = reshape((T_33_1 .- Z_33_1)' * (e_1 * H_1 * g₃¹[:]), Nx, Ny, Nz)
+
+s55 = reshape((T_13_2 .- Z_13_2)' * (e_2 * H_2 * (e_2T)) * u1_filter * u_analy, Nx, Ny, Nz)
+s56 = reshape((T_13_2 .- Z_13_2)' * (e_2 * H_2 * g₁²[:]), Nx, Ny, Nz)
+
+s57 = reshape((T_23_2 .- Z_23_2)' * (e_2 * H_2 * (e_2T)) * u2_filter * u_analy, Nx, Ny, Nz)
+s58 = reshape((T_23_2 .- Z_23_2)' * (e_2 * H_2 * g₂²[:]), Nx, Ny, Nz)
+
+s59 = reshape((T_33_2 .- Z_33_2)' * (e_2 * H_2 * (e_2T)) * u3_filter * u_analy, Nx, Ny, Nz)
+s60 = reshape((T_33_2 .- Z_33_2)' * (e_2 * H_2 * g₃²[:]), Nx, Ny, Nz)
 
 
+reshape(SAT_1_LHS * u_analy, Nx, Ny, Nz)
+reshape(SAT_1_RHS, Nx, Ny, Nz)
 
+reshape(SAT_2_LHS * u_analy, Nx, Ny, Nz)
+reshape(SAT_2_RHS, Nx, Ny, Nz)
+
+reshape(SAT_3_LHS * u_analy, Nx, Ny, Nz)
+reshape(SAT_3_RHS, Nx, Ny, Nz)
+
+reshape(SAT_tilde_1_LHS * u_analy, Nx, Ny, Nz)
+reshape(SAT_tilde_1_RHS, Nx, Ny, Nz)

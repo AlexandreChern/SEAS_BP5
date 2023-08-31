@@ -11,7 +11,7 @@ using Plots
 
 p = 2
 
-level = 3
+level = 4
 
 i = j = k = level
 h_list_x = [1/2^1, 1/2^2, 1/2^3, 1/2^4, 1/2^5, 1/2^6, 1/2^7, 1/2^8,1/2^9,1/2^10]
@@ -363,7 +363,7 @@ T_33_6 = (K_v + 4/3) * p_pz #* u3_filter
 
 ### Assembling SBP terms for left-hand-side (LHS) traction condition
 
-SAT_1_LHS = -HI_tilde * (
+SAT_1_LHS = - HI_tilde * (
         e_3 * H_3 * e_3T * (T_11_3 * u1_filter .+ T_12_3 * u2_filter .+ T_13_3 * u3_filter)
     +   e_4 * H_4 * e_4T * (T_11_4 * u1_filter .+ T_12_4 * u2_filter .+ T_13_4 * u3_filter)
     +   e_5 * H_5 * e_5T * (T_11_5 * u1_filter .+ T_12_5 * u2_filter .+ T_13_5 * u3_filter)
@@ -583,11 +583,20 @@ SAT_tilde_3_RHS = - HI_tilde * (
 
 # Assembling LHS of the linear system
 
-LHS = (A + u1_filter' * SAT_1_LHS + u2_filter' * SAT_2_LHS + u3_filter' * SAT_3_LHS 
-    + u1_filter' * SAT_tilde_1_LHS +  u2_filter' * SAT_tilde_2_LHS +  u3_filter' * SAT_tilde_3_LHS)
+LHS = ( A + u1_filter' * H_tilde * SAT_1_LHS 
+        + u2_filter' * H_tilde * SAT_2_LHS 
+        + u3_filter' * H_tilde * SAT_3_LHS 
+        + u1_filter' * H_tilde * SAT_tilde_1_LHS 
+        + u2_filter' * H_tilde * SAT_tilde_2_LHS 
+        + u3_filter' * H_tilde * SAT_tilde_3_LHS
+    )
 
-RHS = (source + u1_filter' * SAT_1_RHS + u2_filter' * SAT_2_RHS + u3_filter' * SAT_3_RHS
-    + u1_filter' * SAT_tilde_1_RHS + u2_filter' * SAT_tilde_2_RHS + u3_filter' * SAT_tilde_3_RHS)
+RHS = (source + u1_filter' * H_tilde * SAT_1_RHS 
+        + u2_filter' * H_tilde * SAT_2_RHS 
+        + u3_filter' * H_tilde * SAT_3_RHS
+        + u1_filter' * H_tilde * SAT_tilde_1_RHS 
+        + u2_filter' * H_tilde * SAT_tilde_2_RHS 
+        + u3_filter' * H_tilde * SAT_tilde_3_RHS)
 
 
 LHS \ RHS
