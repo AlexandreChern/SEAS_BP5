@@ -11,7 +11,7 @@ using Plots
 
 p = 2
 
-level = 4
+level = 5
 
 i = j = k = level
 h_list_x = [1/2^1, 1/2^2, 1/2^3, 1/2^4, 1/2^5, 1/2^6, 1/2^7, 1/2^8,1/2^9,1/2^10]
@@ -599,4 +599,9 @@ RHS = (source + u1_filter' * H_tilde * SAT_1_RHS
         + u3_filter' * H_tilde * SAT_tilde_3_RHS)
 
 
-LHS \ RHS
+u_direct = LHS \ RHS
+
+error_direct = sqrt((u1_filter * u_direct - u1)' * H_tilde * (u1_filter * u_direct - u1) 
+            + (u2_filter * u_direct - u2)' * H_tilde * (u2_filter * u_direct - u2) 
+            + (u3_filter * u_direct - u3)' * H_tilde * (u3_filter * u_direct - u3) 
+)
