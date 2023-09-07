@@ -1,7 +1,7 @@
 include("diagonal_sbp.jl")
 include("3D_face.jl")
-# include("analy_sol.jl")
-include("analy_sol_2.jl")
+include("analy_sol.jl")
+# include("analy_sol_2.jl")
 include("components.jl")
 include("coefficients.jl")
 
@@ -12,7 +12,7 @@ using Plots
 
 p = 2
 
-level = 5
+level = 3
 
 i = j = k = level
 h_list_x = [1/2^1, 1/2^2, 1/2^3, 1/2^4, 1/2^5, 1/2^6, 1/2^7, 1/2^8,1/2^9,1/2^10]
@@ -323,7 +323,7 @@ T_13_4 = 0
 
 T_21_4 = (K_v - 2/3 * μ_v) * p_px #* u1_filter
 T_22_4 = (K_v + 4/3) * p_py #* u2_filter
-T_23_4 = (K_v - 2/3 * μ_v) #* p_pz * u3_filter
+T_23_4 = (K_v - 2/3 * μ_v) * p_pz # * u3_filter
 
 T_31_4 = 0
 T_32_4 = μ_v * p_pz #* u2_filter
@@ -439,34 +439,34 @@ analy_sol = u1_filter' * u1 + u2_filter' * u2 + u3_filter' * u3
 # Getting boundary values
 
 # u1
-u1_Front = Front_operator' * u1_Front(y,z)[:] # Dirichlet Conditions
-u1_End = End_operator' * u1_End(y,z)[:] # Dirichlet Conditions
+u1_Front_value = Front_operator' * u1_Front(y,z)[:] # Dirichlet Conditions
+u1_End_value = End_operator' * u1_End(y,z)[:] # Dirichlet Conditions
 
-u1_Top = Top_operator' * u1_Top(x,y)[:] # Dirichlet Conditions
-u1_Bottom = Bottom_operator' * u1_Top(x,y)[:] # Dirichlet Conditions
+u1_Top_value = Top_operator' * u1_Top(x,y)[:] # Dirichlet Conditions
+u1_Bottom_value = Bottom_operator' * u1_Top(x,y)[:] # Dirichlet Conditions
 
-u1_Left = Left_operator' * u1_y_Left(x,z)[:] # Neumann Conditions
-u1_Right = Right_operator' * u1_y_Right(x,z)[:]
+u1_Left_value = Left_operator' * u1_y_Left(x,z)[:] # Neumann Conditions
+u1_Right_value = Right_operator' * u1_y_Right(x,z)[:]
 
 # u2
-u2_Front = Front_operator' * u1_Front(y,z)[:] # Dirichlet Conditions
-u2_End = End_operator' * u1_End(y,z)[:] # Dirichlet Conditions
+u2_Front_value = Front_operator' * u1_Front(y,z)[:] # Dirichlet Conditions
+u2_End_value = End_operator' * u1_End(y,z)[:] # Dirichlet Conditions
 
-u2_Top = Top_operator' * u1_Top(x,y)[:] # Dirichlet Conditions
-u2_Bottom = Bottom_operator' * u1_Top(x,y)[:] # Dirichlet Conditions
+u2_Top_value = Top_operator' * u1_Top(x,y)[:] # Dirichlet Conditions
+u2_Bottom_value = Bottom_operator' * u1_Top(x,y)[:] # Dirichlet Conditions
 
-u2_Left = Left_operator' * u1_y_Left(x,z)[:] # Neumann Conditions
-u2_Right = Right_operator' * u1_y_Right(x,z)[:]
+u2_Left_value = Left_operator' * u1_y_Left(x,z)[:] # Neumann Conditions
+u2_Right_value = Right_operator' * u1_y_Right(x,z)[:]
 
 # u3
-u3_Front = Front_operator' * u1_Front(y,z)[:] # Dirichlet Conditions
-u3_End = End_operator' * u1_End(y,z)[:] # Dirichlet Conditions
+u3_Front_value = Front_operator' * u1_Front(y,z)[:] # Dirichlet Conditions
+u3_End_value = End_operator' * u1_End(y,z)[:] # Dirichlet Conditions
 
-u3_Top = Top_operator' * u1_Top(x,y)[:] # Dirichlet Conditions
-u3_Bottom = Bottom_operator' * u1_Top(x,y)[:] # Dirichlet Conditions
+u3_Top_value = Top_operator' * u1_Top(x,y)[:] # Dirichlet Conditions
+u3_Bottom_value = Bottom_operator' * u1_Top(x,y)[:] # Dirichlet Conditions
 
-u3_Left = Left_operator' * u1_y_Left(x,z)[:] # Neumann Conditions
-u3_Right = Right_operator' * u1_y_Right(x,z)[:]
+u3_Left_value = Left_operator' * u1_y_Left(x,z)[:] # Neumann Conditions
+u3_Right_value = Right_operator' * u1_y_Right(x,z)[:]
 
 
 
@@ -489,14 +489,14 @@ source_u1 = u1_filter' * H_tilde * ((K_v - 2/3 * μ_v) * (-π^2 * u1_analy(x,y,z
             )
 
 source_u2 = u2_filter' * H_tilde * (μ_v * (-π^2 * u1_analy(x,y,z)[:] - π^2 * u2_analy(x,y,z)[:])
-            + (K_v - 2/3 * μ_v) * (-π^2 * u1_analy(x,y,z)[:] -π^2 * u1_analy(x,y,z)[:] ) 
-            + 2 * μ_v * (-π^2 * u1_analy(x,y,z)[:])
+            + (K_v - 2/3 * μ_v) * (-π^2 * u1_analy(x,y,z)[:] -π^2 * u2_analy(x,y,z)[:] ) 
+            + 2 * μ_v * (-π^2 * u2_analy(x,y,z)[:])
             + μ_v * (-π^2 * u2_analy(x,y,z)[:])
             )
 
 source_u3 = u3_filter' * H_tilde * (μ_v * (-π^2 * u1_analy(x,y,z)[:])
             + μ_v * (-π^2 * u2_analy(x,y,z)[:])
-            + (K_v - 2/3 * μ_v) * (-π^2 * u1_analy(x,y,z)[:] + -π^2 * u1_analy(x,y,z)[:])
+            + (K_v - 2/3 * μ_v) * (-π^2 * u1_analy(x,y,z)[:] + -π^2 * u2_analy(x,y,z)[:])
             # u3 is set to be zero 
             )
 source = source_u1 + source_u2 + source_u3
@@ -518,19 +518,19 @@ g₂³ = (K_v - 2/3 * μ_v) * (u1_x_Left(x,z) + u2_y_Left(x,z))
 g₃³ = zeros(Nx,Nz)
 
 # Face 4: Neumann
-g₁⁴ = u1_y_Right(x,z)
-g₂⁴ = (K_v - 2/3 * μ_v) * u1_x_Right(x,z)
+g₁⁴ = u1_y_Right(x,z) + u2_x_Right(x,z)
+g₂⁴ = (K_v - 2/3 * μ_v) * (u1_x_Right(x,z) + u2_y_Right(x,z))
 g₃⁴ = zeros(Nx,Nz)
 
 # Face 5: Neumann
-g₁⁵ = u_z_Bottom(x,y)
-g₂⁵ = zeros(Nx,Ny)
-g₃⁵ = (K_v - 2/3 * μ_v) * u_x_Bottom(x,y)
+g₁⁵ = u1_z_Bottom(x,y)
+g₂⁵ = u2_z_Bottom(x,y)
+g₃⁵ = (K_v - 2/3 * μ_v) * (u1_x_Bottom(x,y) + u2_y_Bottom(x,y))
 
 # Face 6: Neumann
-g₁⁶ = u_z_Top(x,y)
-g₂⁶ = zeros(Nx,Ny) 
-g₃⁶ = (K_v - 2/3 * μ_v) * u_x_Top(x,y)
+g₁⁶ = u1_z_Top(x,y)
+g₂⁶ = u2_z_Top(x,y)
+g₃⁶ = (K_v - 2/3 * μ_v) * (u1_x_Top(x,y) + u2_y_Top(x,y))
 
 
 ### Assembling SBP terms for right-hand-side (RHS) traction condition

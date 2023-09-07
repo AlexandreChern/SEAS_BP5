@@ -27,7 +27,7 @@ end
 # ex_analy_sol = u(x_ex,y_ex,z_ex)
 
 
-function form_analy_sol(;u=u,N = 2^3)
+function form_analy_sol(;N = 2^3)
     x_ex = 0:1/N:1
     y_ex = 0:1/N:1
     z_ex = 0:1/N:1
@@ -204,7 +204,7 @@ function u2_z_Top(x,y)
     return a 
 end
 
-function u2_x_Top(x,y)
+function u2_y_Top(x,y)
     a = π * [0 for i ∈ x, j ∈ y] # +1 normal direction
     return a 
 end
@@ -215,7 +215,7 @@ function u2_z_Bottom(x,y)
     return a 
 end
 
-function u2_x_Bottom(x,y)
+function u2_y_Bottom(x,y)
     a = -π * [0 for i ∈ x, j ∈ y] # -1 normal direction
     return a 
 end
