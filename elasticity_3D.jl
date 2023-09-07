@@ -12,7 +12,7 @@ using Plots
 
 p = 2
 
-level = 5
+level = 3
 
 i = j = k = level
 h_list_x = [1/2^1, 1/2^2, 1/2^3, 1/2^4, 1/2^5, 1/2^6, 1/2^7, 1/2^8,1/2^9,1/2^10]
@@ -389,7 +389,7 @@ SAT_3_LHS = - HI_tilde * (
 
 ### Assembling SBP terms for left-hand-side (LHS) Dirichlet condition
 
-SAT_tilde_1_LHS = - HI_tilde * (
+SAT_tilde_1_LHS = HI_tilde * (
         (T_11_1 .- Z_11_1)' * (e_1 * H_1 * (e_1T)) * u1_filter
     +   (T_21_1 .- Z_21_1)' * (e_1 * H_1 * (e_1T)) * u2_filter
     +   (T_31_1 .- Z_31_1)' * (e_1 * H_1 * (e_1T)) * u3_filter
@@ -398,7 +398,7 @@ SAT_tilde_1_LHS = - HI_tilde * (
     +   (T_31_2 .- Z_31_2)' * (e_2 * H_2 * (e_2T)) * u3_filter
 )
 
-SAT_tilde_2_LHS = - HI_tilde * (
+SAT_tilde_2_LHS = HI_tilde * (
         (T_12_1 .- Z_12_1)' * (e_1 * H_1 * (e_1T)) * u1_filter
     +   (T_22_1 .- Z_22_1)' * (e_1 * H_1 * (e_1T)) * u2_filter
     +   (T_32_1 .- Z_32_1)' * (e_1 * H_1 * (e_1T)) * u3_filter
@@ -407,7 +407,7 @@ SAT_tilde_2_LHS = - HI_tilde * (
     +   (T_32_2 .- Z_32_2)' * (e_2 * H_2 * (e_2T)) * u3_filter
 )
 
-SAT_tilde_3_LHS = - HI_tilde * (
+SAT_tilde_3_LHS = HI_tilde * (
         (T_13_1 .- Z_13_1)' * (e_1 * H_1 * (e_1T)) * u1_filter
     +   (T_23_1 .- Z_23_1)' * (e_1 * H_1 * (e_1T)) * u2_filter
     +   (T_33_1 .- Z_33_1)' * (e_1 * H_1 * (e_1T)) * u3_filter
@@ -478,7 +478,7 @@ A2 = (u2_filter' * H_tilde * u2_operator)
 
 A3 = (u3_filter' * H_tilde * u3_operator)
 
-A = A1 + A2 + A3
+A = ( A1 + A2 + A3)
 
 # Assembling right hand side
 # Assembling source source_terms
@@ -499,7 +499,7 @@ source_u3 = u3_filter' * H_tilde * (μ_v * (-π^2 * u1_analy(x,y,z)[:])
             + (K_v - 2/3 * μ_v) * (-π^2 * u1_analy(x,y,z)[:] + -π^2 * u2_analy(x,y,z)[:])
             # u3 is set to be zero 
             )
-source = source_u1 + source_u2 + source_u3
+source = ( source_u1 + source_u2 + source_u3)
 
 # Assembling boundary data
 # Face 1: Dirichlet
@@ -558,7 +558,7 @@ SAT_3_RHS = - HI_tilde * (
 
 
 ### Assembling SBP terms for right-hand-side (RHS) Dirichlet condition
-SAT_tilde_1_RHS = - HI_tilde * (
+SAT_tilde_1_RHS = HI_tilde * (
         (T_11_1 .- Z_11_1)' * (e_1 * H_1 * g₁¹[:])
     +   (T_21_1 .- Z_21_1)' * (e_1 * H_1 * g₂¹[:])
     +   (T_31_1 .- Z_31_1)' * (e_1 * H_1 * g₃¹[:])
@@ -567,7 +567,7 @@ SAT_tilde_1_RHS = - HI_tilde * (
     +   (T_31_2 .- Z_31_2)' * (e_2 * H_2 * g₃²[:])
 )
 
-SAT_tilde_2_RHS = - HI_tilde * (
+SAT_tilde_2_RHS = HI_tilde * (
         (T_12_1 .- Z_12_1)' * (e_1 * H_1 * g₁¹[:])
     +   (T_22_1 .- Z_22_1)' * (e_1 * H_1 * g₂¹[:])
     +   (T_32_1 .- Z_32_1)' * (e_1 * H_1 * g₃¹[:])
@@ -576,7 +576,7 @@ SAT_tilde_2_RHS = - HI_tilde * (
     +   (T_32_2 .- Z_31_2)' * (e_2 * H_2 * g₃²[:])
 )
 
-SAT_tilde_3_RHS = - HI_tilde * (
+SAT_tilde_3_RHS = HI_tilde * (
         (T_13_1 .- Z_13_1)' * (e_1 * H_1 * g₁¹[:])
     +   (T_23_1 .- Z_23_1)' * (e_1 * H_1 * g₂¹[:])
     +   (T_33_1 .- Z_33_1)' * (e_1 * H_1 * g₃¹[:])
@@ -588,7 +588,7 @@ SAT_tilde_3_RHS = - HI_tilde * (
 
 # Assembling LHS of the linear system
 
-LHS = ( A + u1_filter' * H_tilde * SAT_1_LHS 
+LHS = ( A + u1_filter' * H_tilde * SAT_1_LHS
         + u2_filter' * H_tilde * SAT_2_LHS 
         + u3_filter' * H_tilde * SAT_3_LHS 
         + u1_filter' * H_tilde * SAT_tilde_1_LHS 
