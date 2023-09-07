@@ -12,7 +12,7 @@ using Plots
 
 p = 2
 
-level = 3
+level = 4
 
 i = j = k = level
 h_list_x = [1/2^1, 1/2^2, 1/2^3, 1/2^4, 1/2^5, 1/2^6, 1/2^7, 1/2^8,1/2^9,1/2^10]
@@ -126,7 +126,7 @@ tau_y = 13/hy
 tau_z = 13/hz
 
 
-beta = -1
+beta = 1
 
 
 
@@ -389,7 +389,7 @@ SAT_3_LHS = - HI_tilde * (
 
 ### Assembling SBP terms for left-hand-side (LHS) Dirichlet condition
 
-SAT_tilde_1_LHS = HI_tilde * (
+SAT_tilde_1_LHS =  HI_tilde * (
         (T_11_1' .- Z_11_1') * (e_1 * H_1 * (e_1T)) * u1_filter
     +   (T_21_1' .- Z_21_1') * (e_1 * H_1 * (e_1T)) * u2_filter
     +   (T_31_1' .- Z_31_1') * (e_1 * H_1 * (e_1T)) * u3_filter
@@ -398,7 +398,7 @@ SAT_tilde_1_LHS = HI_tilde * (
     +   (T_31_2' .- Z_31_2') * (e_2 * H_2 * (e_2T)) * u3_filter
 )
 
-SAT_tilde_2_LHS = HI_tilde * (
+SAT_tilde_2_LHS =  HI_tilde * (
         (T_12_1' .- Z_12_1') * (e_1 * H_1 * (e_1T)) * u1_filter
     +   (T_22_1' .- Z_22_1') * (e_1 * H_1 * (e_1T)) * u2_filter
     +   (T_32_1' .- Z_32_1') * (e_1 * H_1 * (e_1T)) * u3_filter
@@ -407,7 +407,7 @@ SAT_tilde_2_LHS = HI_tilde * (
     +   (T_32_2' .- Z_32_2') * (e_2 * H_2 * (e_2T)) * u3_filter
 )
 
-SAT_tilde_3_LHS = HI_tilde * (
+SAT_tilde_3_LHS =  HI_tilde * (
         (T_13_1' .- Z_13_1') * (e_1 * H_1 * (e_1T)) * u1_filter
     +   (T_23_1' .- Z_23_1') * (e_1 * H_1 * (e_1T)) * u2_filter
     +   (T_33_1' .- Z_33_1') * (e_1 * H_1 * (e_1T)) * u3_filter
@@ -472,11 +472,11 @@ u3_Right_value = Right_operator' * u1_y_Right(x,z)[:]
 
 # # Assembling left hand side
 
-A1 = (u1_filter' * H_tilde * u1_operator)
+E1 = (u1_filter' * H_tilde * u1_operator)
 
-A2 = (u2_filter' * H_tilde * u2_operator)
+E2 = (u2_filter' * H_tilde * u2_operator)
 
-A3 = (u3_filter' * H_tilde * u3_operator)
+E3 = (u3_filter' * H_tilde * u3_operator)
 
 A = ( A1 + A2 + A3)
 
@@ -513,13 +513,13 @@ g₂² = u2_Front(y,z)
 g₃² = zeros(Ny,Nz)
 
 # Face 3: Neumann
-g₁³ = u1_y_Left(x,z) + u2_y_Left(x,z)
-g₂³ = (K_v - 2/3 * μ_v) * (u1_x_Left(x,z) + u2_y_Left(x,z))
+g₁³ = u1_y_Left(x,z) + u2_x_Left(x,z)
+g₂³ = (K_v - 2/3 * μ_v) * u1_x_Left(x,z) + (K_v + 4/3 * μ_v) * u2_y_Left(x,z)
 g₃³ = zeros(Nx,Nz)
 
 # Face 4: Neumann
 g₁⁴ = u1_y_Right(x,z) + u2_x_Right(x,z)
-g₂⁴ = (K_v - 2/3 * μ_v) * (u1_x_Right(x,z) + u2_y_Right(x,z))
+g₂⁴ = (K_v - 2/3 * μ_v) * u1_x_Right(x,z) + (K_v + 4/3 * μ_v) * u2_y_Right(x,z)
 g₃⁴ = zeros(Nx,Nz)
 
 # Face 5: Neumann
@@ -558,7 +558,7 @@ SAT_3_RHS = - HI_tilde * (
 
 
 ### Assembling SBP terms for right-hand-side (RHS) Dirichlet condition
-SAT_tilde_1_RHS = HI_tilde * (
+SAT_tilde_1_RHS =  HI_tilde * (
         (T_11_1' .- Z_11_1') * (e_1 * H_1 * g₁¹[:])
     +   (T_21_1' .- Z_21_1') * (e_1 * H_1 * g₂¹[:])
     +   (T_31_1' .- Z_31_1') * (e_1 * H_1 * g₃¹[:])
@@ -567,7 +567,7 @@ SAT_tilde_1_RHS = HI_tilde * (
     +   (T_31_2' .- Z_31_2') * (e_2 * H_2 * g₃²[:])
 )
 
-SAT_tilde_2_RHS = HI_tilde * (
+SAT_tilde_2_RHS =  HI_tilde * (
         (T_12_1' .- Z_12_1') * (e_1 * H_1 * g₁¹[:])
     +   (T_22_1' .- Z_22_1') * (e_1 * H_1 * g₂¹[:])
     +   (T_32_1' .- Z_32_1') * (e_1 * H_1 * g₃¹[:])
@@ -576,7 +576,7 @@ SAT_tilde_2_RHS = HI_tilde * (
     +   (T_32_2' .- Z_31_2') * (e_2 * H_2 * g₃²[:])
 )
 
-SAT_tilde_3_RHS = HI_tilde * (
+SAT_tilde_3_RHS =  HI_tilde * (
         (T_13_1' .- Z_13_1') * (e_1 * H_1 * g₁¹[:])
     +   (T_23_1' .- Z_23_1') * (e_1 * H_1 * g₂¹[:])
     +   (T_33_1' .- Z_33_1') * (e_1 * H_1 * g₃¹[:])
@@ -588,7 +588,7 @@ SAT_tilde_3_RHS = HI_tilde * (
 
 # Assembling LHS of the linear system
 
-LHS = (A + u1_filter' * H_tilde * SAT_1_LHS
+M = (A + u1_filter' * H_tilde * SAT_1_LHS
         + u2_filter' * H_tilde * SAT_2_LHS 
         + u3_filter' * H_tilde * SAT_3_LHS 
         + u1_filter' * H_tilde * SAT_tilde_1_LHS 
@@ -610,3 +610,11 @@ error_direct = sqrt((u1_filter * u_direct - u1)' * H_tilde * (u1_filter * u_dire
             + (u2_filter * u_direct - u2)' * H_tilde * (u2_filter * u_direct - u2) 
             + (u3_filter * u_direct - u3)' * H_tilde * (u3_filter * u_direct - u3) 
 )
+
+reshape((u1_filter * u_direct - u1), Nx, Ny, Nz)
+reshape((u2_filter * u_direct - u2), Nx, Ny, Nz)
+reshape((u3_filter * u_direct - u3), Nx, Ny, Nz)
+
+sqrt((u1_filter * u_direct - u1)' * H_tilde * (u1_filter * u_direct - u1))
+sqrt((u2_filter * u_direct - u2)' * H_tilde * (u2_filter * u_direct - u2))
+sqrt((u3_filter * u_direct - u3)' * H_tilde * (u3_filter * u_direct - u3))
