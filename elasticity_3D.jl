@@ -1,6 +1,7 @@
 include("diagonal_sbp.jl")
 include("3D_face.jl")
-include("analy_sol.jl")
+# include("analy_sol.jl")
+include("analy_sol_2.jl")
 include("components.jl")
 include("coefficients.jl")
 
@@ -225,7 +226,6 @@ u3_operator = ( μ_v * (p2_px2 * u3_filter + p2_pxpz * u1_filter)
             + 2 * μ_v * p2_pz2 * u3_filter
 )
 
-# Equations for u1
 
 
 
@@ -418,8 +418,8 @@ SAT_tilde_3_LHS = - HI_tilde * (
 
 # Forming analytical solutions
 u1 = form_analy_sol(;N = N_x)[1][:] # u1 is the only non-zero component
-u2 = zeros(Nx*Ny*Nz) # u2 = 0 for the test case
-u3 = zeros(Nx*Ny*Nz) # u3 = 0 for the test case
+u2 = form_analy_sol(;N = N_x)[2][:] # u2 = 0 for the test case
+u3 = form_analy_sol(;N = N_x)[3][:] # u3 = 0 for the test case
 
 analy_sol = u1_filter' * u1 + u2_filter' * u2 + u3_filter' * u3
 
@@ -439,34 +439,34 @@ analy_sol = u1_filter' * u1 + u2_filter' * u2 + u3_filter' * u3
 # Getting boundary values
 
 # u1
-u1_Front = Front_operator' * u_Front(y,z)[:] # Dirichlet Conditions
-u1_End = End_operator' * u_End(y,z)[:] # Dirichlet Conditions
+u1_Front = Front_operator' * u1_Front(y,z)[:] # Dirichlet Conditions
+u1_End = End_operator' * u1_End(y,z)[:] # Dirichlet Conditions
 
-u1_Top = Top_operator' * u_Top(x,y)[:] # Dirichlet Conditions
-u1_Bottom = Bottom_operator' * u_Bottom(x,y)[:] # Dirichlet Conditions
+u1_Top = Top_operator' * u1_Top(x,y)[:] # Dirichlet Conditions
+u1_Bottom = Bottom_operator' * u1_Top(x,y)[:] # Dirichlet Conditions
 
-u1_Left = Left_operator' * u_y_Left(x,z)[:] # Neumann Conditions
-u1_Right = Right_operator' * u_y_Right(x,z)[:]
+u1_Left = Left_operator' * u1_y_Left(x,z)[:] # Neumann Conditions
+u1_Right = Right_operator' * u1_y_Right(x,z)[:]
 
 # u2
-u2_Front = Front_operator' * u_Front(y,z)[:] # Dirichlet Conditions
-u2_End = End_operator' * u_End(y,z)[:] # Dirichlet Conditions
+u2_Front = Front_operator' * u1_Front(y,z)[:] # Dirichlet Conditions
+u2_End = End_operator' * u1_End(y,z)[:] # Dirichlet Conditions
 
-u2_Top = Top_operator' * u_Top(x,y)[:] # Dirichlet Conditions
-u2_Bottom = Bottom_operator' * u_Bottom(x,y)[:] # Dirichlet Conditions
+u2_Top = Top_operator' * u1_Top(x,y)[:] # Dirichlet Conditions
+u2_Bottom = Bottom_operator' * u1_Top(x,y)[:] # Dirichlet Conditions
 
-u2_Left = Left_operator' * u_y_Left(x,z)[:] # Neumann Conditions
-u2_Right = Right_operator' * u_y_Right(x,z)[:]
+u2_Left = Left_operator' * u1_y_Left(x,z)[:] # Neumann Conditions
+u2_Right = Right_operator' * u1_y_Right(x,z)[:]
 
 # u3
-u3_Front = Front_operator' * u_Front(y,z)[:] # Dirichlet Conditions
-u3_End = End_operator' * u_End(y,z)[:] # Dirichlet Conditions
+u3_Front = Front_operator' * u1_Front(y,z)[:] # Dirichlet Conditions
+u3_End = End_operator' * u1_End(y,z)[:] # Dirichlet Conditions
 
-u3_Top = Top_operator' * u_Top(x,y)[:] # Dirichlet Conditions
-u3_Bottom = Bottom_operator' * u_Bottom(x,y)[:] # Dirichlet Conditions
+u3_Top = Top_operator' * u1_Top(x,y)[:] # Dirichlet Conditions
+u3_Bottom = Bottom_operator' * u1_Top(x,y)[:] # Dirichlet Conditions
 
-u3_Left = Left_operator' * u_y_Left(x,z)[:] # Neumann Conditions
-u3_Right = Right_operator' * u_y_Right(x,z)[:]
+u3_Left = Left_operator' * u1_y_Left(x,z)[:] # Neumann Conditions
+u3_Right = Right_operator' * u1_y_Right(x,z)[:]
 
 
 
@@ -482,39 +482,44 @@ A = A1 + A2 + A3
 
 # Assembling right hand side
 # Assembling source source_terms
-# source_u1 = u1_filter' * H_tilde * u1_operator * analy_sol
-# source_u2 = u2_filter' * H_tilde * u2_operator * analy_sol
-# source_u3 = u3_filter' * H_tilde * u3_operator * analy_sol
-source_u1 = u1_filter' * H_tilde * ((K_v - 2/3 * μ_v) * (-π^2 * u(x,y,z)[:]) 
-            + 2 * μ_v *  (-π^2 * u(x,y,z)[:])
-            + μ_v * (-π^2 * u(x,y,z)[:]) + μ_v * (-π^2 * u(x,y,z)[:]))
+source_u1 = u1_filter' * H_tilde * ((K_v - 2/3 * μ_v) * (-π^2 * u1_analy(x,y,z)[:] -π^2 * u2_analy(x,y,z)[:]) 
+            + 2 * μ_v * (-π^2 * u1_analy(x,y,z)[:])
+            + μ_v * (-π^2 * u1_analy(x,y,z)[:] -π^2 * u2_analy(x,y,z)[:]) 
+            + μ_v * (-π^2 * u1_analy(x,y,z)[:])
+            )
 
-source_u2 = u2_filter' * H_tilde * (μ_v * (-π^2 * u(x,y,z)[:])
-            + (K_v - 2/3 * μ_v) * (-π^2 * u(x,y,z)[:]))
+source_u2 = u2_filter' * H_tilde * (μ_v * (-π^2 * u1_analy(x,y,z)[:] - π^2 * u2_analy(x,y,z)[:])
+            + (K_v - 2/3 * μ_v) * (-π^2 * u1_analy(x,y,z)[:] -π^2 * u1_analy(x,y,z)[:] ) 
+            + 2 * μ_v * (-π^2 * u1_analy(x,y,z)[:])
+            + μ_v * (-π^2 * u2_analy(x,y,z)[:])
+            )
 
-source_u3 = u3_filter' * H_tilde * (μ_v * (-π^2 * u(x,y,z)[:])
-            + (K_v - 2/3 * μ_v) * (-π^2 * u(x,y,z)[:]))
+source_u3 = u3_filter' * H_tilde * (μ_v * (-π^2 * u1_analy(x,y,z)[:])
+            + μ_v * (-π^2 * u2_analy(x,y,z)[:])
+            + (K_v - 2/3 * μ_v) * (-π^2 * u1_analy(x,y,z)[:] + -π^2 * u1_analy(x,y,z)[:])
+            # u3 is set to be zero 
+            )
 source = source_u1 + source_u2 + source_u3
 
 # Assembling boundary data
 # Face 1: Dirichlet
-g₁¹ = u_End(y,z)
-g₂¹ = zeros(Ny,Nz)
+g₁¹ = u1_End(y,z)
+g₂¹ = u2_End(y,z)
 g₃¹ = zeros(Ny,Nz)
 
 # Face 2: Dirichlet
-g₁² = u_Front(y,z)
-g₂² = zeros(Ny,Nz)
+g₁² = u1_Front(y,z)
+g₂² = u2_Front(y,z)
 g₃² = zeros(Ny,Nz)
 
 # Face 3: Neumann
-g₁³ = u_y_Left(x,z)
-g₂³ = (K_v - 2/3 * μ_v) * u_x_Left(x,z)
+g₁³ = u1_y_Left(x,z) + u2_y_Left(x,z)
+g₂³ = (K_v - 2/3 * μ_v) * (u1_x_Left(x,z) + u2_y_Left(x,z))
 g₃³ = zeros(Nx,Nz)
 
 # Face 4: Neumann
-g₁⁴ = u_y_Right(x,z)
-g₂⁴ = (K_v - 2/3 * μ_v) * u_x_Right(x,z)
+g₁⁴ = u1_y_Right(x,z)
+g₂⁴ = (K_v - 2/3 * μ_v) * u1_x_Right(x,z)
 g₃⁴ = zeros(Nx,Nz)
 
 # Face 5: Neumann
