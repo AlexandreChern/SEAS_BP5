@@ -12,7 +12,7 @@ using Plots
 
 p = 2
 
-level = 3
+level = 5
 
 i = j = k = level
 h_list_x = [1/2^1, 1/2^2, 1/2^3, 1/2^4, 1/2^5, 1/2^6, 1/2^7, 1/2^8,1/2^9,1/2^10]
@@ -306,7 +306,7 @@ T_12_3 = - μ_v * p_px #* u2_filter
 T_13_3 = 0 # Face 1
 
 T_21_3 = - (K_v - 2/3 * μ_v) * p_px #* u1_filter
-T_22_3 = - (K_v + 4/3 ) * p_py #* u2_filter
+T_22_3 = - (K_v + 4/3 * μ_v) * p_py #* u2_filter
 T_23_3 = - (K_v - 2/3 * μ_v) * p_pz #* u3_filter
 
 T_31_3 = 0
@@ -322,7 +322,7 @@ T_12_4 = μ_v * p_px #* u2_filter
 T_13_4 = 0
 
 T_21_4 = (K_v - 2/3 * μ_v) * p_px #* u1_filter
-T_22_4 = (K_v + 4/3) * p_py #* u2_filter
+T_22_4 = (K_v + 4/3 * μ_v) * p_py #* u2_filter
 T_23_4 = (K_v - 2/3 * μ_v) * p_pz # * u3_filter
 
 T_31_4 = 0
@@ -343,7 +343,7 @@ T_23_5 = - μ_v * p_py #* u3_filter
 
 T_31_5 = - (K_v - 2/3 * μ_v) * p_px #* u1_filter
 T_32_5 = - (K_v - 2/3 * μ_v) * p_py #* u2_filter
-T_33_5 = - (K_v + 4/3) * p_pz #* u3_filter
+T_33_5 = - (K_v + 4/3 * μ_v) * p_pz #* u3_filter
 
 ### Face 6
 e_6 = Top_operator'
@@ -359,7 +359,7 @@ T_23_6 = μ_v * p_py #* u3_filter
 
 T_31_6 = (K_v - 2/3 * μ_v) * p_px #* u1_filter
 T_32_6 = (K_v - 2/3 * μ_v) * p_py #* u2_filter
-T_33_6 = (K_v + 4/3) * p_pz #* u3_filter
+T_33_6 = (K_v + 4/3 * μ_v) * p_pz #* u3_filter
 
 ### Assembling SBP terms for left-hand-side (LHS) traction condition
 
