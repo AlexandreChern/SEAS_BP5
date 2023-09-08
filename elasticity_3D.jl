@@ -12,7 +12,7 @@ using Plots
 
 p = 2
 
-level = 4
+level = 2
 
 i = j = k = level
 h_list_x = [1/2^1, 1/2^2, 1/2^3, 1/2^4, 1/2^5, 1/2^6, 1/2^7, 1/2^8,1/2^9,1/2^10]
@@ -478,7 +478,7 @@ E2 = (u2_filter' * H_tilde * u2_operator)
 
 E3 = (u3_filter' * H_tilde * u3_operator)
 
-A = ( A1 + A2 + A3)
+E = ( E1 + E2 + E3)
 
 # Assembling right hand side
 # Assembling source source_terms
@@ -588,7 +588,7 @@ SAT_tilde_3_RHS =  HI_tilde * (
 
 # Assembling LHS of the linear system
 
-M = (A + u1_filter' * H_tilde * SAT_1_LHS
+M = (E + u1_filter' * H_tilde * SAT_1_LHS
         + u2_filter' * H_tilde * SAT_2_LHS 
         + u3_filter' * H_tilde * SAT_3_LHS 
         + u1_filter' * H_tilde * SAT_tilde_1_LHS 
@@ -604,7 +604,7 @@ RHS = (source + u1_filter' * H_tilde * SAT_1_RHS
         + u3_filter' * H_tilde * SAT_tilde_3_RHS)
 
 
-u_direct = LHS \ RHS
+u_direct = M \ RHS
 
 error_direct = sqrt((u1_filter * u_direct - u1)' * H_tilde * (u1_filter * u_direct - u1) 
             + (u2_filter * u_direct - u2)' * H_tilde * (u2_filter * u_direct - u2) 
