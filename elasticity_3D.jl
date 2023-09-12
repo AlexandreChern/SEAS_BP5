@@ -12,7 +12,7 @@ using Plots
 
 p = 2
 
-level = 2
+level = 3
 
 i = j = k = level
 h_list_x = [1/2^1, 1/2^2, 1/2^3, 1/2^4, 1/2^5, 1/2^6, 1/2^7, 1/2^8,1/2^9,1/2^10]
@@ -238,7 +238,7 @@ u3_operator = ( μ_v * (p2_px2 * u3_filter + p2_pxpz * u1_filter)
 e_1 = End_operator'
 e_1T = End_operator
 
-T_11_1 = - (K_v + 4/3) * p_px #* u1_filter
+T_11_1 = - (K_v + 4/3 * μ_v) * p_px #* u1_filter
 T_12_1 = - (K_v - 2/3 * μ_v) * p_pz #* u2_filter # Not quite sure 
 T_13_1 = - (K_v - 2/3 * μ_v) * p_py #* u3_filter
 
@@ -252,17 +252,30 @@ T_33_1 = - μ_v * p_px #* u3_filter
 
 
 ## TO DO Fix Z values
-Z_11_1 = (d * β / H1x[1]) * (K_v + 4/3 * μ_v + 2 * μ_v) #* u1_filter
-Z_12_1 = (d * β/ H1x[1]) * (K_v - 2/3 * μ_v + μ_v) * 0 #* u2_filter
-Z_13_1 = (d * β/ H1x[1]) * (K_v - 2/3 * μ_v + μ_v) * 0#* u3_filter
+Z_11_1 = (d * β / H1x[1]) * (K_v + 4/3 * μ_v + 2 * μ_v) * kron(I_Nz, I_Ny, I_Nx)#* u1_filter
+Z_12_1 = (d * β/ H1x[1]) * (K_v - 2/3 * μ_v + μ_v) * 0 * kron(I_Nz, I_Ny, I_Nx) #* u2_filter
+Z_13_1 = (d * β/ H1x[1]) * (K_v - 2/3 * μ_v + μ_v) * 0 * kron(I_Nz, I_Ny, I_Nx) #* u3_filter
 
-Z_21_1 =  (d * β/ H1x[1]) * (K_v - 2/3 * μ_v + μ_v) * 0  #* u1_filter
-Z_22_1 = (d * β / H1x[1]) * (K_v + 4/3 * μ_v + 2 * μ_v) #* u2_filter
-Z_23_1 =  (d * β/ H1x[1]) * (K_v - 2/3 * μ_v + μ_v) * 0  #* u3_filter ## 0 ?
+Z_21_1 =  (d * β/ H1x[1]) * (K_v - 2/3 * μ_v + μ_v) * 0 * kron(I_Nz, I_Ny, I_Nx) #* u1_filter
+Z_22_1 = (d * β / H1x[1]) * (K_v + 4/3 * μ_v + 2 * μ_v) * kron(I_Nz, I_Ny, I_Nx)#* u2_filter
+Z_23_1 =  (d * β/ H1x[1]) * (K_v - 2/3 * μ_v + μ_v) * 0 * kron(I_Nz, I_Ny, I_Nx) #* u3_filter ## 0 ?
 
-Z_31_1 = (d * β/ H1x[1]) * (K_v - 2/3 * μ_v + μ_v) * 0 #* u1_filter
-Z_32_1 = (d * β/ H1x[1]) * (K_v - 2/3 * μ_v + μ_v) * 0
-Z_33_1 = (d * β / H1x[1]) * (K_v + 4/3 * μ_v + 2 * μ_v) #* u3_filter
+Z_31_1 = (d * β/ H1x[1]) * (K_v - 2/3 * μ_v + μ_v) * 0 * kron(I_Nz, I_Ny, I_Nx)#* u1_filter
+Z_32_1 = (d * β/ H1x[1]) * (K_v - 2/3 * μ_v + μ_v) * 0 * kron(I_Nz, I_Ny, I_Nx)
+Z_33_1 = (d * β / H1x[1]) * (K_v + 4/3 * μ_v + 2 * μ_v) * kron(I_Nz, I_Ny, I_Nx) #* u3_filter
+
+# # Z version 2
+# Z_11_1 = (d * β / H1x[1]) * (K_v + 4/3 * μ_v + 2 * μ_v) * kron(I_Nz, I_Ny, e_1x * e_1x')#* u1_filter
+# Z_12_1 = (d * β/ H1x[1]) * (K_v - 2/3 * μ_v + μ_v) * 0 * kron(I_Nz, I_Ny, e_1x * e_1x') #* u2_filter
+# Z_13_1 = (d * β/ H1x[1]) * (K_v - 2/3 * μ_v + μ_v) * 0 * kron(I_Nz, I_Ny, e_1x * e_1x') #* u3_filter
+
+# Z_21_1 =  (d * β/ H1x[1]) * (K_v - 2/3 * μ_v + μ_v) * 0 * kron(I_Nz, I_Ny, e_1x * e_1x') #* u1_filter
+# Z_22_1 = (d * β / H1x[1]) * (K_v + 4/3 * μ_v + 2 * μ_v) * kron(I_Nz, I_Ny, e_1x * e_1x')#* u2_filter
+# Z_23_1 =  (d * β/ H1x[1]) * (K_v - 2/3 * μ_v + μ_v) * 0 * kron(I_Nz, I_Ny, e_1x * e_1x') #* u3_filter ## 0 ?
+
+# Z_31_1 = (d * β/ H1x[1]) * (K_v - 2/3 * μ_v + μ_v) * 0 * kron(I_Nz, I_Ny, e_1x * e_1x')#* u1_filter
+# Z_32_1 = (d * β/ H1x[1]) * (K_v - 2/3 * μ_v + μ_v) * 0 * kron(I_Nz, I_Ny, e_1x * e_1x')
+# Z_33_1 = (d * β / H1x[1]) * (K_v + 4/3 * μ_v + 2 * μ_v) * kron(I_Nz, I_Ny, e_1x * e_1x') #* u3_filter
 
 
 ### Face 2
@@ -282,17 +295,30 @@ T_32_2 = 0
 T_33_2 = μ_v * p_px #* u3_filter
 
 ## TO DO Fix Z values
-Z_11_2 = (d * β / H1x[1]) * (K_v + 4/3 * μ_v + 2 * μ_v) #* u1_filter
-Z_12_2 = (d * β/ H1x[1]) * (K_v - 2/3 * μ_v + μ_v) * 0 #* u2_filter
-Z_13_2 = (d * β/ H1x[1]) * (K_v - 2/3 * μ_v + μ_v) * 0#* u3_filter
+Z_11_2 = (d * β / H1x[1]) * (K_v + 4/3 * μ_v + 2 * μ_v) * kron(I_Nz, I_Ny, I_Nx) #* u1_filter
+Z_12_2 = (d * β/ H1x[1]) * (K_v - 2/3 * μ_v + μ_v) * 0 * kron(I_Nz, I_Ny, I_Nx) #* u2_filter
+Z_13_2 = (d * β/ H1x[1]) * (K_v - 2/3 * μ_v + μ_v) * 0 * kron(I_Nz, I_Ny, I_Nx) #* u3_filter
 
-Z_21_2 =  (d * β/ H1x[1]) * (K_v - 2/3 * μ_v + μ_v) * 0  #* u1_filter
-Z_22_2 = (d * β / H1x[1]) * (K_v + 4/3 * μ_v + 2 * μ_v) #* u2_filter
-Z_23_2 =  (d * β/ H1x[1]) * (K_v - 2/3 * μ_v + μ_v) * 0  #* u3_filter ## 0 ?
+Z_21_2 =  (d * β/ H1x[1]) * (K_v - 2/3 * μ_v + μ_v) * 0 * kron(I_Nz, I_Ny, I_Nx) #* u1_filter
+Z_22_2 = (d * β / H1x[1]) * (K_v + 4/3 * μ_v + 2 * μ_v) * kron(I_Nz, I_Ny, I_Nx) #* u2_filter
+Z_23_2 =  (d * β/ H1x[1]) * (K_v - 2/3 * μ_v + μ_v) * 0 * kron(I_Nz, I_Ny, I_Nx) #* u3_filter ## 0 ?
 
-Z_31_2 = (d * β/ H1x[1]) * (K_v - 2/3 * μ_v + μ_v) * 0 #* u1_filter
-Z_32_2 = (d * β/ H1x[1]) * (K_v - 2/3 * μ_v + μ_v) * 0
-Z_33_2 = (d * β / H1x[1]) * (K_v + 4/3 * μ_v + 2 * μ_v) #* u3_filter
+Z_31_2 = (d * β/ H1x[1]) * (K_v - 2/3 * μ_v + μ_v) * 0 * kron(I_Nz, I_Ny, I_Nx) #* u1_filter
+Z_32_2 = (d * β/ H1x[1]) * (K_v - 2/3 * μ_v + μ_v) * 0 * kron(I_Nz, I_Ny, I_Nx)
+Z_33_2 = (d * β / H1x[1]) * (K_v + 4/3 * μ_v + 2 * μ_v) * kron(I_Nz, I_Ny, I_Nx)#* u3_filter
+
+# # Z version 2
+# Z_11_2 = (d * β / H1x[1]) * (K_v + 4/3 * μ_v + 2 * μ_v) * kron(I_Nz, I_Ny, e_Nx * e_Nx') #* u1_filter
+# Z_12_2 = (d * β/ H1x[1]) * (K_v - 2/3 * μ_v + μ_v) * 0 * kron(I_Nz, I_Ny, e_Nx * e_Nx') #* u2_filter
+# Z_13_2 = (d * β/ H1x[1]) * (K_v - 2/3 * μ_v + μ_v) * 0 * kron(I_Nz, I_Ny, e_Nx * e_Nx') #* u3_filter
+
+# Z_21_2 =  (d * β/ H1x[1]) * (K_v - 2/3 * μ_v + μ_v) * 0 * kron(I_Nz, I_Ny, e_Nx * e_Nx') #* u1_filter
+# Z_22_2 = (d * β / H1x[1]) * (K_v + 4/3 * μ_v + 2 * μ_v) * kron(I_Nz, I_Ny, e_Nx * e_Nx') #* u2_filter
+# Z_23_2 =  (d * β/ H1x[1]) * (K_v - 2/3 * μ_v + μ_v) * 0 * kron(I_Nz, I_Ny, e_Nx * e_Nx') #* u3_filter ## 0 ?
+
+# Z_31_2 = (d * β/ H1x[1]) * (K_v - 2/3 * μ_v + μ_v) * 0 * kron(I_Nz, I_Ny, e_Nx * e_Nx') #* u1_filter
+# Z_32_2 = (d * β/ H1x[1]) * (K_v - 2/3 * μ_v + μ_v) * 0 * kron(I_Nz, I_Ny, e_Nx * e_Nx')
+# Z_33_2 = (d * β / H1x[1]) * (K_v + 4/3 * μ_v + 2 * μ_v) * kron(I_Nz, I_Ny, e_Nx * e_Nx')#* u3_filter
 
 
 
@@ -368,6 +394,12 @@ SAT_1_LHS = - HI_tilde * (
     +   e_4 * H_4 * e_4T * (T_11_4 * u1_filter .+ T_12_4 * u2_filter .+ T_13_4 * u3_filter)
     +   e_5 * H_5 * e_5T * (T_11_5 * u1_filter .+ T_12_5 * u2_filter .+ T_13_5 * u3_filter)
     +   e_6 * H_6 * e_6T * (T_11_6 * u1_filter .+ T_12_6 * u2_filter .+ T_13_6 * u3_filter)
+
+    #     e_3 * e_3T * (T_11_3 * u1_filter .+ T_12_3 * u2_filter .+ T_13_3 * u3_filter)
+    # +   e_4 * e_4T * (T_11_4 * u1_filter .+ T_12_4 * u2_filter .+ T_13_4 * u3_filter)
+    # +   e_5 * e_5T * (T_11_5 * u1_filter .+ T_12_5 * u2_filter .+ T_13_5 * u3_filter)
+    # +   e_6 * e_6T * (T_11_6 * u1_filter .+ T_12_6 * u2_filter .+ T_13_6 * u3_filter)
+
 ) 
 
 SAT_2_LHS = - HI_tilde * (
@@ -375,6 +407,12 @@ SAT_2_LHS = - HI_tilde * (
     +   e_4 * H_4 * e_4T * (T_21_4 * u1_filter .+ T_22_4 * u2_filter .+ T_23_4 * u3_filter)
     +   e_5 * H_5 * e_5T * (T_21_5 * u1_filter .+ T_22_5 * u2_filter .+ T_23_5 * u3_filter)
     +   e_6 * H_5 * e_6T * (T_21_6 * u1_filter .+ T_22_6 * u2_filter .+ T_23_6 * u3_filter)
+
+    #     e_3 * e_3T * (T_21_3 * u1_filter .+ T_22_3 * u2_filter .+ T_23_3 * u3_filter)
+    # +   e_4 * e_4T * (T_21_4 * u1_filter .+ T_22_4 * u2_filter .+ T_23_4 * u3_filter)
+    # +   e_5 * e_5T * (T_21_5 * u1_filter .+ T_22_5 * u2_filter .+ T_23_5 * u3_filter)
+    # +   e_6 * e_6T * (T_21_6 * u1_filter .+ T_22_6 * u2_filter .+ T_23_6 * u3_filter)
+
 ) 
 
 
@@ -383,6 +421,11 @@ SAT_3_LHS = - HI_tilde * (
     +   e_4 * H_4 * e_4T * (T_31_4 * u1_filter .+ T_32_4 * u2_filter .+ T_33_4 * u3_filter)
     +   e_5 * H_5 * e_5T * (T_31_5 * u1_filter .+ T_32_5 * u2_filter .+ T_33_5 * u3_filter)
     +   e_6 * H_6 * e_6T * (T_31_6 * u1_filter .+ T_32_6 * u2_filter .+ T_33_6 * u3_filter)
+
+    #     e_3 * e_3T * (T_31_3 * u1_filter .+ T_32_3 * u2_filter .+ T_33_3 * u3_filter)
+    # +   e_4 * e_4T * (T_31_4 * u1_filter .+ T_32_4 * u2_filter .+ T_33_4 * u3_filter)
+    # +   e_5 * e_5T * (T_31_5 * u1_filter .+ T_32_5 * u2_filter .+ T_33_5 * u3_filter)
+    # +   e_6 * e_6T * (T_31_6 * u1_filter .+ T_32_6 * u2_filter .+ T_33_6 * u3_filter)
 )
 
 
@@ -415,6 +458,64 @@ SAT_tilde_3_LHS =  HI_tilde * (
     +   (T_23_2' .- Z_23_2') * (e_2 * H_2 * (e_2T)) * u2_filter
     +   (T_33_2' .- Z_33_2') * (e_2 * H_2 * (e_2T)) * u3_filter
 )
+
+
+# New formulation of SAT_tilde_LHS version 2
+
+# SAT_tilde_1_LHS =  HI_tilde * (
+#         (e_1 * H_1 * (e_1T)) * (T_11_1' .- Z_11_1') * u1_filter
+#     +   (e_1 * H_1 * (e_1T)) * (T_21_1' .- Z_21_1') * u2_filter
+#     +   (e_1 * H_1 * (e_1T)) * (T_31_1' .- Z_31_1') * u3_filter
+#     +   (e_2 * H_2 * (e_2T)) * (T_11_2' .- Z_11_2') * u1_filter
+#     +   (e_2 * H_2 * (e_2T)) * (T_21_2' .- Z_21_2') * u2_filter
+#     +   (e_2 * H_2 * (e_2T)) * (T_31_2' .- Z_31_2') * u3_filter
+# )
+
+# SAT_tilde_2_LHS =  HI_tilde * (
+#         (e_1 * H_1 * (e_1T)) * (T_12_1' .- Z_12_1') * u1_filter
+#     +   (e_1 * H_1 * (e_1T)) * (T_22_1' .- Z_22_1') * u2_filter
+#     +   (e_1 * H_1 * (e_1T)) * (T_32_1' .- Z_32_1') * u3_filter
+#     +   (e_2 * H_2 * (e_2T)) * (T_12_2' .- Z_12_2') * u1_filter
+#     +   (e_2 * H_2 * (e_2T)) * (T_22_2' .- Z_22_2') * u2_filter
+#     +   (e_2 * H_2 * (e_2T)) * (T_32_2' .- Z_32_2') * u3_filter
+# )
+
+# SAT_tilde_3_LHS =  HI_tilde * (
+#         (e_1 * H_1 * (e_1T)) * (T_13_1' .- Z_13_1') * u1_filter
+#     +   (e_1 * H_1 * (e_1T)) * (T_23_1' .- Z_23_1') * u2_filter
+#     +   (e_1 * H_1 * (e_1T)) * (T_33_1' .- Z_33_1') * u3_filter
+#     +   (e_2 * H_2 * (e_2T)) * (T_13_2' .- Z_13_2') * u1_filter
+#     +   (e_2 * H_2 * (e_2T)) * (T_23_2' .- Z_23_2') * u2_filter
+#     +   (e_2 * H_2 * (e_2T)) * (T_33_2' .- Z_33_2') * u3_filter
+# )
+
+# New formulation for SAT_tilde_LHS version 3
+# SAT_tilde_1_LHS =  HI_tilde * (
+#         (T_11_1' .- Z_11_1') * (e_1 * (e_1T)) * u1_filter
+#     +   (T_21_1' .- Z_21_1') * (e_1 * (e_1T)) * u2_filter
+#     +   (T_31_1' .- Z_31_1') * (e_1 * (e_1T)) * u3_filter
+#     +   (T_11_2' .- Z_11_2') * (e_2 * (e_2T)) * u1_filter
+#     +   (T_21_2' .- Z_21_2') * (e_2 * (e_2T)) * u2_filter
+#     +   (T_31_2' .- Z_31_2') * (e_2 * (e_2T)) * u3_filter
+# )
+
+# SAT_tilde_2_LHS =  HI_tilde * (
+#         (T_12_1' .- Z_12_1') * (e_1 * (e_1T)) * u1_filter
+#     +   (T_22_1' .- Z_22_1') * (e_1 * (e_1T)) * u2_filter
+#     +   (T_32_1' .- Z_32_1') * (e_1 * (e_1T)) * u3_filter
+#     +   (T_12_2' .- Z_12_2') * (e_2 * (e_2T)) * u1_filter
+#     +   (T_22_2' .- Z_22_2') * (e_2 * (e_2T)) * u2_filter
+#     +   (T_32_2' .- Z_32_2') * (e_2 * (e_2T)) * u3_filter
+# )
+
+# SAT_tilde_3_LHS =  HI_tilde * (
+#         (T_13_1' .- Z_13_1') * (e_1 * (e_1T)) * u1_filter
+#     +   (T_23_1' .- Z_23_1') * (e_1 * (e_1T)) * u2_filter
+#     +   (T_33_1' .- Z_33_1') * (e_1 * (e_1T)) * u3_filter
+#     +   (T_13_2' .- Z_13_2') * (e_2 * (e_2T)) * u1_filter
+#     +   (T_23_2' .- Z_23_2') * (e_2 * (e_2T)) * u2_filter
+#     +   (T_33_2' .- Z_33_2') * (e_2 * (e_2T)) * u3_filter
+# )
 
 # Forming analytical solutions
 u1 = form_analy_sol(;N = N_x)[1][:] # u1 is the only non-zero component
@@ -539,6 +640,10 @@ SAT_1_RHS = - HI_tilde * (
     +   e_4 * H_4 * g₁⁴[:]
     +   e_5 * H_5 * g₁⁵[:]
     +   e_6 * H_6 * g₁⁶[:]
+    #     e_3 * g₁³[:]
+    # +   e_4 * g₁⁴[:]
+    # +   e_5 * g₁⁵[:]
+    # +   e_6 * g₁⁶[:]
 )
 
 SAT_2_RHS = - HI_tilde * (
@@ -546,6 +651,10 @@ SAT_2_RHS = - HI_tilde * (
     +   e_4 * H_4 * g₂⁴[:]
     +   e_5 * H_5 * g₂⁵[:]
     +   e_6 * H_6 * g₂⁶[:]
+    #     e_3 * g₂³[:]
+    # +   e_4 * g₂⁴[:]
+    # +   e_5 * g₂⁵[:]
+    # +   e_6 * g₂⁶[:]
 )
 
 SAT_3_RHS = - HI_tilde * (
@@ -553,6 +662,10 @@ SAT_3_RHS = - HI_tilde * (
     +   e_4 * H_4 * g₃⁴[:]
     +   e_5 * H_5 * g₃⁵[:]
     +   e_6 * H_6 * g₃⁶[:]
+    #     e_3 * g₃³[:]
+    # +   e_4 * g₃⁴[:]
+    # +   e_5 * g₃⁵[:]
+    # +   e_6 * g₃⁶[:]
 )
 
 
@@ -584,6 +697,62 @@ SAT_tilde_3_RHS =  HI_tilde * (
     +   (T_23_2' .- Z_23_2') * (e_2 * H_2 * g₂²[:])
     +   (T_33_2' .- Z_33_2') * (e_2 * H_2 * g₃²[:])
 )
+
+# # New formulation for SAT_tilde_RHS version 2
+# SAT_tilde_1_RHS =  HI_tilde * (
+#         (e_1 * H_1 * (e_1T)) * (T_11_1' .- Z_11_1') * (e_1 * g₁¹[:])
+#     +   (e_1 * H_1 * (e_1T)) * (T_21_1' .- Z_21_1') * (e_1 * g₂¹[:])
+#     +   (e_1 * H_1 * (e_1T)) * (T_31_1' .- Z_31_1') * (e_1 * g₃¹[:])
+#     +   (e_2 * H_2 * (e_2T)) * (T_11_2' .- Z_11_2') * (e_2 * g₁²[:])
+#     +   (e_2 * H_2 * (e_2T)) * (T_21_2' .- Z_21_2') * (e_2 * g₂²[:])
+#     +   (e_2 * H_2 * (e_2T)) * (T_31_2' .- Z_31_2') * (e_2 * g₃²[:])
+# )
+
+# SAT_tilde_2_RHS =  HI_tilde * (
+#         (e_1 * H_1 * (e_1T)) * (T_12_1' .- Z_12_1') * (e_1 * g₁¹[:])
+#     +   (e_1 * H_1 * (e_1T)) * (T_22_1' .- Z_22_1') * (e_1 * g₂¹[:])
+#     +   (e_1 * H_1 * (e_1T)) * (T_32_1' .- Z_32_1') * (e_1 * g₃¹[:])
+#     +   (e_2 * H_2 * (e_2T)) * (T_12_2' .- Z_12_2') * (e_2 * g₁²[:])
+#     +   (e_2 * H_2 * (e_2T)) * (T_22_2' .- Z_22_2') * (e_2 * g₂²[:])
+#     +   (e_2 * H_2 * (e_2T)) * (T_32_2' .- Z_31_2') * (e_2 * g₃²[:])
+# )
+
+# SAT_tilde_3_RHS =  HI_tilde * (
+#         (e_1 * H_1 * (e_1T)) * (T_13_1' .- Z_13_1') * (e_1 * g₁¹[:])
+#     +   (e_1 * H_1 * (e_1T)) * (T_23_1' .- Z_23_1') * (e_1 * g₂¹[:])
+#     +   (e_1 * H_1 * (e_1T)) * (T_33_1' .- Z_33_1') * (e_1 * g₃¹[:])
+#     +   (e_2 * H_2 * (e_2T)) * (T_13_2' .- Z_13_2') * (e_2 * g₁²[:])
+#     +   (e_2 * H_2 * (e_2T)) * (T_23_2' .- Z_23_2') * (e_2 * g₂²[:])
+#     +   (e_2 * H_2 * (e_2T)) * (T_33_2' .- Z_33_2') * (e_2 * g₃²[:])
+# )
+
+# # New formulation for SAT_tilde_RHS version 3
+# SAT_tilde_1_RHS =  HI_tilde * (
+#         (T_11_1' .- Z_11_1') * (e_1 * g₁¹[:])
+#     +   (T_21_1' .- Z_21_1') * (e_1 * g₂¹[:])
+#     +   (T_31_1' .- Z_31_1') * (e_1 * g₃¹[:])
+#     +   (T_11_2' .- Z_11_2') * (e_2 * g₁²[:])
+#     +   (T_21_2' .- Z_21_2') * (e_2 * g₂²[:])
+#     +   (T_31_2' .- Z_31_2') * (e_2 * g₃²[:])
+# )
+
+# SAT_tilde_2_RHS =  HI_tilde * (
+#         (T_12_1' .- Z_12_1') * (e_1 * g₁¹[:])
+#     +   (T_22_1' .- Z_22_1') * (e_1 * g₂¹[:])
+#     +   (T_32_1' .- Z_32_1') * (e_1 * g₃¹[:])
+#     +   (T_12_2' .- Z_12_2') * (e_2 * g₁²[:])
+#     +   (T_22_2' .- Z_22_2') * (e_2 * g₂²[:])
+#     +   (T_32_2' .- Z_31_2') * (e_2 * g₃²[:])
+# )
+
+# SAT_tilde_3_RHS =  HI_tilde * (
+#         (T_13_1' .- Z_13_1') * (e_1 * g₁¹[:])
+#     +   (T_23_1' .- Z_23_1') * (e_1 * g₂¹[:])
+#     +   (T_33_1' .- Z_33_1') * (e_1 * g₃¹[:])
+#     +   (T_13_2' .- Z_13_2') * (e_2 * g₁²[:])
+#     +   (T_23_2' .- Z_23_2') * (e_2 * g₂²[:])
+#     +   (T_33_2' .- Z_33_2') * (e_2 * g₃²[:])
+# )
 
 
 # Assembling LHS of the linear system
