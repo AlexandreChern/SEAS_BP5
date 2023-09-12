@@ -126,7 +126,7 @@ tau_y = 13/hy
 tau_z = 13/hz
 
 
-beta = 1
+beta = -1
 
 
 
