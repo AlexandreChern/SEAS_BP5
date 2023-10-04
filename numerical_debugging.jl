@@ -232,3 +232,7 @@ reshape(SAT_3_RHS, Nx, Ny, Nz)
 
 reshape(SAT_tilde_1_LHS * analy_sol, Nx, Ny, Nz)
 reshape(SAT_tilde_1_RHS, Nx, Ny, Nz)
+
+
+
+# Debugging the SPD of the matrix M

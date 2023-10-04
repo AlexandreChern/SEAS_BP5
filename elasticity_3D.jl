@@ -251,7 +251,7 @@ T_32_1 = 0
 T_33_1 = - μ_v * p_px #* u3_filter
 
 
-## TO DO Fix Z values
+## TO DO Fix Z values it should be of the same size as T values
 Z_11_1 = (d * β / H1x[1]) * (K_v + 4/3 * μ_v + 2 * μ_v) * kron(I_Nz, I_Ny, I_Nx)#* u1_filter
 Z_12_1 = (d * β/ H1x[1]) * (K_v - 2/3 * μ_v + μ_v) * 0 * kron(I_Nz, I_Ny, I_Nx) #* u2_filter
 Z_13_1 = (d * β/ H1x[1]) * (K_v - 2/3 * μ_v + μ_v) * 0 * kron(I_Nz, I_Ny, I_Nx) #* u3_filter
@@ -308,17 +308,31 @@ Z_32_2 = (d * β/ H1x[1]) * (K_v - 2/3 * μ_v + μ_v) * 0 * kron(I_Nz, I_Ny, I_N
 Z_33_2 = (d * β / H1x[1]) * (K_v + 4/3 * μ_v + 2 * μ_v) * kron(I_Nz, I_Ny, I_Nx)#* u3_filter
 
 # # Z version 2
-# Z_11_2 = (d * β / H1x[1]) * (K_v + 4/3 * μ_v + 2 * μ_v) * kron(I_Nz, I_Ny, e_Nx * e_Nx') #* u1_filter
-# Z_12_2 = (d * β/ H1x[1]) * (K_v - 2/3 * μ_v + μ_v) * 0 * kron(I_Nz, I_Ny, e_Nx * e_Nx') #* u2_filter
-# Z_13_2 = (d * β/ H1x[1]) * (K_v - 2/3 * μ_v + μ_v) * 0 * kron(I_Nz, I_Ny, e_Nx * e_Nx') #* u3_filter
 
-# Z_21_2 =  (d * β/ H1x[1]) * (K_v - 2/3 * μ_v + μ_v) * 0 * kron(I_Nz, I_Ny, e_Nx * e_Nx') #* u1_filter
-# Z_22_2 = (d * β / H1x[1]) * (K_v + 4/3 * μ_v + 2 * μ_v) * kron(I_Nz, I_Ny, e_Nx * e_Nx') #* u2_filter
-# Z_23_2 =  (d * β/ H1x[1]) * (K_v - 2/3 * μ_v + μ_v) * 0 * kron(I_Nz, I_Ny, e_Nx * e_Nx') #* u3_filter ## 0 ?
+# Z_11_1 = (d * β / H1x[1]) * (K_v + 4/3 * μ_v + 2 * μ_v) * kron(I_Nz, I_Ny)#* u1_filter
+# Z_12_1 = (d * β/ H1x[1]) * (K_v - 2/3 * μ_v + μ_v) * 0 * kron(I_Nz, I_Ny) #* u2_filter
+# Z_13_1 = (d * β/ H1x[1]) * (K_v - 2/3 * μ_v + μ_v) * 0 * kron(I_Nz, I_Ny) #* u3_filter
 
-# Z_31_2 = (d * β/ H1x[1]) * (K_v - 2/3 * μ_v + μ_v) * 0 * kron(I_Nz, I_Ny, e_Nx * e_Nx') #* u1_filter
-# Z_32_2 = (d * β/ H1x[1]) * (K_v - 2/3 * μ_v + μ_v) * 0 * kron(I_Nz, I_Ny, e_Nx * e_Nx')
-# Z_33_2 = (d * β / H1x[1]) * (K_v + 4/3 * μ_v + 2 * μ_v) * kron(I_Nz, I_Ny, e_Nx * e_Nx')#* u3_filter
+# Z_21_1 =  (d * β/ H1x[1]) * (K_v - 2/3 * μ_v + μ_v) * 0 * kron(I_Nz, I_Ny) #* u1_filter
+# Z_22_1 = (d * β / H1x[1]) * (K_v + 4/3 * μ_v + 2 * μ_v) * kron(I_Nz, I_Ny)#* u2_filter
+# Z_23_1 =  (d * β/ H1x[1]) * (K_v - 2/3 * μ_v + μ_v) * 0 * kron(I_Nz, I_Ny) #* u3_filter ## 0 ?
+
+# Z_31_1 = (d * β/ H1x[1]) * (K_v - 2/3 * μ_v + μ_v) * 0 * kron(I_Nz, I_Ny)#* u1_filter
+# Z_32_1 = (d * β/ H1x[1]) * (K_v - 2/3 * μ_v + μ_v) * 0 * kron(I_Nz, I_Ny)
+# Z_33_1 = (d * β / H1x[1]) * (K_v + 4/3 * μ_v + 2 * μ_v) * kron(I_Nz, I_Ny) #* u3_filter
+
+
+# Z_11_2 = (d * β / H1x[1]) * (K_v + 4/3 * μ_v + 2 * μ_v) * kron(I_Nz, I_Ny) #* u1_filter
+# Z_12_2 = (d * β/ H1x[1]) * (K_v - 2/3 * μ_v + μ_v) * 0 * kron(I_Nz, I_Ny) #* u2_filter
+# Z_13_2 = (d * β/ H1x[1]) * (K_v - 2/3 * μ_v + μ_v) * 0 * kron(I_Nz, I_Ny) #* u3_filter
+
+# Z_21_2 =  (d * β/ H1x[1]) * (K_v - 2/3 * μ_v + μ_v) * 0 * kron(I_Nz, I_Ny) #* u1_filter
+# Z_22_2 = (d * β / H1x[1]) * (K_v + 4/3 * μ_v + 2 * μ_v) * kron(I_Nz, I_Ny) #* u2_filter
+# Z_23_2 =  (d * β/ H1x[1]) * (K_v - 2/3 * μ_v + μ_v) * 0 * kron(I_Nz, I_Ny) #* u3_filter ## 0 ?
+
+# Z_31_2 = (d * β/ H1x[1]) * (K_v - 2/3 * μ_v + μ_v) * 0 * kron(I_Nz, I_Ny) #* u1_filter
+# Z_32_2 = (d * β/ H1x[1]) * (K_v - 2/3 * μ_v + μ_v) * 0 * kron(I_Nz, I_Ny)
+# Z_33_2 = (d * β / H1x[1]) * (K_v + 4/3 * μ_v + 2 * μ_v) * kron(I_Nz, I_Ny) #* u3_filter
 
 
 
