@@ -12,7 +12,7 @@ using Plots
 
 p = 2
 
-level = 3
+level = 2
 
 i = j = k = level
 h_list_x = [1/2^1, 1/2^2, 1/2^3, 1/2^4, 1/2^5, 1/2^6, 1/2^7, 1/2^8,1/2^9,1/2^10]
@@ -625,8 +625,8 @@ source = ( source_u1 + source_u2 + source_u3)
 
 # Assembling boundary data
 # Face 1: Dirichlet
-g₁¹ = u1_End(y,z)
-g₂¹ = u2_End(y,z)
+g₁¹ = -u1_End(y,z)
+g₂¹ = -u2_End(y,z)
 g₃¹ = zeros(Ny,Nz)
 
 # Face 2: Dirichlet
@@ -635,8 +635,8 @@ g₂² = u2_Front(y,z)
 g₃² = zeros(Ny,Nz)
 
 # Face 3: Neumann
-g₁³ = u1_y_Left(x,z) + u2_x_Left(x,z)
-g₂³ = (K_v - 2/3 * μ_v) * u1_x_Left(x,z) + (K_v + 4/3 * μ_v) * u2_y_Left(x,z)
+g₁³ = -(u1_y_Left(x,z) + u2_x_Left(x,z))
+g₂³ = -((K_v - 2/3 * μ_v) * u1_x_Left(x,z) + (K_v + 4/3 * μ_v) * u2_y_Left(x,z))
 g₃³ = zeros(Nx,Nz)
 
 # Face 4: Neumann
@@ -645,9 +645,9 @@ g₂⁴ = (K_v - 2/3 * μ_v) * u1_x_Right(x,z) + (K_v + 4/3 * μ_v) * u2_y_Right
 g₃⁴ = zeros(Nx,Nz)
 
 # Face 5: Neumann
-g₁⁵ = u1_z_Bottom(x,y)
-g₂⁵ = u2_z_Bottom(x,y)
-g₃⁵ = (K_v - 2/3 * μ_v) * (u1_x_Bottom(x,y) + u2_y_Bottom(x,y))
+g₁⁵ = -u1_z_Bottom(x,y)
+g₂⁵ = -u2_z_Bottom(x,y)
+g₃⁵ = -(K_v - 2/3 * μ_v) * (u1_x_Bottom(x,y) + u2_y_Bottom(x,y))
 
 # Face 6: Neumann
 g₁⁶ = u1_z_Top(x,y)
