@@ -236,3 +236,19 @@ reshape(SAT_tilde_1_RHS, Nx, Ny, Nz)
 
 
 # Debugging the SPD of the matrix M
+
+
+p2_px2_result = Matrix(H_tilde * p2_px2)
+Matrix(H_tilde * BS_Front)
+
+H_tilde * End_operator' * HI_1 * End_operator * BS_Front
+
+H_tilde * Front_operator' * HI_1 * Front_operator * BS_End
+
+
+BS_end_result = H_tilde * kron(I_Nz,I_Ny,HIx) * End_operator' * End_operator * BS_End
+BS_front_result = H_tilde * kron(I_Nz,I_Ny,HIx) * Front_operator' * Front_operator * BS_Front
+
+
+BS_end_result'
+BS_front_result'
