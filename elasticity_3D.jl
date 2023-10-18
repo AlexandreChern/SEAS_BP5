@@ -81,27 +81,27 @@ e_Nz = e(N_z + 1,N_z + 1)
 # Needs to redefine the shape to be N^3 by N^3 
 # Size: N^2 by N^2
 H_1 = kron(H1z,H1y)
-HI_1 = kron(HIz,HIy)
+# HI_1 = kron(HIz,HIy)
 
 H_2 = kron(H1z, H1y)
-HI_2 = kron(HIz, HIy)
+# HI_2 = kron(HIz, HIy)
 
 # H and HI operators for Left and Right
 # Size: N^2 by N^2
 H_3 = kron(H1z, H1x)
-HI_3 = kron(HIz, HIx)
+# HI_3 = kron(HIz, HIx)
 
 H_4 = kron(H1z, H1x)
-HI_4 = kron(HIz, HIx)
+# HI_4 = kron(HIz, HIx)
 
 # H and HI operators for Bottom and Top
 # Size: N^2 by N^2
 
 H_5 = kron(H1y, H1x)
-HI_5 = kron(HIy,HIx)
+# HI_5 = kron(HIy,HIx)
 
 H_6 = kron(H1y, H1x)
-HI_6 = kron(HIy,HIx)
+# HI_6 = kron(HIy,HIx)
 
 # BS operators for 6 faces
 # Size: N^3 by N^3
