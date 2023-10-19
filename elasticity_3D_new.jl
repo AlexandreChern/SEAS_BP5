@@ -173,18 +173,18 @@ p2_pxpz_new = kron(D1z,I_Ny,D1x)
 p2_pzpx_new = kron(D1z,I_Ny,D1x)
 
 # Express σ tensors as operators on u vector (u1, u2, u3 stacked)
-sigma_11_new = (K_v - 2/3*μ_v) * (p_px * u1_filter + p_py * u2_filter + p_pz * u3_filter) + 2 * μ_v * p_px * u1_filter
-sigma_12_new = μ_v*(p_py*u1_filter + p_px*u2_filter)
-sigma_13_new = μ_v*(p_pz*u1_filter + p_px*u3_filter)
+sigma_11_new = (K_v - 2/3*μ_v) * (p_px_new * u1_filter + p_py_new * u2_filter + p_pz_new * u3_filter) + 2 * μ_v * p_px_new * u1_filter
+sigma_12_new = μ_v*(p_py_new*u1_filter + p_px_new*u2_filter)
+sigma_13_new = μ_v*(p_pz_new*u1_filter + p_px_new*u3_filter)
 
 
-sigma_21_new = μ_v*(p_px*u2_filter + p_py*u1_filter) 
-sigma_22_new = (K_v - 2/3*μ_v) * (p_px * u1_filter + p_py * u2_filter + p_pz * u3_filter) + 2 * μ_v * p_py * u2_filter
-sigma_23_new = μ_v * (p_pz * u2_filter + p_py * u3_filter)
+sigma_21_new = μ_v*(p_px_new*u2_filter + p_py_new*u1_filter) 
+sigma_22_new = (K_v - 2/3*μ_v) * (p_px_new * u1_filter + p_py_new * u2_filter + p_pz_new * u3_filter) + 2 * μ_v * p_py_new * u2_filter
+sigma_23_new = μ_v * (p_pz_new * u2_filter + p_py_new * u3_filter)
 
-sigma_31_new = μ_v * (p_px * u3_filter + p_pz * u1_filter)
-sigma_32_new = μ_v * (p_py * u3_filter + p_pz * u2_filter)
-sigma_33_new = (K_v - 2/3 * μ_v) * (p_px * u1_filter + p_py * u2_filter + p_pz * u3_filter) + 2 * μ_v * p_pz * u3_filter
+sigma_31_new = μ_v * (p_px_new * u3_filter + p_pz_new * u1_filter)
+sigma_32_new = μ_v * (p_py_new * u3_filter + p_pz_new * u2_filter)
+sigma_33_new = (K_v - 2/3 * μ_v) * (p_px_new * u1_filter + p_py_new * u2_filter + p_pz_new * u3_filter) + 2 * μ_v * p_pz_new * u3_filter
 
 
 # # # Deriving equation for u1 as operators on u vector (u1, u2, u3 stacked)
@@ -197,22 +197,22 @@ sigma_33_new = (K_v - 2/3 * μ_v) * (p_px * u1_filter + p_py * u2_filter + p_pz 
 # u3_operator = p_px * sigma_31 + p_py * sigma_32 + p_pz * sigma_33
 
 # # TO DO: Need to rewrite this part 
-u1_operator_new =  ( (K_v - 2/3 * μ_v) * (p2_px2 * u1_filter + p2_pxpy * u2_filter + p2_pxpz * u3_filter) 
-            + 2 * μ_v * p2_px2 * u1_filter 
-            + μ_v * (p2_py2 * u1_filter + p2_pxpy * u2_filter)
-            + μ_v * (p2_pz2 * u1_filter + p2_pxpz * u3_filter)
+u1_operator_new =  ( (K_v - 2/3 * μ_v) * (p2_px2_new * u1_filter + p2_pxpy_new * u2_filter + p2_pxpz_new * u3_filter) 
+            + 2 * μ_v * p2_px2_new * u1_filter 
+            + μ_v * (p2_py2_new * u1_filter + p2_pxpy_new * u2_filter)
+            + μ_v * (p2_pz2_new * u1_filter + p2_pxpz_new * u3_filter)
 )
 
-u2_operator_new = ( μ_v * (p2_px2 * u2_filter + p2_pxpy * u1_filter)
-            + (K_v - 2/3 * μ_v) * (p2_pxpy * u1_filter + p2_py2 * u2_filter + p2_pypz * u3_filter)
-            + 2 * μ_v * p2_py2 * u2_filter
-            + μ_v * (p2_pz2 * u2_filter + p2_pypz * u3_filter)
+u2_operator_new = ( μ_v * (p2_px2_new * u2_filter + p2_pxpy_new * u1_filter)
+            + (K_v - 2/3 * μ_v) * (p2_pxpy_new * u1_filter + p2_py2_new * u2_filter + p2_pypz_new * u3_filter)
+            + 2 * μ_v * p2_py2_new * u2_filter
+            + μ_v * (p2_pz2_new * u2_filter + p2_pypz_new * u3_filter)
 )
 
-u3_operator_new = ( μ_v * (p2_px2 * u3_filter + p2_pxpz * u1_filter)
-            + μ_v * (p2_py2 * u3_filter + p2_pypz * u2_filter)
-            + (K_v - 2/3 * μ_v) * (p2_pxpz * u1_filter + p2_pypz * u2_filter + p2_pz2 * u3_filter)
-            + 2 * μ_v * p2_pz2 * u3_filter
+u3_operator_new = ( μ_v * (p2_px2_new * u3_filter + p2_pxpz_new * u1_filter)
+            + μ_v * (p2_py2_new * u3_filter + p2_pypz_new * u2_filter)
+            + (K_v - 2/3 * μ_v) * (p2_pxpz_new * u1_filter + p2_pypz_new * u2_filter + p2_pz2_new * u3_filter)
+            + 2 * μ_v * p2_pz2_new * u3_filter
 )
 
 
@@ -262,13 +262,13 @@ T_11_2_new = (K_v + 4/3)  * p_px_hat_new #* u1_filter
 T_12_2_new = (K_v - 2/3 * μ_v) * p_pz_new #* u2_filter # Not quite sure 
 T_13_2_new = (K_v - 2/3 * μ_v) * p_py_new #* u3_filter
 
-T_21_2_new = μ_v * p_px_hat #* u1_filter
-T_22_2_new = μ_v * p_py #* u2_filter
+T_21_2_new = μ_v * p_px_hat_new #* u1_filter
+T_22_2_new = μ_v * p_py_new #* u2_filter
 T_23_2_new = 0
 
 T_31_2_new = μ_v * p_pz_new #* u1_filter
 T_32_2_new = 0
-T_33_2_new = μ_v * p_px_hat #* u3_filter
+T_33_2_new = μ_v * p_px_hat_new #* u3_filter
 
 ## TO DO Fix Z values
 Z_11_2_new = (d * β / H1x[1]) * (K_v + 4/3 * μ_v + 2 * μ_v) * kron(I_Nz, I_Ny, I_Nx) #* u1_filter
@@ -299,7 +299,7 @@ T_23_3_new = - (K_v - 2/3 * μ_v) * p_pz_new #* u3_filter
 
 T_31_3_new = 0
 T_32_3_new = - μ_v * p_pz_new #* u2_filter
-T_33_3_new = μ_v * p_py_hat #* u3_filter
+T_33_3_new = μ_v * p_py_hat_new #* u3_filter
 
 ### Face 4
 e_4 = Right_operator'
@@ -453,11 +453,11 @@ u3_Right_value = Right_operator' * u1_y_Right(x,z)[:]
 
 # # Assembling left hand side
 
-E1 = (u1_filter' * H_tilde * u1_operator)
+E1 = (u1_filter' * H_tilde * u1_operator_new)
 
-E2 = (u2_filter' * H_tilde * u2_operator)
+E2 = (u2_filter' * H_tilde * u2_operator_new)
 
-E3 = (u3_filter' * H_tilde * u3_operator)
+E3 = (u3_filter' * H_tilde * u3_operator_new)
 
 E = ( E1 + E2 + E3)
 
