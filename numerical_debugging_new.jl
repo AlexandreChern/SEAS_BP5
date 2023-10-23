@@ -90,8 +90,40 @@ s58 = reshape((T_23_2' .- Z_23_2') * (HI_2 * e_2 * g₂²[:]), Nx, Ny, Nz)
 s59 = reshape((T_33_2' .- Z_33_2') * (HI_2 * e_2 * (e_2T)) * u3_filter * analy_sol, Nx, Ny, Nz)
 s60 = reshape((T_33_2' .- Z_33_2') * (HI_2 * e_2 * g₃²[:]), Nx, Ny, Nz)
 
-s61 = 
-s62 = 
+# Checking SPD property
 
-s63 = 
-s64 = 
+Matrix(E1)
+sbp_sat_1 = u1_filter' * H_tilde * SAT_1_LHS_new
+sbp_sat_2 = u1_filter' * H_tilde * SAT_tilde_1_LHS_new
+
+Matrix(
+    # sbp_sat_1 
+    # + sbp_sat_2
+    u1_filter' * H_tilde * (
+        (K_v - 2/3 * μ_v) * (p2_px2_new * u1_filter + p2_pxpy_new * u2_filter + p2_pxpz_new * u3_filter)
+        + 2 * μ_v * p2_px2_new * u1_filter  
+        + μ_v * (p2_py2_new * u1_filter + p2_pxpy_new * u2_filter)
+        + μ_v * (p2_pz2_new * u1_filter + p2_pxpz_new * u3_filter)
+    )
+)[end-9:end,end-9:end]
+
+Matrix(E1)[end-9:end,end-9:end]
+
+Matrix(sbp_sat_1)[end-9:end, end-9:end]
+Matrix(sbp_sat_2)[end-9:end, end-9:end]
+
+
+Matrix(H_tilde 
+* (K_v + 4/3 * μ_v) 
+* p2_px2_new)
+
+Matrix(H_tilde *  HI_1 * T_11_1_new')
+
+
+Matrix(H_tilde * (p2_px2_new + HI_1 * p_px_hat_new' ))
+
+Matrix(H_tilde * p2_px2_new)
+Matrix(H_tilde * HI_1 * p_px_hat_new')
+
+
+HI_1 * p_px_hat_new' - p_px_hat_new' * HI_1
