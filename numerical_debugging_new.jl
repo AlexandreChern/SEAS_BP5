@@ -191,81 +191,107 @@ temp4 = HI_tilde * (T_11_1_new' .- Z_11_1_new') * (e_1 * H_1 * (e_1T)) * u1_filt
 @assert temp3 == temp4
 
 
-M_partial_11 = u1_filter' * H_tilde * (
+M_partial_11 = u1_filter' * (
 # p2_px2_new
     (
-        (K_v + 4/3 * μ_v) * p2_px2_new 
+        H_tilde * (K_v + 4/3 * μ_v) * p2_px2_new 
 # p_px_hat_new
-    +   HI_1 * (T_11_1_new') * (e_1 * (e_1T))
-    +   HI_2 * T_11_2_new' * (e_2 * e_2T)
+    +   (T_11_1_new') * (e_1 * H_1 * e_1T)
+    +   (T_11_2_new') * (e_2 * H_2 * e_2T)
     ) * u1_filter
 
 # p2_py2_new
 +   (
-        μ_v * (p2_py2_new ) 
+        H_tilde * μ_v * (p2_py2_new ) 
 # p_py_hat_new
-    +   beta * HI_3 * e_3 * e_3T * T_11_3_new
-    +   beta * HI_4 * e_4 * e_4T * T_11_4_new
+    +   beta * e_3 * H_3 * e_3T * T_11_3_new
+    +   beta * e_4 * H_4 * e_4T * T_11_4_new
     ) * u1_filter
 
 # p2_pz2_new
 +   (
-        μ_v * (p2_pz2_new)
+        H_tilde * μ_v * (p2_pz2_new)
 # p_pz_hat_new
-    +   beta * HI_5 * e_5 * e_5T * T_11_5_new
-    +   beta * HI_6 * e_6 * e_6T * T_11_6_new
+    +   beta * e_5 * H_5 * e_5T * T_11_5_new
+    +   beta * e_6 * H_6 * e_6T * T_11_6_new
     ) * u1_filter
 )
 
 
-M_partial_22 = u2_filter' * H_tilde * (
+M_partial_22 = u2_filter' * (
 # p2_px2_new
     (
-        μ_v * (p2_px2_new)
+        H_tilde * μ_v * (p2_px2_new)
 # p_px_hat_new
-    +   HI_1 * T_21_1_new' * (e_1 * e_1T)
-    +   HI_2 * T_21_2_new' * (e_2 * e_2T)
+    +   T_21_1_new' * (e_1 * H_1 * e_1T)
+    +   T_21_2_new' * (e_2 * H_2 * e_2T)
     ) * u2_filter
 +
 # p2_py2_new
     (
-        (K_v + 4/3 * μ_v) * p2_py2_new
+        H_tilde * (K_v + 4/3 * μ_v) * p2_py2_new
 # p_py_hat_new
-    +   beta * HI_3 * e_3 * e_3T * T_22_3_new
-    +   beta * HI_4 * e_4 * e_4T * T_22_4_new
+    +   beta * e_3 * H_3 * e_3T * T_22_3_new
+    +   beta * e_4 * H_4 * e_4T * T_22_4_new
     )  * u2_filter
 
 # p2_pz2_new
 +   (
-        μ_v * (p2_pz2_new) 
-    +   beta * HI_5 * e_5 * e_5T * T_22_5_new
-    +   beta * HI_6 * e_6 * e_6T * T_22_6_new
+        H_tilde * μ_v * (p2_pz2_new) 
+    +   beta * e_5 * H_5 * e_5T * T_22_5_new
+    +   beta * e_6 * H_6 * e_6T * T_22_6_new
     ) * u2_filter
 )
 
 
-M_partial_33 = u3_filter' * H_tilde * (
+M_partial_33 = u3_filter' * (
 # p2_px2_new
     (
-        μ_v * p2_px2_new 
-    +   HI_1 * T_33_1_new' * e_1 * e_1T
-    +   HI_2 * T_33_2_new' * e_2 * e_2T
+        H_tilde * μ_v * p2_px2_new 
+    +   T_33_1_new' * e_1 * H_1 * e_1T
+    +   T_33_2_new' * e_2 * H_2 * e_2T
     ) * u3_filter
 
 +
 # p2_py2_new
     (
-        μ_v * p2_py2_new
-    +   beta * HI_3 * e_3 * e_3T * T_33_3_new
-    +   beta * HI_4 * e_4 * e_4T * T_33_4_new
+        H_tilde * μ_v * p2_py2_new
+    +   beta * e_3 * H_3 * e_3T * T_33_3_new
+    +   beta * e_4 * H_4 * e_4T * T_33_4_new
     ) * u3_filter
 
 # p2_pz2_new
 +   (
-        (K_v + 4/3 * μ_v) * p2_pz2_new
-    +   beta * HI_5 * e_5 * e_5T * T_33_5_new
-    +   beta * HI_6 * e_6 * e_6T * T_33_6_new
+        H_tilde * (K_v + 4/3 * μ_v) * p2_pz2_new
+    +   beta * e_5 * H_5 * e_5T * T_33_5_new
+    +   beta * e_6 * H_6 * e_6T * T_33_6_new
     ) * u3_filter
 )
 
 
+
+temp1 = (u3_filter' * H_tilde * (
+        (K_v - 2/3 * μ_v) * (p2_pxpz_new * u1_filter + p2_pypz_new * u2_filter + p2_pz2_new * u3_filter)
+    +   2 * μ_v * p2_pz2_new * u3_filter
+    )
+)
+
+temp2 = (u3_filter' * H_tilde * (
+    (K_v + 4/3 * μ_v) * p2_pz2_new
+    ) * u3_filter
+)
+
+temp3 = (u3_filter' * H_tilde * (
+        (K_v - 2/3 * μ_v) * p2_pz2_new
+    +   2 * μ_v * p2_pz2_new 
+    ) * u3_filter
+)
+
+
+function approx(n)
+    if abs(n) ≥ 1e-10:
+        return 1
+    else
+        return 0
+    end
+end
