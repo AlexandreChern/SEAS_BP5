@@ -164,8 +164,8 @@ p2_pz2_new = kron(D2z,I_Ny,I_Nx)
 # crossterms
 
 p2_pypx_new = kron(I_Nz,D1y,D1x) # equivalent to p_py * p_px ? actually true 
-# p2_pxpy_seperate = kron(I_Nz, I_Ny, D1x) * kron(I_Nz, D1y, I_Nx)
-# p2_pypx_seperate = kron(I_Nz, D1y, I_Nx) * kron(I_Nz, I_Ny, D1x)
+p2_pxpy_seperate = kron(I_Nz, I_Ny, D1x) * kron(I_Nz, D1y, I_Nx)
+p2_pypx_seperate = kron(I_Nz, D1y, I_Nx) * kron(I_Nz, I_Ny, D1x)
 # they are equivalent using kronecker mixed product property
 # (A⊗B) * (C⊗D) = (A*C) ⊗ (B*D)
 p2_pxpy_new = kron(I_Nz,D1y,D1x)

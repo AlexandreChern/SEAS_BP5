@@ -306,3 +306,9 @@ p2_pxpy_2D_alt2 = kron(D1y, I_Nx)'  * kron(I_Ny, D1x)
 plot(x,y,p2_pxpy_2D_alt1 * u_test[:], st=:surface)
 plot(x,y,p2_pxpy_2D_alt2 * u_test[:], st=:surface)
 plot(x,y,(p2_pxpy_2D_alt1 + p2_pxpy_2D_alt2) * u_test[:], st=:surface)
+
+
+sum(u1' * H_tilde * p2_pxpy_new * u1)
+sum(u1' * (H_tilde * p2_pxpy_new * u1))
+sum(u1' * (H_tilde * p2_pxpy_alt * u1))
+sum(u1' * (H_tilde * p2_pypx_alt * u1))
