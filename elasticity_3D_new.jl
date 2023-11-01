@@ -12,7 +12,7 @@ using Plots
 
 p = 2
 
-level = 2
+level = 4
 
 i = j = k = level
 h_list_x = [1/2^1, 1/2^2, 1/2^3, 1/2^4, 1/2^5, 1/2^6, 1/2^7, 1/2^8,1/2^9,1/2^10]
@@ -169,7 +169,9 @@ p2_pypx_new = kron(I_Nz,D1y,D1x) # equivalent to p_py * p_px ? actually true
 # they are equivalent using kronecker mixed product property
 # (A⊗B) * (C⊗D) = (A*C) ⊗ (B*D)
 p2_pxpy_new = kron(I_Nz,D1y,D1x)
-
+# alternative form
+p2_pxpy_alt = kron(I_Nz,I_Ny,D1x)' * kron(I_Nz, D1y, I_Nx) 
+p2_pypx_alt = kron(I_Nz, D1y, I_Nx)' * kron(I_Nz,I_Ny,D1x) 
 p2_pzpy_new = kron(D1z,D1y,I_Nx)
 p2_pypz_new = kron(D1z,D1y,I_Nx)
 

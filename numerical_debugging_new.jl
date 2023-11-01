@@ -289,9 +289,20 @@ temp3 = (u3_filter' * H_tilde * (
 
 
 function approx(n)
-    if abs(n) ≥ 1e-10:
+    if abs(n) ≥ 1e-10
         return 1
     else
         return 0
     end
 end
+
+
+p2_pxpy_2D = kron(D1y, D1x)
+u_test = sin.(π.*x .+ π.*y')
+plot(x,y,u_test,st=:surface)
+plot(x,y,p2_pxpy_2D * u_test[:], st=:surface)
+p2_pxpy_2D_alt1 = kron(I_Ny, D1x)' * kron(D1y, I_Ny)
+p2_pxpy_2D_alt2 = kron(D1y, I_Nx)'  * kron(I_Ny, D1x)
+plot(x,y,p2_pxpy_2D_alt1 * u_test[:], st=:surface)
+plot(x,y,p2_pxpy_2D_alt2 * u_test[:], st=:surface)
+plot(x,y,(p2_pxpy_2D_alt1 + p2_pxpy_2D_alt2) * u_test[:], st=:surface)
