@@ -10,7 +10,19 @@ using IterativeSolvers
 using BenchmarkTools
 using Plots
 
-function Assembling_3D_matrices(Nx, Ny, Nz)
+function Assembling_3D_matrices(N_x, N_y, N_z)
+    hx = 1 / N_x
+    hy = 1 / N_y
+    hz = 1 / N_z
+
+    x = collect(range(0,step=hx,1));
+    y = collect(range(0,step=hy,1));
+    z = collect(range(0,step=hz,1));
+
+    Nx = N_x + 1
+    Ny = N_y + 1
+    Nz = N_z + 1
+
     (D1x, HIx, H1x, r1x) = diagonal_sbp_D1(p,N_x,xc=(0,1));
     (D2x, S0x, SNx, HI2x, H2x, r2x) = diagonal_sbp_D2(p,N_x,xc=(0,1));
 
@@ -112,7 +124,6 @@ function Assembling_3D_matrices(Nx, Ny, Nz)
     u3_filter = get_u3(Nx,Ny,Nz)
 
 
-    # analy_sol = zeros(3*Nx*Ny*Nz)
 
 
     # replacing D1x D1y D1z with BSx BSy BSz
@@ -538,7 +549,7 @@ function Assembling_3D_matrices(Nx, Ny, Nz)
 
     # Assembling LHS of the linear system
 
-    M_new = (E + u1_filter' * H_tilde * SAT_1_LHS_new
+    M_new = - (E + u1_filter' * H_tilde * SAT_1_LHS_new
             + u2_filter' * H_tilde * SAT_2_LHS_new 
             + u3_filter' * H_tilde * SAT_3_LHS_new 
             + u1_filter' * H_tilde * SAT_tilde_1_LHS_new 
@@ -546,10 +557,12 @@ function Assembling_3D_matrices(Nx, Ny, Nz)
             + u3_filter' * H_tilde * SAT_tilde_3_LHS_new
         )
 
-    RHS_new = (source + u1_filter' * H_tilde * SAT_1_RHS_new 
+    RHS_new = - (source + u1_filter' * H_tilde * SAT_1_RHS_new 
             + u2_filter' * H_tilde * SAT_2_RHS_new 
             + u3_filter' * H_tilde * SAT_3_RHS_new
             + u1_filter' * H_tilde * SAT_tilde_1_RHS_new 
             + u2_filter' * H_tilde * SAT_tilde_2_RHS_new 
             + u3_filter' * H_tilde * SAT_tilde_3_RHS_new)
+
+    return M_new, RHS_new
 end
