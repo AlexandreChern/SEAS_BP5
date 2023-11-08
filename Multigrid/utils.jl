@@ -1,4 +1,5 @@
 using CUDA
+using Arpack
 
 mutable struct MG_CUDA
     A_mg
@@ -149,4 +150,50 @@ function discretization_error(k)
     +   (CuArray(u3_filter(u_direct_k)) - CuArray(u3_filter(mg_struct_CUDA.u_exact[k])))' 
         * mg_struct_CUDA.H_mg[k] * (CuArray(u3_filter(u_direct_k)) - CuArray(u3_filter(mg_struct_CUDA.u_exact[k])))
     )
+end
+
+
+
+function get_lams(mg_struct_CUDA)
+    # TO DO, get 
+    empty!(mg_struct_CUDA.λ_mins)
+    empty!(mg_struct_CUDA.λ_maxs)
+    # empty!(mg_struct.αs)
+    # empty!(mg_struct.δs)
+    reverse_Amg = reverse(mg_struct_CUDA.A_CPU_mg)
+    if size(reverse_Amg[1])[1] > 289
+        println("The minimal A matrix is too large for λ_min calculation")
+        return 0
+    end
+    for k in eachindex(reverse_Amg)
+        # lam_max, v_max = eigs(reverse_Amg[k], nev=1, which=:LR)
+        # lam_max = real(lam_max[1]) # try different formulations
+        if size(reverse_Amg[k])[1] <= 1089 # nx <= 32
+        # if size(reverse_Amg[k])[1] <= 4225 # nx <= 64 not consistent, sometimes work
+            lam_min, v_min = eigs(reverse_Amg[k], nev=1, which=:SR)
+            lam_min = real(lam_min[1])
+            # @show lam_min
+
+            lam_max, v_max = eigs(reverse_Amg[k], nev=1, which=:LR)
+            lam_max = real(lam_max[1]) # try different formulations
+        else
+            lam_min = mg_struct_CUDA.λ_mins[1] / 4
+            # @show mg_struct_CUDA.λ_mins[1]
+            # @show lam_min
+            if size(reverse_Amg[k])[1] <= 16641
+                lam_max, v_max = eigs(reverse_Amg[k], nev=1, which=:LR)
+                lam_max = real(lam_max[1]) # try different formulations
+            else
+                lam_max = mg_struct_CUDA.λ_maxs[1] + (mg_struct_CUDA.λ_maxs[1] - mg_struct_CUDA.λ_maxs[2]) * 0.6
+            end
+            # @show mg_struct_CUDA.λ_maxs[1]
+        end
+        pushfirst!(mg_struct_CUDA.λ_mins, lam_min)
+        pushfirst!(mg_struct_CUDA.λ_maxs, lam_max)
+        # α = (lam_min + lam_max) / 2
+        # δ = α - 0.99 * lam_min
+        # pushfirst!(mg_struct.αs, α)
+        # pushfirst!(mg_struct.δs, δ)
+    end 
+    # return lam_mins, lam_maxs, αs, δs
 end
