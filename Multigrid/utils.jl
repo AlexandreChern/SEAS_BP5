@@ -94,20 +94,24 @@ function initialize_mg_struct_CUDA(mg_struct_CUDA, nx, ny, nz, n_level)
             hy = 1/ny
             hz = 1/nz
             if k == 1
-                A, b, H_tilde, HI_tilde = Assembling_3D_matrices(nx,ny,nz)
+                A, b, H_tilde, HI_tilde, analy_sol = Assembling_3D_matrices(nx,ny,nz)
                 push!(A_CPU_mg, A)
                 push!(A_mg, CUDA.CUSPARSE.CuSparseMatrixCSR(A))
                 push!(b_mg, CuArray(b))
                 push!(H_mg, CUDA.CUSPARSE.CuSparseMatrixCSR(H_tilde))
                 push!(H_inv_mg, CUDA.CUSPARSE.CuSparseMatrixCSR(HI_tilde))
+                push!(u_exact, analy_sol)
             else
-                A, b, H_tilde, HI_tilde = Assembling_3D_matrices(nx,ny,nz)
+                A, b, H_tilde, HI_tilde, analy_sol = Assembling_3D_matrices(nx,ny,nz)
                 push!(A_CPU_mg, A)
                 push!(A_mg, CUDA.CUSPARSE.CuSparseMatrixCSR(A))
                 push!(b_mg, CuArray(b))
                 push!(H_mg, CUDA.CUSPARSE.CuSparseMatrixCSR(H_tilde))
                 push!(H_inv_mg, CUDA.CUSPARSE.CuSparseMatrixCSR(HI_tilde))
+                push!(u_exact, analy_sol)
             end
+            nx, ny, nz = div(nx,2), div(ny,2), div(nz,2)
+            hx, hy = 2*hx, 2*hy, 2*hz
         end 
     end
     # # struct for mgcg_CUDA
