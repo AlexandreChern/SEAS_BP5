@@ -155,7 +155,7 @@ end
 
 
 function get_lams(mg_struct_CUDA)
-    # TO DO, get 
+    # TODO rewrite the function to get correct interpolation for eigenvalues
     empty!(mg_struct_CUDA.λ_mins)
     empty!(mg_struct_CUDA.λ_maxs)
     # empty!(mg_struct.αs)
