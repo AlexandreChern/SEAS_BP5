@@ -137,7 +137,7 @@ function u1_y_Right(x,z)
 end
 
 function u1_x_Right(x,z)
-    a = π * [cos(π*i + π + π*k) for i ∈ y, k ∈ z] # +1 normal direction
+    a = π * [cos(π*i + π + π*k) for i ∈ x, k ∈ z] # +1 normal direction
     return a 
 end
 
@@ -195,7 +195,7 @@ function u2_y_Right(x,z)
 end
 
 function u2_x_Right(x,z)
-    a = π * [0 for i ∈ y, k ∈ z] # +1 normal direction
+    a = π * [0 for i ∈ x, k ∈ z] # +1 normal direction
     return a 
 end
 

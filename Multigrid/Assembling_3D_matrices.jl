@@ -10,7 +10,7 @@ using IterativeSolvers
 using BenchmarkTools
 using Plots
 
-function Assembling_3D_matrices(N_x, N_y, N_z)
+function Assembling_3D_matrices(N_x, N_y, N_z;p=2)
     hx = 1 / N_x
     hy = 1 / N_y
     hz = 1 / N_z
@@ -564,5 +564,5 @@ function Assembling_3D_matrices(N_x, N_y, N_z)
             + u2_filter' * H_tilde * SAT_tilde_2_RHS_new 
             + u3_filter' * H_tilde * SAT_tilde_3_RHS_new)
 
-    return M_new, RHS_new
+    return M_new, RHS_new, H_tilde, HI_tilde
 end
