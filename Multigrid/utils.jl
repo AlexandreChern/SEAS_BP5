@@ -101,6 +101,9 @@ function initialize_mg_struct_CUDA(mg_struct_CUDA, nx, ny, nz, n_level)
                 push!(b_mg, CuArray(b))
                 push!(H_mg, CUDA.CUSPARSE.CuSparseMatrixCSR(H_tilde))
                 push!(H_inv_mg, CUDA.CUSPARSE.CuSparseMatrixCSR(HI_tilde))
+                push!(f_mg, CuArray(zeros(size(b))))
+                push!(r_mg, CuArray(zeros(size(b))))
+                push!(u_mg, CuArray(zeros(size(b))))
                 push!(u_exact, analy_sol)
             else
                 A, b, H_tilde, HI_tilde, analy_sol = Assembling_3D_matrices(nx,ny,nz)
@@ -109,6 +112,9 @@ function initialize_mg_struct_CUDA(mg_struct_CUDA, nx, ny, nz, n_level)
                 push!(b_mg, CuArray(b))
                 push!(H_mg, CUDA.CUSPARSE.CuSparseMatrixCSR(H_tilde))
                 push!(H_inv_mg, CUDA.CUSPARSE.CuSparseMatrixCSR(HI_tilde))
+                push!(f_mg, CuArray(zeros(size(b))))
+                push!(r_mg, CuArray(zeros(size(b))))
+                push!(u_mg, CuArray(zeros(size(b))))
                 push!(u_exact, analy_sol)
             end
             nx, ny, nz = div(nx,2), div(ny,2), div(nz,2)
@@ -197,4 +203,29 @@ function get_lams(mg_struct_CUDA)
         # pushfirst!(mg_struct.δs, δ)
     end 
     # return lam_mins, lam_maxs, αs, δs
+end
+
+
+function mg_solver_CUDA(mg_struct_CUDA, f_in; 
+                        nx=16, ny=16, nz=16, 
+                        n_levels=3, v1=5, v2=5, v3=5,
+                        tolerance=1e-10,
+                        max_mg_iterations=1, 
+                        use_direct_sol=false,
+                        dynamic_richardson_ω=false)
+    if isempty(mg_struct_CUDA.A_mg)
+        initialize_mg_struct_CUDA(mg_struct_CUDA,nx,ny,nz,n_levels)
+    end
+    clear_urf_CUDA(mg_struct_CUDA)
+
+    mg_struct_CUDA.f_mg[1][:] .= copy(f_in)[:]
+
+    mg_struct_CUDA.r_mg[1][:] .= mg_struct_CUDA.f_mg[1][:] .- mg_struct_CUDA.A_mg[1] * mg_struct_CUDA.u_mg[1]
+    ω_richardson = 2 / (mg_struct_CUDA.λ_mins[1] + mg_struct_CUDA.λ_maxs[1])
+    for i in 1:v1
+        mg_struct_CUDA.u_mg[1][:] .+= ω_richardson * (mg_struct_CUDA.f_mg[1][:] .- mg_struct_CUDA.A_mg[1] * mg_struct_CUDA.u_mg[1][:])
+        mg_struct_CUDA.r_mg[1][:] .= mg_struct_CUDA.f_mg[1][:] .- mg_struct_CUDA.A_mg[1] * mg_struct_CUDA.u_mg[1]
+        @show norm(mg_struct_CUDA.r_mg[1][:])
+    end
+
 end
