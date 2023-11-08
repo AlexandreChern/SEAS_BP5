@@ -99,23 +99,29 @@ function initialize_mg_struct_CUDA(mg_struct_CUDA, nx, ny, nz, n_level)
                 push!(A_CPU_mg, A)
                 push!(A_mg, CUDA.CUSPARSE.CuSparseMatrixCSR(A))
                 push!(b_mg, CuArray(b))
-                push!(H_mg, CUDA.CUSPARSE.CuSparseMatrixCSR(H_tilde))
-                push!(H_inv_mg, CUDA.CUSPARSE.CuSparseMatrixCSR(HI_tilde))
+                push!(H_mg, CUDA.CUSPARSE.CuSparseMatrixCSR(kron(H_tilde, sparse(I,3,3)))) # kron(H_tilde, sparse(I,3,3))
+                push!(H_inv_mg, CUDA.CUSPARSE.CuSparseMatrixCSR(kron(HI_tilde, sparse(I,3,3))))
                 push!(f_mg, CuArray(zeros(size(b))))
                 push!(r_mg, CuArray(zeros(size(b))))
                 push!(u_mg, CuArray(zeros(size(b))))
                 push!(u_exact, analy_sol)
+                push!(prol_fine_mg, CuArray(zeros(size(b))))
+                push!(rest_mg, CUDA.CUSPARSE.CuSparseMatrixCSR(kron(restriction_matrix_v0(nx,ny,nz,div(nx,2),div(ny,2),div(nz,2)),sparse(I,3,3))))
+                push!(prol_mg, CUDA.CUSPARSE.CuSparseMatrixCSR(kron(prolongation_matrix_v0(nx,ny,nz,div(nx,2),div(ny,2),div(nz,2)),sparse(I,3,3))))
             else
                 A, b, H_tilde, HI_tilde, analy_sol = Assembling_3D_matrices(nx,ny,nz)
                 push!(A_CPU_mg, A)
                 push!(A_mg, CUDA.CUSPARSE.CuSparseMatrixCSR(A))
                 push!(b_mg, CuArray(b))
-                push!(H_mg, CUDA.CUSPARSE.CuSparseMatrixCSR(H_tilde))
-                push!(H_inv_mg, CUDA.CUSPARSE.CuSparseMatrixCSR(HI_tilde))
+                push!(H_mg, CUDA.CUSPARSE.CuSparseMatrixCSR(kron(H_tilde, sparse(I,3,3))))
+                push!(H_inv_mg, CUDA.CUSPARSE.CuSparseMatrixCSR(kron(HI_tilde, sparse(I,3,3))))
                 push!(f_mg, CuArray(zeros(size(b))))
                 push!(r_mg, CuArray(zeros(size(b))))
                 push!(u_mg, CuArray(zeros(size(b))))
                 push!(u_exact, analy_sol)
+                push!(prol_fine_mg, CuArray(zeros(size(b))))
+                push!(rest_mg, CUDA.CUSPARSE.CuSparseMatrixCSR(kron(restriction_matrix_v0(nx,ny,nz,div(nx,2),div(ny,2),div(nz,2)),sparse(I,3,3))))
+                push!(prol_mg, CUDA.CUSPARSE.CuSparseMatrixCSR(kron(prolongation_matrix_v0(nx,ny,nz,div(nx,2),div(ny,2),div(nz,2)),sparse(I,3,3))))
             end
             nx, ny, nz = div(nx,2), div(ny,2), div(nz,2)
             hx, hy = 2*hx, 2*hy, 2*hz
@@ -219,13 +225,37 @@ function mg_solver_CUDA(mg_struct_CUDA, f_in;
     clear_urf_CUDA(mg_struct_CUDA)
 
     mg_struct_CUDA.f_mg[1][:] .= copy(f_in)[:]
-
     mg_struct_CUDA.r_mg[1][:] .= mg_struct_CUDA.f_mg[1][:] .- mg_struct_CUDA.A_mg[1] * mg_struct_CUDA.u_mg[1]
-    ω_richardson = 2 / (mg_struct_CUDA.λ_mins[1] + mg_struct_CUDA.λ_maxs[1])
-    for i in 1:v1
-        mg_struct_CUDA.u_mg[1][:] .+= ω_richardson * (mg_struct_CUDA.f_mg[1][:] .- mg_struct_CUDA.A_mg[1] * mg_struct_CUDA.u_mg[1][:])
+
+    mg_iter_count = 0
+
+    if nx < (2^n_levels)
+        println("Number of levels exceeds the possible number.")
+        return 0
+    end
+
+    for iteration_count in 1:max_mg_iterations
+        mg_iter_count += 1
+
+        ω_richardson = 2 / (mg_struct_CUDA.λ_mins[1] + mg_struct_CUDA.λ_maxs[1])
+        for i in 1:v1
+            mg_struct_CUDA.u_mg[1][:] .+= ω_richardson * (mg_struct_CUDA.f_mg[1][:] .- mg_struct_CUDA.A_mg[1] * mg_struct_CUDA.u_mg[1][:])
+            # mg_struct_CUDA.r_mg[1][:] .= mg_struct_CUDA.f_mg[1][:] .- mg_struct_CUDA.A_mg[1] * mg_struct_CUDA.u_mg[1]
+            # @show norm(mg_struct_CUDA.r_mg[1][:])
+        end
+
         mg_struct_CUDA.r_mg[1][:] .= mg_struct_CUDA.f_mg[1][:] .- mg_struct_CUDA.A_mg[1] * mg_struct_CUDA.u_mg[1]
-        @show norm(mg_struct_CUDA.r_mg[1][:])
+
+        for k in 2:n_levels
+            if k == 2
+                mg_struct_CUDA.r_mg[k-1] = mg_struct_CUDA.r_mg[1]
+            else
+                mg_struct_CUDA.r_mg[k-1][:] .= mg_struct_CUDA.f_mg[k-1][:] .- mg_struct_CUDA.A_mg[k-1] * mg_struct_CUDA.u_mg[k-1]
+            end
+
+            mg_struct_CUDA.f_mg[k] .= mg_struct_CUDA.rest_mg[k-1] * mg_struct_CUDA.H_inv_mg[k-1] * mg_struct_CUDA.r_mg[k-1]
+
+        end
     end
 
 end
