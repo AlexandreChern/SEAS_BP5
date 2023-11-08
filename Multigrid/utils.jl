@@ -135,3 +135,18 @@ end
 function u3_filter(u)
     return u[3:3:end]
 end
+
+
+function discretization_error(k)
+    u_direct_k = mg_struct_CUDA.A_CPU_mg[k] \ Array(mg_struct_CUDA.b_mg[k])
+    # extrema((u_direct_k - mg_struct_CUDA.u_exact[k]))
+
+    sqrt(
+        (CuArray(u1_filter(u_direct_k)) - CuArray(u1_filter(mg_struct_CUDA.u_exact[k])))' 
+        * mg_struct_CUDA.H_mg[k] * (CuArray(u1_filter(u_direct_k)) - CuArray(u1_filter(mg_struct_CUDA.u_exact[k])))
+    +   (CuArray(u2_filter(u_direct_k)) - CuArray(u2_filter(mg_struct_CUDA.u_exact[k])))' 
+        * mg_struct_CUDA.H_mg[k] * (CuArray(u2_filter(u_direct_k)) - CuArray(u2_filter(mg_struct_CUDA.u_exact[k])))
+    +   (CuArray(u3_filter(u_direct_k)) - CuArray(u3_filter(mg_struct_CUDA.u_exact[k])))' 
+        * mg_struct_CUDA.H_mg[k] * (CuArray(u3_filter(u_direct_k)) - CuArray(u3_filter(mg_struct_CUDA.u_exact[k])))
+    )
+end
