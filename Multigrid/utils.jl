@@ -122,3 +122,16 @@ function initialize_mg_struct_CUDA(mg_struct_CUDA, nx, ny, nz, n_level)
     # mg_struct_CUDA.z_new_CUDA
     # mg_struct_CUDA.p_CUDA
 end
+
+
+function u1_filter(u)
+    return u[1:3:end]
+end
+
+function u2_filter(u)
+    return u[2:3:end]
+end
+
+function u3_filter(u)
+    return u[3:3:end]
+end
