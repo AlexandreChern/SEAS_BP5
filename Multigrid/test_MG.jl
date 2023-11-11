@@ -13,10 +13,10 @@ get_lams(mg_struct_CUDA)
 
 f_in = mg_struct_CUDA.b_mg[1]
 
-mg_solver_CUDA(mg_struct_CUDA, f_in; max_mg_iterations=5, n_levels=3)
+mg_solver_CUDA(mg_struct_CUDA, f_in; max_mg_iterations=5, n_levels=3, print_results=true, scaling_factor=2)
 
 mg_struct_CUDA.x_CUDA[1] .= 0
-mgcg_CUDA(mg_struct_CUDA,nx=32,ny=32,nz=32,n_levels=4,precond=true,max_cg_iter=10)
+mgcg_CUDA(mg_struct_CUDA,nx=32,ny=32,nz=32,n_levels=4,precond=true,max_mg_iterations=1, max_cg_iter=10)
 
 dot(mg_struct_CUDA.r_CUDA[1],mg_struct_CUDA.r_CUDA[1]) / dot(mg_struct_CUDA.r_CUDA[1], mg_struct_CUDA.A_mg[1] * mg_struct_CUDA.r_CUDA[1])
 

@@ -234,7 +234,8 @@ function mg_solver_CUDA(mg_struct_CUDA, f_in;
                         max_mg_iterations=1, 
                         use_direct_sol=false,
                         dynamic_richardson_Ï‰=false,
-                        print_results=false)
+                        print_results=false,
+                        scaling_factor=1)
     if isempty(mg_struct_CUDA.A_mg)
         initialize_mg_struct_CUDA(mg_struct_CUDA,nx,ny,nz,n_levels)
     end
@@ -274,7 +275,7 @@ function mg_solver_CUDA(mg_struct_CUDA, f_in;
                 mg_struct_CUDA.r_mg[k-1][:] .= mg_struct_CUDA.f_mg[k-1][:] .- mg_struct_CUDA.A_mg[k-1] * mg_struct_CUDA.u_mg[k-1]
             end
 
-            mg_struct_CUDA.f_mg[k] .= mg_struct_CUDA.H_mg[k] * mg_struct_CUDA.rest_mg[k-1] * mg_struct_CUDA.H_inv_mg[k-1] * mg_struct_CUDA.r_mg[k-1]  # ./ 2 to modify the 3D problem
+            mg_struct_CUDA.f_mg[k] .= mg_struct_CUDA.H_mg[k] * mg_struct_CUDA.rest_mg[k-1] * mg_struct_CUDA.H_inv_mg[k-1] * mg_struct_CUDA.r_mg[k-1]  ./ scaling_factor# ./ 2 to modify the 3D problem
 
             if k < n_levels
                 if print_results
@@ -315,8 +316,10 @@ function mg_solver_CUDA(mg_struct_CUDA, f_in;
         end
         mg_struct_CUDA.r_mg[1][:] .= mg_struct_CUDA.f_mg[1][:] .- mg_struct_CUDA.A_mg[1] * mg_struct_CUDA.u_mg[1][:]
 
-        # println("Finish V-cycle")
-        # @show norm(mg_struct_CUDA.r_mg[1][:])
+        if print_results
+            println("Finish V-cycle")
+            @show norm(mg_struct_CUDA.r_mg[1][:])
+        end
     end
 end
 
@@ -333,7 +336,7 @@ function mgcg_CUDA(mg_struct_CUDA;nx=64,ny=64,nz=64,n_levels=3,v1=5,v2=5,v3=5, Ï
     # z_CUDA = CuArray(zeros(nx+1,ny+1))
 
     if precond == true
-        mg_solver_CUDA(mg_struct_CUDA, mg_struct_CUDA.r_CUDA[1], n_levels = n_levels)
+        mg_solver_CUDA(mg_struct_CUDA, mg_struct_CUDA.r_CUDA[1], n_levels = n_levels, max_mg_iterations=max_mg_iterations)
         mg_struct_CUDA.z_CUDA[1] .= mg_struct_CUDA.u_mg[1]
     else
         mg_struct_CUDA.z_CUDA[1][:] .= mg_struct_CUDA.r_CUDA[1][:]
@@ -365,7 +368,7 @@ function mgcg_CUDA(mg_struct_CUDA;nx=64,ny=64,nz=64,n_levels=3,v1=5,v2=5,v3=5, Ï
         end
 
         if precond == true
-            mg_solver_CUDA(mg_struct_CUDA, mg_struct_CUDA.r_new_CUDA[1], n_levels = n_levels)            
+            mg_solver_CUDA(mg_struct_CUDA, mg_struct_CUDA.r_new_CUDA[1], n_levels = n_levels, max_mg_iterations=max_mg_iterations)            
             mg_struct_CUDA.z_new_CUDA[1] .= mg_struct_CUDA.u_mg[1]
         else
             mg_struct_CUDA.z_new_CUDA[1] .= copy(mg_struct_CUDA.r_new_CUDA[1])
