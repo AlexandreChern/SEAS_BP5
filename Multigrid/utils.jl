@@ -233,12 +233,15 @@ function mg_solver_CUDA(mg_struct_CUDA, f_in;
                         tolerance=1e-10,
                         max_mg_iterations=1, 
                         use_direct_sol=false,
-                        dynamic_richardson_ω=false)
+                        dynamic_richardson_ω=false,
+                        print_results=false)
     if isempty(mg_struct_CUDA.A_mg)
         initialize_mg_struct_CUDA(mg_struct_CUDA,nx,ny,nz,n_levels)
     end
     clear_urf_CUDA(mg_struct_CUDA)
-    println("Starting Multigrid V-cycle")
+    if print_results
+        println("Starting Multigrid V-cycle")
+    end
 
     mg_struct_CUDA.f_mg[1][:] .= copy(f_in)[:]
     mg_struct_CUDA.r_mg[1][:] .= mg_struct_CUDA.f_mg[1][:] .- mg_struct_CUDA.A_mg[1] * mg_struct_CUDA.u_mg[1]
@@ -271,10 +274,12 @@ function mg_solver_CUDA(mg_struct_CUDA, f_in;
                 mg_struct_CUDA.r_mg[k-1][:] .= mg_struct_CUDA.f_mg[k-1][:] .- mg_struct_CUDA.A_mg[k-1] * mg_struct_CUDA.u_mg[k-1]
             end
 
-            mg_struct_CUDA.f_mg[k] .= mg_struct_CUDA.H_mg[k] * mg_struct_CUDA.rest_mg[k-1] * mg_struct_CUDA.H_inv_mg[k-1] * mg_struct_CUDA.r_mg[k-1]
+            mg_struct_CUDA.f_mg[k] .= mg_struct_CUDA.H_mg[k] * mg_struct_CUDA.rest_mg[k-1] * mg_struct_CUDA.H_inv_mg[k-1] * mg_struct_CUDA.r_mg[k-1]  # ./ 2 to modify the 3D problem
 
             if k < n_levels
-                println("pre-smoothing")
+                if print_results
+                    println("pre-smoothing")
+                end
                 for i in 1:v1
                     mg_struct_CUDA.u_mg[k][:] .+= ω_richardson * (mg_struct_CUDA.f_mg[k][:] .- mg_struct_CUDA.A_mg[k] * mg_struct_CUDA.u_mg[k][:])
                     mg_struct_CUDA.r_mg[k][:] .= mg_struct_CUDA.f_mg[k][:] .- mg_struct_CUDA.A_mg[k] * mg_struct_CUDA.u_mg[k]
@@ -282,7 +287,9 @@ function mg_solver_CUDA(mg_struct_CUDA, f_in;
                 end
                 mg_struct_CUDA.r_mg[k][:] .= mg_struct_CUDA.f_mg[k][:] .- mg_struct_CUDA.A_mg[k] * mg_struct_CUDA.u_mg[k]
             elseif k == n_levels
-                println("coarsest grid smoothing")
+                if print_results
+                    println("coarsest grid smoothing")
+                end
                 for i in 1:v2
                     mg_struct_CUDA.u_mg[k][:] .+= ω_richardson * (mg_struct_CUDA.f_mg[k][:] .- mg_struct_CUDA.A_mg[k] * mg_struct_CUDA.u_mg[k][:])
                     mg_struct_CUDA.r_mg[k][:] .= mg_struct_CUDA.f_mg[k][:] .- mg_struct_CUDA.A_mg[k] * mg_struct_CUDA.u_mg[k]
@@ -291,7 +298,9 @@ function mg_solver_CUDA(mg_struct_CUDA, f_in;
             end
         end
 
-        println("Post smoothing")
+        if print_results
+            println("Post smoothing")
+        end
 
         for k = n_levels:-1:2
             ω_richardson = 2 / (mg_struct_CUDA.λ_mins[k] + mg_struct_CUDA.λ_maxs[k])
@@ -306,7 +315,7 @@ function mg_solver_CUDA(mg_struct_CUDA, f_in;
         end
         mg_struct_CUDA.r_mg[1][:] .= mg_struct_CUDA.f_mg[1][:] .- mg_struct_CUDA.A_mg[1] * mg_struct_CUDA.u_mg[1][:]
 
-        println("Finish V-cycle")
+        # println("Finish V-cycle")
         # @show norm(mg_struct_CUDA.r_mg[1][:])
     end
 end
