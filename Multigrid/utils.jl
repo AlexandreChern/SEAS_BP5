@@ -6,6 +6,7 @@ mutable struct MG_CUDA
     A_mg
     b_mg
     A_CPU_mg
+    b_CPU_mg
     λ_mins
     λ_maxs
     odata_mg
@@ -32,13 +33,14 @@ mutable struct MG_CUDA
     p_CUDA
 end
 
-mg_struct_CUDA = MG_CUDA([],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[])
+mg_struct_CUDA = MG_CUDA([],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[])
 
 function clear_mg_struct_CUDA(mg_struct_CUDA)
     println("Clearing mg_struct")
     mg_struct_CUDA.A_mg = []
     mg_struct_CUDA.b_mg = []
     mg_struct_CUDA.A_CPU_mg = []
+    mg_struct_CUDA.b_CPU_mg = []
     mg_struct_CUDA.λ_mins = []
     mg_struct_CUDA.λ_maxs = []
     mg_struct_CUDA.odata_mg = []
@@ -79,6 +81,7 @@ function initialize_mg_struct_CUDA(mg_struct_CUDA, nx, ny, nz, n_level)
     A_mg = mg_struct_CUDA.A_mg
     b_mg = mg_struct_CUDA.b_mg
     A_CPU_mg = mg_struct_CUDA.A_CPU_mg
+    b_CPU_mg = mg_struct_CUDA.b_CPU_mg
     odata_mg = mg_struct_CUDA.odata_mg
     H_mg = mg_struct_CUDA.H_mg
     H_inv_mg = mg_struct_CUDA.H_inv_mg
@@ -101,6 +104,7 @@ function initialize_mg_struct_CUDA(mg_struct_CUDA, nx, ny, nz, n_level)
             if k == 1
                 A, b, H_tilde, HI_tilde, analy_sol = Assembling_3D_matrices(nx,ny,nz)
                 push!(A_CPU_mg, A)
+                push!(b_CPU_mg, b)
                 push!(A_mg, CUDA.CUSPARSE.CuSparseMatrixCSR(A))
                 push!(b_mg, CuArray(b))
                 push!(H_mg, CUDA.CUSPARSE.CuSparseMatrixCSR(kron(H_tilde, sparse(I,3,3)))) # kron(H_tilde, sparse(I,3,3))
@@ -116,6 +120,7 @@ function initialize_mg_struct_CUDA(mg_struct_CUDA, nx, ny, nz, n_level)
                 A, b, H_tilde, HI_tilde, analy_sol = Assembling_3D_matrices(nx,ny,nz)
                 push!(A_CPU_mg, A)
                 push!(A_mg, CUDA.CUSPARSE.CuSparseMatrixCSR(A))
+                push!(b_CPU_mg, b)
                 push!(b_mg, CuArray(b))
                 push!(H_mg, CUDA.CUSPARSE.CuSparseMatrixCSR(kron(H_tilde, sparse(I,3,3))))
                 push!(H_inv_mg, CUDA.CUSPARSE.CuSparseMatrixCSR(kron(HI_tilde, sparse(I,3,3))))
