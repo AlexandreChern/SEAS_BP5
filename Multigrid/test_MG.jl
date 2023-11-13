@@ -13,10 +13,10 @@ get_lams(mg_struct_CUDA)
 
 f_in = mg_struct_CUDA.b_mg[1]
 
-mg_solver_CUDA(mg_struct_CUDA, f_in; max_mg_iterations=5, n_levels=3, print_results=true, scaling_factor=4)
+mg_solver_CUDA(mg_struct_CUDA, f_in; max_mg_iterations=5, n_levels=3, print_results=true, scaling_factor=1)
 
 mg_struct_CUDA.x_CUDA[1] .= 0
-mgcg_CUDA(mg_struct_CUDA,nx=32,ny=32,nz=32,n_levels=3,precond=true,max_mg_iterations=1, max_cg_iter=500,scaling_factor=1) # check mgcg implementation! precond=false should give good convergence
+mgcg_CUDA(mg_struct_CUDA,nx=32,ny=32,nz=32,n_levels=2,precond=true,max_mg_iterations=1, max_cg_iter=500,scaling_factor=1) # check mgcg implementation! precond=false should give good convergence
 x_out, history = cg(mg_struct_CUDA.A_mg[1], mg_struct_CUDA.b_mg[1], log=true)
 history.data
 
@@ -78,3 +78,13 @@ source_2h_u1_reshaped = reshape(HI_tilde_2h * u1_filter_MF(source_2h), N_x2h + 1
 
 plot(0:hx_h:1,0:hy_h:1, source_h_u1_reshaped[1,:,:], st=:surface)
 plot(0:hx_2h:1,0:hy_2h:1, source_2h_u1_reshaped[1,:,:], st=:surface)
+
+
+
+mg_struct_CUDA.λ_mins
+mg_struct_CUDA.λ_maxs
+
+extrema(eigvals(Matrix(mg_struct_CUDA.A_CPU_mg[end])))
+extrema(eigvals(Matrix(mg_struct_CUDA.A_CPU_mg[end-1])))
+extrema(eigvals(Matrix(mg_struct_CUDA.A_CPU_mg[end-2])))
+extrema(eigvals(Matrix(mg_struct_CUDA.A_CPU_mg[end-3])))

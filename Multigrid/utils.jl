@@ -204,7 +204,7 @@ function get_lams(mg_struct_CUDA)
             lam_max, v_max = eigs(reverse_Amg[k], nev=1, which=:LR)
             lam_max = real(lam_max[1]) # try different formulations
         else
-            lam_min = mg_struct_CUDA.λ_mins[1] / 4
+            lam_min = mg_struct_CUDA.λ_mins[1] / 7
             # @show mg_struct_CUDA.λ_mins[1]
             # @show lam_min
             if size(reverse_Amg[k])[1] <= 16641
