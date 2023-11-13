@@ -13,10 +13,12 @@ get_lams(mg_struct_CUDA)
 
 f_in = mg_struct_CUDA.b_mg[1]
 
-mg_solver_CUDA(mg_struct_CUDA, f_in; max_mg_iterations=5, n_levels=3, print_results=true, scaling_factor=2)
+mg_solver_CUDA(mg_struct_CUDA, f_in; max_mg_iterations=5, n_levels=3, print_results=true, scaling_factor=4)
 
 mg_struct_CUDA.x_CUDA[1] .= 0
-mgcg_CUDA(mg_struct_CUDA,nx=32,ny=32,nz=32,n_levels=4,precond=true,max_mg_iterations=1, max_cg_iter=10)
+mgcg_CUDA(mg_struct_CUDA,nx=32,ny=32,nz=32,n_levels=3,precond=true,max_mg_iterations=1, max_cg_iter=500,scaling_factor=1) # check mgcg implementation! precond=false should give good convergence
+x_out, history = cg(mg_struct_CUDA.A_mg[1], mg_struct_CUDA.b_mg[1], log=true)
+history.data
 
 dot(mg_struct_CUDA.r_CUDA[1],mg_struct_CUDA.r_CUDA[1]) / dot(mg_struct_CUDA.r_CUDA[1], mg_struct_CUDA.A_mg[1] * mg_struct_CUDA.r_CUDA[1])
 
@@ -31,7 +33,7 @@ mg_struct_CUDA
 
 # exploring interpolation operators
 
-N = 16
+N = 32
 N_xh = N_yh = N_zh = N
 hx_h = 1 / N_xh
 hy_h = 1 / N_yh
@@ -45,8 +47,8 @@ hz_2h = 1 / N_z2h
 
 
 
-M_h, RHS_h, H_tilde_h, HI_tilde_h, analy_sol_h = Assembling_3D_matrices(N_xh, N_yh, N_zh;p=2)
-M_2h, RHS_2h, H_tilde_2h, HI_tilde_2h, analy_sol_2h = Assembling_3D_matrices(N_x2h, N_y2h, N_z2h;p=2)
+M_h, RHS_h, H_tilde_h, HI_tilde_h, analy_sol_h, source_h = Assembling_3D_matrices(N_xh, N_yh, N_zh;p=2)
+M_2h, RHS_2h, H_tilde_2h, HI_tilde_2h, analy_sol_2h, source_2h = Assembling_3D_matrices(N_x2h, N_y2h, N_z2h;p=2)
 
 
 RHS_h_1_reshaped = reshape(u1_filter_MF(RHS_h), N_xh + 1, N_yh + 1, N_zh + 1)
@@ -55,7 +57,7 @@ RHS_2h_1_reshaped = reshape(u1_filter_MF(RHS_2h), N_x2h + 1, N_y2h + 1, N_z2h + 
 
 RHS_h_1_reshaped = reshape(HI_tilde_h * u1_filter_MF(RHS_h), N_xh + 1, N_yh + 1, N_zh + 1)
 RHS_2h_1_reshaped = reshape(HI_tilde_2h * u1_filter_MF(RHS_2h), N_x2h + 1, N_y2h + 1, N_z2h + 1)
-
+[]
 RHS_h_1_reshaped[1,:,:]
 RHS_2h_1_reshaped[1,:,:]
 
@@ -65,5 +67,14 @@ RHS_restricted = H_tilde_2h * rest_h * HI_tilde_h * u1_filter_MF(RHS_h)
 RHS_resricted_reshaped = reshape(RHS_restricted,N_x2h + 1, N_y2h + 1, N_z2h + 1) / 2
 reshape(u1_filter_MF(RHS_2h), N_x2h + 1, N_y2h + 1, N_z2h + 1)
 
-plot(0:hx_h:1,0:hy_h:1, RHS_h_1_reshaped[1,:,:], st=:surface)
-plot(0:hx_2h:1,0:hy_2h:1, RHS_2h_1_reshaped[1,:,:], st=:surface)
+plot(0:hx_h:1,0:hy_h:1, RHS_h_1_reshaped[:,:,1], st=:surface)
+plot(0:hx_2h:1,0:hy_2h:1, RHS_2h_1_reshaped[:,:,1], st=:surface)
+
+
+
+source_h_u1_reshaped = reshape(HI_tilde_h * u1_filter_MF(source_h), N_xh + 1, N_yh + 1, N_zh + 1)
+source_2h_u1_reshaped = reshape(HI_tilde_2h * u1_filter_MF(source_2h), N_x2h + 1, N_y2h + 1, N_z2h + 1)
+
+
+plot(0:hx_h:1,0:hy_h:1, source_h_u1_reshaped[1,:,:], st=:surface)
+plot(0:hx_2h:1,0:hy_2h:1, source_2h_u1_reshaped[1,:,:], st=:surface)
