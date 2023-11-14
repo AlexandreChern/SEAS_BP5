@@ -2,7 +2,7 @@ include("Assembling_3D_matrices.jl")
 include("utils.jl")
 
 clear_mg_struct_CUDA(mg_struct_CUDA)
-initialize_mg_struct_CUDA(mg_struct_CUDA, 64, 64, 64, 6)
+initialize_mg_struct_CUDA(mg_struct_CUDA, 128, 128, 128, 6)
 
 # u_direct_1 = mg_struct_CUDA.A_CPU_mg[1] \ Array(mg_struct_CUDA.b_mg[1])
 # extrema((u_direct_1 - mg_struct_CUDA.u_exact[1]))
@@ -13,10 +13,10 @@ get_lams(mg_struct_CUDA)
 
 f_in = mg_struct_CUDA.b_mg[1]
 
-mg_solver_CUDA(mg_struct_CUDA, nx = 64, ny = 64, nz=64, f_in; max_mg_iterations=2, n_levels=5, v1=10, v2 = 10, v3 = 10, print_results=true, scaling_factor=1, iter_algo_num=1)
+mg_solver_CUDA(mg_struct_CUDA, nx = 64, ny = 64, nz=64, f_in; max_mg_iterations=10, n_levels=2, v1=10, v2 = 100, v3 = 10, print_results=true, scaling_factor=1, iter_algo_num=1)
 
 mg_struct_CUDA.x_CUDA[1] .= 0
-mgcg_CUDA(mg_struct_CUDA,nx=64,ny=64,nz=64,n_levels=5,precond=true,max_mg_iterations=1, v2=10, max_cg_iter=20,scaling_factor=1) # check mgcg implementation! precond=false should give good convergence
+mgcg_CUDA(mg_struct_CUDA,nx=64,ny=64,nz=64,n_levels=6,precond=true,max_mg_iterations=1, v1=5, v2=100, v3=5, max_cg_iter=30,scaling_factor=1) # check mgcg implementation! precond=false should give good convergence
 x_out, history = cg(mg_struct_CUDA.A_mg[1], mg_struct_CUDA.b_mg[1], log=true)
 history.data
 
@@ -27,6 +27,17 @@ dot(mg_struct_CUDA.b_mg[1],mg_struct_CUDA.b_mg[1]) / dot(mg_struct_CUDA.b_mg[1],
 
 mg_struct_CUDA
 
+
+
+############################### N = 128 ######################################
+clear_mg_struct_CUDA(mg_struct_CUDA)
+initialize_mg_struct_CUDA(mg_struct_CUDA, 128, 128, 128, 7)
+get_lams(mg_struct_CUDA)
+
+f_in = mg_struct_CUDA.b_mg[1]
+mg_solver_CUDA(mg_struct_CUDA, nx = 128, ny = 128, nz=128, f_in; max_mg_iterations=10, n_levels=7, v1=10, v2 = 100, v3 = 10, print_results=true, scaling_factor=1, iter_algo_num=1)
+mg_struct_CUDA.x_CUDA[1] .= 0
+mgcg_CUDA(mg_struct_CUDA,nx=128,ny=128,nz=128,n_levels=7,precond=true,max_mg_iterations=1, v1=5, v2=100, v3=5, max_cg_iter=30,scaling_factor=1) 
 
 
 
