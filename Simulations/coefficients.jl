@@ -24,3 +24,7 @@ BP5_coeff = coefficients(
     1000,
     1800
 )
+
+# for this benchmark
+b = BP5_coeff.b0
+

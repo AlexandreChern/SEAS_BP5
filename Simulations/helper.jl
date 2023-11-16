@@ -77,6 +77,11 @@ function h_func(a, b, μ, BP5_coeff::coefficients)
     return π/2 * (μ * b * BP5_coeff.L) / ((b - a)^2 * BP5_coeff.σn)^2
 end
 
+# fault strength
+function F_func(f, Vbold, BP5_coeff::coefficients)
+    return BP5_coeff.σn * f * Vbold / norm(V) 
+end
+
 # test functions 
 let    
     a_func(20,20,BP5_coeff)

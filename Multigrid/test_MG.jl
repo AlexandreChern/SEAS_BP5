@@ -57,6 +57,35 @@ mg_struct_CUDA.x_CUDA[1] .= 0
 mgcg_CUDA(mg_struct_CUDA,nx=256,ny=256,nz=256,n_levels=8,precond=true,max_mg_iterations=1, v1=5, v2=5, v3=5, max_cg_iter=30,scaling_factor=1) 
 
 
+# julia> mgcg_CUDA(mg_struct_CUDA,nx=256,ny=256,nz=256,n_levels=8,precond=true,max_mg_iterations=1, v1=5, v2=5, v3=5, max_cg_iter=30,scaling_factor=1)        
+# using H_tilde^-1                                                                              │·
+# (k, norm_v_initial_norm) = (1, 0.006436951926747335)                                                                                                                                                                                      │·
+# (k, norm_v_initial_norm) = (2, 0.0005254223510206546)                                                                                                                                                                                     │·
+# (k, norm_v_initial_norm) = (3, 0.00012181443910793622)                                                                                                                                                                                    │·
+# (k, norm_v_initial_norm) = (4, 4.9241457128124536e-5)                                                                                                                                                                                     │·
+# (k, norm_v_initial_norm) = (5, 1.6505258274511717e-5)                                                                                                                                                                                     │·
+# (k, norm_v_initial_norm) = (6, 5.1670865098935386e-6)                                                                                                                                                                                     │·
+# (k, norm_v_initial_norm) = (7, 1.6681474624175163e-6)                                                                                                                                                                                     │·
+# (k, norm_v_initial_norm) = (8, 5.167277942923694e-7)                                                                                                                                                                                      │·
+# (k, norm_v_initial_norm) = (9, 1.4793698693336772e-7)                                                                                                                                                                                     │·
+# (k, norm_v_initial_norm) = (10, 4.557867719399852e-8)                                                                                                                                                                                     │·
+# (k, norm_v_initial_norm) = (11, 1.425339878856736e-8) 
+
+# julia> mgcg_CUDA(mg_struct_CUDA,nx=256,ny=256,nz=256,n_levels=8,precond=true,max_mg_iterations=1, v1=5, v2=5, v3=5, max_cg_iter=30,scaling_factor=1)     
+# using constant scaling                                                                                 │·
+# (k, norm_v_initial_norm) = (1, 0.005335368218840409)                                                                                                                                                                                      │·
+# (k, norm_v_initial_norm) = (2, 0.00194702294752371)                                                                                                                                                                                       │·
+# (k, norm_v_initial_norm) = (3, 0.00018189868319323977)                                                                                                                                                                                    │·
+# (k, norm_v_initial_norm) = (4, 6.832784342162066e-5)                                                                                                                                                                                      │·
+# (k, norm_v_initial_norm) = (5, 2.829042376293409e-5)                                                                                                                                                                                      │·
+# (k, norm_v_initial_norm) = (6, 4.4056196113501565e-6)                                                                                                                                                                                     │·
+# (k, norm_v_initial_norm) = (7, 2.460823014646125e-6)                                                                                                                                                                                      │·
+# (k, norm_v_initial_norm) = (8, 7.026687034884572e-7)                                                                                                                                                                                      │·
+# (k, norm_v_initial_norm) = (9, 1.609102149369374e-7)                                                                                                                                                                                      │·
+# (k, norm_v_initial_norm) = (10, 9.305216028187453e-8)                                                                                                                                                                                     │·
+# (k, norm_v_initial_norm) = (11, 3.1782700282913165e-8)                                                                                                                                                                                    │·
+# (k, norm_v_initial_norm) = (12, 9.446818769670756e-9)  
+
 mg_struct_CUDA.A_CPU_mg[1]
 
 
@@ -64,7 +93,7 @@ mg_struct_CUDA.A_CPU_mg[1]
 
 # exploring interpolation operators
 
-N = 32
+N = 64
 N_xh = N_yh = N_zh = N
 hx_h = 1 / N_xh
 hy_h = 1 / N_yh
@@ -106,6 +135,11 @@ plot(0:hx_2h:1,0:hy_2h:1, RHS_2h_1_reshaped[:,:,1], st=:surface)
 source_h_u1_reshaped = reshape(HI_tilde_h * u1_filter_MF(source_h), N_xh + 1, N_yh + 1, N_zh + 1)
 source_2h_u1_reshaped = reshape(HI_tilde_2h * u1_filter_MF(source_2h), N_x2h + 1, N_y2h + 1, N_z2h + 1)
 
+
+source_h_u1_reshaped = reshape(u1_filter_MF(source_h), N_xh + 1, N_yh + 1, N_zh + 1)
+source_2h_u1_reshaped = reshape(u1_filter_MF(source_2h), N_x2h + 1, N_y2h + 1, N_z2h + 1)
+source_h_u1_reshaped[9,:,:]
+source_2h_u1_reshaped[5,:,:]
 
 plot(0:hx_h:1,0:hy_h:1, source_h_u1_reshaped[1,:,:], st=:surface)
 plot(0:hx_2h:1,0:hy_2h:1, source_2h_u1_reshaped[1,:,:], st=:surface)

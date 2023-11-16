@@ -288,6 +288,10 @@ function mg_solver_CUDA(mg_struct_CUDA, f_in;
             end
 
             mg_struct_CUDA.f_mg[k] .= mg_struct_CUDA.H_mg[k] * mg_struct_CUDA.rest_mg[k-1] * mg_struct_CUDA.H_inv_mg[k-1] * mg_struct_CUDA.r_mg[k-1]  ./ scaling_factor# ./ 2 to modify the 3D problem
+            # alternative form test cosntant scaling of 8 better at the beginning
+            # mg_struct_CUDA.f_mg[k] .= 8 * mg_struct_CUDA.rest_mg[k-1] *  mg_struct_CUDA.r_mg[k-1]  ./ scaling_factor# ./ 2 to modify the 3D problem
+            # alternative form test no scaling really bad performance
+            # mg_struct_CUDA.f_mg[k] .= mg_struct_CUDA.rest_mg[k-1] *  mg_struct_CUDA.r_mg[k-1]  ./ scaling_factor# ./ 2 to modify the 3D problem
 
             if k < n_levels
                 if print_results
