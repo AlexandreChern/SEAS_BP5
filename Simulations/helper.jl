@@ -1,13 +1,9 @@
 # Helper functions for BP5-QD and BP5-FD simulations
-const year_seconds = 31556926
-
 using DifferentialEquations
 using Printf
 using Plots
 
-function odefun(dψV, ψδ, p, t)
-    
-end
+
 
 struct coefficients
     # Table 1: Parameter values used in this benchmark problem 
@@ -37,9 +33,9 @@ end
 
 
 
-function f_func(V, θ, a, BP5_coeff::coefficients)
+function f_func(V, θ, a, b, BP5_coeff::coefficients)
     return a * asinh(
-        V / (2 * BP5_coeff.V0) * exp((BP5_coeff.f0 + BP5_coeff.b0 * ln(BP5_coeff.V0 / BP5_coeff.L) ) / a)
+        V / (2 * BP5_coeff.V0) * exp((BP5_coeff.f0 + b * ln(BP5_coeff.V0 / BP5_coeff.L) ) / a) # is b the value b0 in coefficients?
     )
 end
 
@@ -55,4 +51,39 @@ function a_func(x2, x3, BP5_coeff::coefficients)
 end
 
 
-a_func(20,20,BP5_coeff)
+# For BP5-QD, the scalar pre-stress τ⁰ is chosen as the steady-state stress
+function τ0_QD_func(a, b, η, BP5_coeff::coefficients)
+    return BP5_coeff.σn * a * asinh(BP5_coeff.Vinit / (2 * BP5_coeff.V0) * exp((BP5_coeff.f0 + b) / a)) + η * BP5_coeff.Vinit
+end
+
+# For BP5-QD, the scalar pre-stress τ⁰ is chosen as the steady-state stress
+function τ0_FD_func(a, b, BP5_coeff::coefficients)
+    return BP5_coeff.σn * asinh(BP5_coeff.Vinit / (2 * BP5_coeff.V0) * exp((BP5_coeff.f0 + b) / a))
+end
+
+# a higher pre-stress along the x2-direction
+function τi0_FD_func(a, b, δ, τ, BP5_coeff::coefficients)
+    return BP5_coeff.σn * asinh(BP5_coeff.Vinit / (2 * BP5_coeff.V0) * exp((BP5_coeff.f0 + b) / a)) + δ * τ
+end
+
+
+# quasi-static process zone
+function Λ0_func(C, μ, b, BP5_coeff::coefficients)
+    return C * μ * BP5_coeff.L / (b * BP5_coeff.σn)
+end
+
+# nucleation zone
+function h_func(a, b, μ, BP5_coeff::coefficients)
+    return π/2 * (μ * b * BP5_coeff.L) / ((b - a)^2 * BP5_coeff.σn)^2
+end
+
+# test functions 
+let    
+    a_func(20,20,BP5_coeff)
+end
+
+
+# ODE function
+function odefun(dψV, ψδ, p, t)
+    # TO DO
+end

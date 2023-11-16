@@ -1,4 +1,5 @@
 include("helper.jl")
+const year_seconds = 31556926
 
 BP5_coeff = coefficients(
     2670,
@@ -23,6 +24,3 @@ BP5_coeff = coefficients(
     1000,
     1800
 )
-
-
-const year_seconds = 31556926
