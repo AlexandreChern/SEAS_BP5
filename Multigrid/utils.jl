@@ -77,7 +77,7 @@ function clear_urf_CUDA(mg_struct_CUDA)
     end
 end
 
-function initialize_mg_struct_CUDA(mg_struct_CUDA, nx, ny, nz, n_level)
+function initialize_mg_struct_CUDA(mg_struct_CUDA, nx, ny, nz, n_levels)
     A_mg = mg_struct_CUDA.A_mg
     b_mg = mg_struct_CUDA.b_mg
     A_CPU_mg = mg_struct_CUDA.A_CPU_mg
@@ -97,7 +97,7 @@ function initialize_mg_struct_CUDA(mg_struct_CUDA, nx, ny, nz, n_level)
     u_exact = mg_struct_CUDA.u_exact
 
     if isempty(A_mg)
-        for k in 1:n_level
+        for k in 1:n_levels
             hx = 1/nx
             hy = 1/ny
             hz = 1/nz

@@ -42,6 +42,8 @@ mgcg_CUDA(mg_struct_CUDA,nx=128,ny=128,nz=128,n_levels=7,precond=true,max_mg_ite
 mg_struct_CUDA.A_CPU_mg[1]
 
 
+
+############################### N = 256 ######################################
 clear_mg_struct_CUDA(mg_struct_CUDA)
 initialize_mg_struct_CUDA(mg_struct_CUDA, 256, 256, 256, 8)
 get_lams(mg_struct_CUDA)
