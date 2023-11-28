@@ -87,3 +87,24 @@ let
     a_func(20,20,BP5_coeff)
 end
 
+
+# Plot the slip in 2D from BP1 problem
+function plot_slip(S, δNp, yf, stride_time)
+
+    m = length(yf)
+    no_time_steps = size(S.t)
+    slip_final = S.u[end][end]
+    
+    for i = 1:stride_time:no_time_steps[1]
+    
+        slip_t = S.u[i][δNp+1:end] # slip at time t
+        #pyplot()
+        display(plot(slip_t, -yf, xtickfont=font(18),
+        ytickfont=font(18),
+        guidefont=font(18),
+        legendfont=font(18), ylabel="Depth (km)", xlabel="Slip (m)", xlims=(0, slip_final)))
+        sleep(0.1)
+    end
+    
+#nothing
+end

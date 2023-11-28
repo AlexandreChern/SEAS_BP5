@@ -3,23 +3,25 @@ using Printf
 using DelimitedFiles
 using IterativeSolvers
 
+include("coefficients.jl")
+include("helper.jl")
 
 odeparam = (
     reject_step = [false],
-    Vp = Vp,
+    Vp = BP5_coeff.Vp,
     M = M,
-    u = u,
-    u_old = u_old,
+    u = zeros(size(RHS)),
+    u_old = zeros(size(RHS)),
     Δτ = Δτ,
     τ = τ,
     counter = [],
     ge = ge,
-    μshear = μshear,
-    RSa = RSa,
-    RSb = RSb,
-    σn = σn,
-    η = η,
-    RSV0 = RSV0,
+    μshear = BP5_coeff.cs^2 * BP5_coeff.ρ ,
+    RSa = BP5_coeff.a0,
+    RSb = BP5_coeff.b0,
+    σn = BP5_coeff.σn,
+    η = BP5_coeff.cs * BP5_coeff.ρ / 2,
+    RSV0 = BP5_coeff.V0,
     τz0 = τz0,
     RSDc = RSDc,
     RSf0 = RSf0,
