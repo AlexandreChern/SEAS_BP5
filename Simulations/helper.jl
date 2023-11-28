@@ -87,8 +87,3 @@ let
     a_func(20,20,BP5_coeff)
 end
 
-
-# ODE function
-function odefun(dψV, ψδ, p, t)
-    # TO DO
-end
