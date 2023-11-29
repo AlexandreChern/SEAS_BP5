@@ -5,6 +5,7 @@ using IterativeSolvers
 
 include("coefficients.jl")
 include("helper.jl")
+include("domain.jl")
 
 odeparam = (
     reject_step = [false],
@@ -25,8 +26,8 @@ odeparam = (
     τz0 = τz0,
     RSDc = RSDc,
     RSf0 = RSf0,
-    σNP = σNp,
-    N = N
+    N = N_x,
+    δNp = N_x + 1,
 )
 
 struct odeparam_struct
