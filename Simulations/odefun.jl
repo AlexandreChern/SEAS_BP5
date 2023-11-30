@@ -85,7 +85,8 @@ function odefun(dψV, ψδ, p, t)
 
     # # End of unpacking
 
-    # automatically unpacking named tuples
+    # automatically unpacking named tuples p
+    # which is a variable for function odefun
     @unpack_namedtuple p
 
     # If reject return
@@ -110,8 +111,8 @@ function odefun(dψV, ψδ, p, t)
 
     dψ .= 0
     V .= 0
-
     # End setting up dψV and ψδ
+
 
 
 

@@ -72,6 +72,11 @@ coefficients() = coefficients(
     1800                    # tf
 )
 
+# initial state variable over the entire fault
+# x2 
+function θ0_func(Nx, Ny, BP5_coeff::coefficients)
+    return fill(BP5_coeff.L / BP5_coeff.Vinit, Nx * Ny)
+end
 
 # for BP5, b is set to be the constant value b0
 # using b in the variables of the functions below 
@@ -175,6 +180,9 @@ function plot_slip(S, δNp, yf, stride_time)
 #nothing
 end
 
+
+
+########################## Test functions, subjected to changes ################################
 
 
 function test_unpack(p)
