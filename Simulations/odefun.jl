@@ -56,7 +56,7 @@ end
 
 # ODE function
 function odefun(dψV, ψδ, p, t)
-    # unpacking named tuple p 
+    # Unpacking named tuple p 
     reject_step = p.reject_step
     Vp = p.Vp
     Δτ = p.Δτ
@@ -82,17 +82,22 @@ function odefun(dψV, ψδ, p, t)
     u = p.u
     u_old = p.u_old
 
-    # if reject return
+    # End of unpacking
+
+    # If reject return
     if reject_step[1]
         return
     end
+    # End if reject block
 
+    # Solving linear system using iterative methods
     u_iterative, history = cg(M, RHS, log=true);    # solving with non preconditioned cg
                                                     # this can be replaced with MGCG in future 
     @show history.iters
     u[:] .= u_iterative
+    # End of solving 
 
-    # set up ratees of change for state and slip
+    # Setting up ratees of change for state and slip
     dψ = @view ψδ[1:δNp]
     δ = @view ψδ[(1:δNp) .+ δNp]
 
@@ -101,6 +106,11 @@ function odefun(dψV, ψδ, p, t)
 
     dψ .= 0
     V .= 0
+
+    # End setting up dψV and ψδ
+    
+
+
 
 
 

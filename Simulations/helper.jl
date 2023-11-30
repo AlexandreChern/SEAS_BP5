@@ -31,7 +31,9 @@ struct coefficients
     tf      # final simulation time                 1800 years
 end
 
-
+# for BP5, b is set to be the constant value b0
+# using b in the variables of the functions below 
+# to write more modular code easier to maintain
 
 function f_func(V, θ, a, b, BP5_coeff::coefficients)
     return a * asinh(
@@ -101,7 +103,7 @@ end
 
 # update boundary conditions
 function boundary_update!(RHS, bc_Dirichlet, bc_Neumann)
-
+    # TODO
 end
 
 # test functions 

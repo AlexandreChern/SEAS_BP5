@@ -23,7 +23,7 @@ function main()
             0.25,                   # ν
             0.004,                  # a0
             0.04,                   # amax
-            0.03,                   # b0
+            0.03,                   # b0            value for b in this problem
             25,                     # σn
             0.14,                   # L
             1E-9,                   # Vp
@@ -42,6 +42,8 @@ function main()
         )
     end
 
+    # setting b = b0
+    b = BP5_coeff.b0
 
     # setting up ψδ, odefun for ODEProblem()
     dψV = zeros(2 * odeparam.δNp * odeparam.δNp)
