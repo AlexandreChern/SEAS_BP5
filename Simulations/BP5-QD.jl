@@ -42,12 +42,10 @@ function main()
         )
     end
 
-    
 
-
-
-
-    
+    # setting up ψδ, odefun for ODEProblem()
+    dψV = zeros(2 * odeparam.δNp * odeparam.δNp)
+    ψδ = zeros(2 * odeparam.δNp * odeparam.δNp)
 
     
 end

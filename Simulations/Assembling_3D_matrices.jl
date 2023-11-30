@@ -564,5 +564,5 @@ function Assembling_3D_matrices(N_x, N_y, N_z;p=2)
             + u2_filter' * H_tilde * SAT_tilde_2_RHS_new 
             + u3_filter' * H_tilde * SAT_tilde_3_RHS_new)
 
-    return M_new, RHS_new, H_tilde, HI_tilde, analy_sol, source
+    return M_new, RHS_new, H_tilde, HI_tilde, analy_sol, source;
 end

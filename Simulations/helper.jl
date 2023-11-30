@@ -7,7 +7,7 @@ using Plots
 
 struct coefficients
     # Table 1: Parameter values used in this benchmark problem 
-            # variable names                        # recommended values                
+    #        # variable names                        # recommended values                
     ρ       # density                               2670 kg/m³
     cs      # shear wave speed                      3.464 km/s
     ν       # Poisson's ratio                       0.25
@@ -68,7 +68,7 @@ end
 
 
 # quasi-static process zone
-function Λ0_func(C, μ, b, BP5_coeff::coefficients)
+function Λ0_func(C, b, μ, BP5_coeff::coefficients)
     return C * μ * BP5_coeff.L / (b * BP5_coeff.σn)
 end
 
@@ -82,10 +82,32 @@ function F_func(f, Vbold, BP5_coeff::coefficients)
     return BP5_coeff.σn * f * Vbold / norm(V) 
 end
 
-# test functions 
-let    
-    a_func(20,20,BP5_coeff)
+
+# boundary functions
+# Dirichlet boundary conditions
+function bc_Dirichlet(face, Vp, δ, x, t)
+    if face == 1 # check this
+        return (δ ./ 2)
+    elseif face == 2 # check the 
+        return fill(t * Vp / 2, size(x))
+    end  
 end
+
+# Neumann boundary conditions
+function bc_Neumann(face, Vp, δ, x, t)
+    return zeros(size(x))
+end
+
+
+# update boundary conditions
+function boundary_update!(RHS, bc_Dirichlet, bc_Neumann)
+
+end
+
+# test functions 
+# let    
+#     a_func(20,20,BP5_coeff)
+# end
 
 
 # Plot the slip in 2D from BP1 problem

@@ -7,5 +7,8 @@
 
 include("Assembling_3D_matrices.jl")
 
-N_x = N_y = N_z = 256
-M, RHS, H_tilde, HI_tilde, analy_sol, source = Assembling_3D_matrices(N_x, N_y, N_z;p=2);
+N_x = N_y = N_z = 32   # Assuming the same number of grids in each direction
+SBPp = 2                # SBPp order
+M, RHS, H_tilde, HI_tilde, analy_sol, source = Assembling_3D_matrices(N_x, N_y, N_z;p=SBPp);
+
+nothing # avoid printing out results 

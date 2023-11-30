@@ -9,7 +9,7 @@ BP5_coeff = coefficients(
     0.04,                   # amax
     0.03,                   # b0
     25,                     # σn
-    0.14,                   # L
+    0.14,                   # L or Dc 
     1E-9,                   # Vp
     1E-9,                   # Vinit
     1E-6,                   # V0
