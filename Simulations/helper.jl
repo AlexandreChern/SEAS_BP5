@@ -47,6 +47,7 @@ struct coefficients
     tf      # final simulation time                 1800 years
 end
 
+# default constructor
 coefficients() = coefficients(
     2670,                   # ρ
     3.464,                  # cs

@@ -1,6 +1,10 @@
 include("helper.jl")
 const year_seconds = 31556926
 
+# calling parameterized constructor to set values for BP5
+# if BP5_coeff is not defined here, the BP5-QD.jl will 
+# call default constructor to construct BP5_coeff using
+# values in helper.jl (line 51)
 BP5_coeff = coefficients(
     2670,                   # ρ
     3.464,                  # cs
