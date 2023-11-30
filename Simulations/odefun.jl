@@ -56,33 +56,37 @@ end
 
 # ODE function
 function odefun(dψV, ψδ, p, t)
-    # Unpacking named tuple p 
-    reject_step = p.reject_step
-    Vp = p.Vp
-    Δτ = p.Δτ
-    τ = p.τ
-    τ0 = p.τ0
 
-    counter = p.counter
-    μshear = p.μshear
-    RSa = p.RSa
-    RSb = p.RSb
-    σn = p.σn
-    η = p.η
-    RSV0 = p.RSV0
-    RSf0 = p.RSf0
+    # # Unpacking named tuple p 
+    # reject_step = p.reject_step
+    # Vp = p.Vp
+    # Δτ = p.Δτ
+    # τ = p.τ
+    # τ0 = p.τ0
 
-    # domain information
-    N = p.N
-    δNp = p.δNp
+    # counter = p.counter
+    # μshear = p.μshear
+    # RSa = p.RSa
+    # RSb = p.RSb
+    # σn = p.σn
+    # η = p.η
+    # RSV0 = p.RSV0
+    # RSf0 = p.RSf0
+
+    # # domain information
+    # N = p.N
+    # δNp = p.δNp
     
-    # linear system
-    M = p.M
-    RHS = p.RHS
-    u = p.u
-    u_old = p.u_old
+    # # linear system
+    # M = p.M
+    # RHS = p.RHS
+    # u = p.u
+    # u_old = p.u_old
 
-    # End of unpacking
+    # # End of unpacking
+
+    # automatically unpacking named tuples
+    @unpack_namedtuple p
 
     # If reject return
     if reject_step[1]
@@ -108,11 +112,6 @@ function odefun(dψV, ψδ, p, t)
     V .= 0
 
     # End setting up dψV and ψδ
-    
-
-
-
-
 
 
 

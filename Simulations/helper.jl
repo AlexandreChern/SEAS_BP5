@@ -3,6 +3,22 @@ using DifferentialEquations
 using Printf
 using Plots
 
+function _unpack(x::NamedTuple)
+    kk = keys(x)
+    vv = values(x)
+    i = 1
+    for k in kk
+        @eval $k = $vv[$i]
+        i +=1
+    end
+end
+
+
+macro unpack_namedtuple(arg)
+ quote
+    _unpack($arg)
+end |> esc
+end
 
 
 struct coefficients
@@ -131,4 +147,15 @@ function plot_slip(S, δNp, yf, stride_time)
     end
     
 #nothing
+end
+
+
+
+function test_unpack(p)
+    @unpack_namedtuple p
+    @show Vp
+    @show RHS
+    # for i in keys(p)
+    #     @show @eval $(i)
+    # end
 end
