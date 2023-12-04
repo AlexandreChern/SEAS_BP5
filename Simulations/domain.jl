@@ -12,9 +12,14 @@ Nx = N_x + 1
 Ny = N_y + 1
 Nz = N_z + 1
 
-# RS friction region
-fN2 = 40                    # y direction
-fN3 = 100                   # z direction
+# RS friction region test purpose at this moment
+# fN2 and fN3 represents number of points in the fault region
+fN2 = 16
+fN3 = 9
+
+# fNy and fNz represents the indices of the fault region
+fNy = (1, 16)                    # y direction 
+fNz = (2, 10)                   # z direction
 
 SBPp = 2                # SBPp order
 M, RHS, H_tilde, HI_tilde, analy_sol, source = Assembling_3D_matrices(N_x, N_y, N_z;p=SBPp);
@@ -56,9 +61,12 @@ function get_ψ_indices(Nx, Ny, Nz, fNy, fNz)
     y_idx = spzeros(Ny)
     z_idx = spzeros(Nz)
     x_idx[1] = 1 # the fault is on the first face
-    y_idx[fNy[1]:fNy[2]] = 1
-    z_idx[fNz[1]:fNz[2]] = 1
-    return kron(x_idx, y_idx, z_idx)
+    y_idx[fNy[1]:fNy[2]] .= 1
+    z_idx[fNz[1]:fNz[2]] .= 1
+    return kron(z_idx, y_idx, x_idx) # x->y->z is the index order, hence the kron order is z_idx<-y_idx<-x_idx
 end
+
+test_ψ_indices = get_ψ_indices(Nx, Ny, Nz, fNy, fNz);
+reshape(test_ψ_indices.nzind,fN2,fN3)'
 
 nothing # avoid printing out results 
