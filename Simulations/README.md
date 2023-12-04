@@ -8,3 +8,4 @@ or [BP5 problem description](../Notebooks/SEAS_BP5-QD-FD.pdf)
 - ``odefun.jl`` contains formulation for the odefunc to pass to the ``ODEProblem()`` in ``DifferentialEquations.jl``. I am still designing params and odefunc to work with the ``ODEProblem()`` interface.
 - ``domain.jl`` contains information to form the computational domain. Right now it's just a 256 by 256 by 256 grid in 3D
 - ``coefficients.jl`` contains coefficients used in BP5 problem. The values are included in the problem description
+- ``BP5-QD.jl`` contains the main function for the simulation. It is the file that should be run when doing the simulation

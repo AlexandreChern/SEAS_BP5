@@ -103,15 +103,34 @@ function odefun(dψV, ψδ, p, t)
     # End of solving 
 
     # Setting up ratees of change for state and slip
-    dψ = @view ψδ[1:δNp]
-    δ = @view ψδ[(1:δNp) .+ δNp]
 
-    dψ = @view dψV[1:δNp]
-    V = @view dψV[(1:δNp) .+ δNp]
+    # ψ = @view ψδ[1:(fN2 + 1)*(fN3 + 1)]
+    # δ = @view ψδ[(fN2 + 1)*(fN3 + 1) + 1:end]
+
+    # dψ = @view dψV[1:(fN2 + 1)*(fN3 + 1)]
+    # V = @view dψV[(fN2 + 1)*(fN3 + 1) + 1:end]
+
+    dψ, V, ψ, δ = create_view(dψV, ψδ) # creating "views" to get dψ, V, ψ, δ
 
     dψ .= 0
     V .= 0
     # End setting up dψV and ψδ
+
+    # updating values TODO
+    # computate tractions using u: similar to calculation in 
+    # assembling 3D matrices
+
+
+    # do non-linear solve for corresponding slip rate TODO
+    # given traction on the fault and state variables   
+    # check https://github.com/Thrase/Thrase.jl/blob/main/src/odefun.jl
+    
+    # update rate-and-state region
+    # update rate-and-state region using slip rate 
+    # and update the region out of rate-and-state 
+    # using steady state slip rate
+
+
 
 
 

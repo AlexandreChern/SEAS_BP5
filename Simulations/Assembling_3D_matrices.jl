@@ -9,6 +9,8 @@ using LinearAlgebra
 using IterativeSolvers
 using BenchmarkTools
 using Plots
+using SparseArrays
+
 
 function Assembling_3D_matrices(N_x, N_y, N_z;p=2)
     hx = 1 / N_x

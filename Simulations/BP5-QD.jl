@@ -23,9 +23,20 @@ function main()
     # setting b = b0
     b = BP5_coeff.b0
 
-    # setting up ψδ, odefun for ODEProblem()
-    dψV = zeros(2 * odeparam.δNp * odeparam.δNp)
-    ψδ = zeros(2 * odeparam.δNp * odeparam.δNp)
+   
+
+    # calling create_ψVδ to create variables used for odefun, create_ψVδ defined in domain.jl
+    dψV, ψδ = create_ψVδ()
+    # calling create_view to create "views" for dψ, V, ψ, δ, create_view defined in domain.jl
+    dψ, V, ψ, δ = create_view(dψV, ψδ)
+
+    # 
+
+
+
+
+
+
 
     
 end
