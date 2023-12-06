@@ -121,14 +121,26 @@ function get_transition_indices(Nx, Ny, Nz, fNy_VW, fNz_VW, fNy_VW_VS, fNz_VW_VS
     return kron(z_idx, y_idx, x_idx) - get_uniform_indices(Nx, Ny, Nz, fNy_VW, fNz_VW)
 end
 
-test_RS_indices = get_RS_indices(Nx, Ny, Nz, fNy, fNz);
-reshape(test_RS_indices.nzind,fN2,fN3)'
+let 
+    test_RS_indices = get_RS_indices(Nx, Ny, Nz, fNy, fNz);
+    reshape(test_RS_indices.nzind,fN2,fN3)'
 
-test_uniform_indices = get_uniform_indices(Nx, Ny, Nz, fNy_VW, fNz_VW);
-reshape(test_uniform_indices.nzind, fN2_VW, fN3_VW)'
+    test_uniform_indices = get_uniform_indices(Nx, Ny, Nz, fNy_VW, fNz_VW);
+    reshape(test_uniform_indices.nzind, fN2_VW, fN3_VW)'
 
-test_transition_indices = get_transition_indices(Nx, Ny, Nz, fNy_VW, fNz_VW, fNy_VW_VS, fNz_VW_VS)
-test_uniform_indices.nzind
+    test_transition_indices = get_transition_indices(Nx, Ny, Nz, fNy_VW, fNz_VW, fNy_VW_VS, fNz_VW_VS)
+    test_uniform_indices.nzind
 
-reshape((test_transition_indices + test_uniform_indices).nzind, fN2_VW_VS, fN3_VW_VS)'
+    reshape((test_transition_indices + test_uniform_indices).nzind, fN2_VW_VS, fN3_VW_VS)'
+end
+
+RS_filter = get_RS_indices(Nx, Ny, Nz, fNy, fNz)
+VW_filter = get_uniform_indices(Nx, Ny, Nz, fNy_VW, fNz_VW)
+VW_VS_transition_filter = get_transition_indices(Nx, Ny, Nz, fNy_VW, fNz_VW, fNy_VW_VS, fNz_VW_VS)
+VS_filter = RS_filter - VW_filter - VW_VS_transition_filter
+
+# assert these three regions have the total points of the entire rate and state
+# friction region
+@assert length(VW_filter.nzind) + length(VW_VS_transition_filter.nzind) + length(VS_filter.nzind) == fN2 * fN3
+
 nothing # avoid printing out results 
