@@ -67,8 +67,9 @@ M, RHS, H_tilde, HI_tilde, analy_sol, source = Assembling_3D_matrices(N_x, N_y, 
 # size of V: 2 * (N3 + 1) * (N2 + 1)
 # size of δ: 2 * (N3 + 1) * (N2 + 1) 
 # size of dψV = size(dψ) + size(V) = (fN2 + 1) * (fN3 + 1) + 2 * (N3 + 1) * (N2 + 1)
-
 # dψV = zeros((fN2 + 1) * (fN3 + 1) + 2 * (Ny) * (Nz))
+
+# size of ψδ = size(ψ) + size(δ) =  (fN2 + 1) * (fN3 + 1) + 2 * (N3 + 1) * (N2 + 1)
 # ψδ = zeros((fN2 + 1) * (fN3 + 1) + 2 * (Ny) * (Nz))
 
 function create_ψVδ()

@@ -68,7 +68,7 @@ coefficients() = coefficients(
     40,                     # Wf
     100,                    # lf
     12,                     # w
-    1000,                   # Δz
+    1000,                   # Δz in meter, 
     1800                    # tf
 )
 
