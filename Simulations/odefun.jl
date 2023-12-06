@@ -13,8 +13,8 @@ odeparam = (
     M = M,                                          # LHS of the linear system M*u=RHS
     u = zeros(size(RHS)),                           # solution for the linear system 
     u_old = zeros(size(RHS)),                       # solution from the previous step
-    Δτ = zeros(2 * (N_x + 1) * (N_y + 1)),          # store the traction computed
-    τ = zeros(2 * (N_x + 1) * (N_y + 1)),           # shear stress vector \boldsymbol{τ} = [τ; τ_z]
+    Δτb = zeros(2 * (N_x + 1) * (N_y + 1)),          # store the traction computed
+    τb = zeros(2 * (N_x + 1) * (N_y + 1)),           # shear stress vector \boldsymbol{τ} = [τ; τ_z]
     counter = [],                                   # counter for slip with Vmax >= threshold
     RHS = RHS,                                      # RHS of the linear system
     μshear = BP5_coeff.cs^2 * BP5_coeff.ρ ,         # constant?
@@ -87,7 +87,7 @@ function odefun(dψV, ψδ, p, t)
 
     # automatically unpacking named tuples p
     # which is a variable for function odefun
-    @unpack_namedtuple p
+    @unpack_namedtuple p;
 
     # If reject return
     if reject_step[1]
@@ -130,7 +130,15 @@ function odefun(dψV, ψδ, p, t)
     # and update the region out of rate-and-state 
     # using steady state slip rate
 
+    len_τ = div(length(Δτb), 2)
+    Δτ = @view Δτb[1:len_τ] 
+    Δτz = @view Δτb[len_τ+1:end]
 
+    Δτ .= compute_traction_τ() # TODO
+    Δτz .= compute_traction_τz() # TODO
+
+    for i in 1:fN2
+    
 
 
 

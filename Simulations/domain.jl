@@ -62,24 +62,24 @@ M, RHS, H_tilde, HI_tilde, analy_sol, source = Assembling_3D_matrices(N_x, N_y, 
 # setting up dψV, ψδ in odefun for ODEProblem()
 
 # size of ψ, dψ: (rate-and-state portion of the fault): (fN2 + 1) * (fN3 + 1)
-# fN2 + 1 ≈ 41      fN3 + 1 ≈ 101
+# fN2 ≈ 51      fN3 ≈ 41
 
-# size of V: 2 * (N3 + 1) * (N2 + 1)
-# size of δ: 2 * (N3 + 1) * (N2 + 1) 
-# size of dψV = size(dψ) + size(V) = (fN2 + 1) * (fN3 + 1) + 2 * (N3 + 1) * (N2 + 1)
-# dψV = zeros((fN2 + 1) * (fN3 + 1) + 2 * (Ny) * (Nz))
+# size of V: 2 * Ny * Nz
+# size of δ: 2 * Ny * Nz
+# size of dψV = size(dψ) + size(V) = fN2 * fN3 + 2 * N2 * N3
+# dψV = zeros(fN2 * fN3 + 2 * N2 * N3)
 
-# size of ψδ = size(ψ) + size(δ) =  (fN2 + 1) * (fN3 + 1) + 2 * (N3 + 1) * (N2 + 1)
-# ψδ = zeros((fN2 + 1) * (fN3 + 1) + 2 * (Ny) * (Nz))
+# size of ψδ = size(ψ) + size(δ) =  fN2 * fN3 + 2 * N2 * N3
+# ψδ = zeros(fN2 * fN3 + 2 * N2 * N3)
 
 function create_ψVδ()
-    dψV = zeros((fN2 + 1) * (fN3 + 1) + 2 * (Ny) * (Nz))
-    ψδ = zeros((fN2 + 1) * (fN3 + 1) + 2 * (Ny) * (Nz))
+    dψV = zeros(fN2 * fN3 + 2 * (Ny) * (Nz))
+    ψδ = zeros(fN2 * fN3 + 2 * (Ny) * (Nz))
     return dψV, ψδ
 end
 
 function create_view(dψV, ψδ)
-    index_1 = (fN2 + 1)*(fN3 + 1)
+    index_1 = fN2 * fN3
 
     dψ = @view dψV[1:index_1]
     V = @view dψV[index_1 + 1:end]
