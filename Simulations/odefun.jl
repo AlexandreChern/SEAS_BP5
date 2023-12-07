@@ -134,12 +134,22 @@ function odefun(dψV, ψδ, p, t)
     Δτ = @view Δτb[1:len_τ] 
     Δτz = @view Δτb[len_τ+1:end]
 
-    Δτ .= compute_traction_τ() # TODO
-    Δτz .= compute_traction_τz() # TODO
+     Δτz .= compute_traction_τz() # TODO
 
     for i in 1:fN2
-    
+        for j in 1:fN3
+            # TODO
+            # Solve for Vn using newton's method newtbndv in BP1
+            # Use rateandstate function to calculate RS
+            # use the same newtbndv to calculate V
+            index = i + (j - 1) * fN2
+            ψ_index = ψ[index]
 
+        end
+    end
+
+    # TODO 
+    # update V
 
 
 

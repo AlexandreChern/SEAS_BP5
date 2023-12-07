@@ -31,7 +31,17 @@ function main()
     dψ, V, ψ, δ = create_view(dψV, ψδ)
 
     # 
-
+    RSa = zeros(fN2 * fN3)
+    for i in 1:fN2
+        for j in 1:fN3
+            index = i + (j - 1) * fN2
+            x2 = (i - 1) * BP5_coeff.Δz/1000 - BP5_coeff.lf/2
+            x3 = (j - 1) * BP5_coeff.Δz/1000
+            RSa[index] = a_func(x2, x3, BP5_coeff)
+            # RSa[index] = x3
+        end
+    end
+    RSa_reshaped = reshape(RSa, fN2, fN3)'
 
 
 

@@ -9,15 +9,15 @@ function _unpack(x::NamedTuple)
     i = 1
     for k in kk
         @eval $k = $vv[$i]
-        i +=1
+        i += 1
     end
 end
 
 
 macro unpack_namedtuple(arg)
- quote
-    _unpack($arg)
-end |> esc
+    quote
+        _unpack($arg)
+    end |> esc
 end
 
 
@@ -84,21 +84,32 @@ end
 
 function f_func(V, θ, a, b, BP5_coeff::coefficients)
     return a * asinh(
-        V / (2 * BP5_coeff.V0) * exp((BP5_coeff.f0 + b * ln(BP5_coeff.V0 / BP5_coeff.L) ) / a) # is b the value b0 in coefficients?
+        V / (2 * BP5_coeff.V0) * exp((BP5_coeff.f0 + b * ln(BP5_coeff.V0 / BP5_coeff.L)) / a) # is b the value b0 in coefficients?
     )
 end
 
 function a_func(x2, x3, BP5_coeff::coefficients)
     if (BP5_coeff.hs + BP5_coeff.ht ≤ x3 ≤ BP5_coeff.hs + BP5_coeff.ht + BP5_coeff.H) && (abs(x2) ≤ BP5_coeff.l / 2)
         return BP5_coeff.a0
-    elseif (0 ≤ x3 ≤ BP5_coeff.hs) || (BP5_coeff.hs + 2 * BP5_coeff.ht + BP5_coeff.H ≤ x3 ≤ BP5_coeff.Wf)
+    elseif (0 ≤ x3 ≤ BP5_coeff.hs) || (BP5_coeff.hs + 2 * BP5_coeff.ht + BP5_coeff.H ≤ x3 ≤ BP5_coeff.Wf) || (BP5_coeff.l / 2 + BP5_coeff.ht ≤ abs(x2) ≤ BP5_coeff.lf / 2)
         return BP5_coeff.amax
     else
-        r = max(abs(x3 - BP5_coeff.hs - BP5_coeff.ht - BP5_coeff.H/2) - BP5_coeff.H/2, abs(x2) - BP5_coeff.l/2) / BP5_coeff.ht
+        r = max(abs(x3 - BP5_coeff.hs - BP5_coeff.ht - BP5_coeff.H / 2) - BP5_coeff.H / 2, abs(x2) - BP5_coeff.l / 2) / BP5_coeff.ht
         return BP5_coeff.a0 + r * (BP5_coeff.amax - BP5_coeff.a0)
     end
 end
 
+# auxiliary function to determine which region a belongs to
+function a_func_region(x2, x3, BP5_coeff::coefficients)
+    if (BP5_coeff.hs + BP5_coeff.ht ≤ x3 ≤ BP5_coeff.hs + BP5_coeff.ht + BP5_coeff.H) && (abs(x2) ≤ BP5_coeff.l / 2)
+        return 0
+    elseif (0 ≤ x3 ≤ BP5_coeff.hs) || (BP5_coeff.hs + 2 * BP5_coeff.ht + BP5_coeff.H ≤ x3 ≤ BP5_coeff.Wf) || (BP5_coeff.l / 2 + BP5_coeff.ht ≤ abs(x2) ≤ BP5_coeff.lf / 2)
+        return 2
+    else
+        r = max(abs(x3 - BP5_coeff.hs - BP5_coeff.ht - BP5_coeff.H / 2) - BP5_coeff.H / 2, abs(x2) - BP5_coeff.l / 2) / BP5_coeff.ht
+        return 1
+    end
+end
 
 # For BP5-QD, the scalar pre-stress τ⁰ is chosen as the steady-state stress
 function τ0_QD_func(a, b, η, BP5_coeff::coefficients)
@@ -123,12 +134,12 @@ end
 
 # nucleation zone
 function h_func(a, b, μ, BP5_coeff::coefficients)
-    return π/2 * (μ * b * BP5_coeff.L) / ((b - a)^2 * BP5_coeff.σn)^2
+    return π / 2 * (μ * b * BP5_coeff.L) / ((b - a)^2 * BP5_coeff.σn)^2
 end
 
 # fault strength
 function F_func(f, Vbold, BP5_coeff::coefficients)
-    return BP5_coeff.σn * f * Vbold / norm(V) 
+    return BP5_coeff.σn * f * Vbold / norm(V)
 end
 
 
@@ -139,7 +150,7 @@ function bc_Dirichlet(face, Vp, δ, x, t)
         return (δ ./ 2)
     elseif face == 2 # check the 
         return fill(t * Vp / 2, size(x))
-    end  
+    end
 end
 
 # Neumann boundary conditions
@@ -158,6 +169,54 @@ end
 #     a_func(20,20,BP5_coeff)
 # end
 
+# rate and state function scalar values
+function rateandstate(V, psi, σn, ϕ, η, a, V0)
+    Y = (1 ./ (2 .* V0)) .* exp.(psi ./ a)
+    f = a .* asinh.(V .* Y)
+    dfdV = a .* (1 ./ sqrt.(1 + (V .* Y) .^ 2)) .* Y
+
+    g = σn .* f + η .* V - ϕ
+    dgdV = σn .* dfdV + η
+    (g, dgdV)
+end
+
+# newtom method for solving V
+function newtbndv(func, xL, xR, x; ftol=1e-6, maxiter=500, minchange=0,
+    atolx=1e-4, rtolx=1e-4)
+    (fL, _) = func(xL)
+    (fR, _) = func(xR)
+    if fL .* fR > 0
+        return (typeof(x)(NaN), typeof(x)(NaN), -maxiter)
+    end
+
+    (f, df) = func(x)
+    dxlr = xR - xL
+
+    for iter = 1:maxiter
+        dx = -f / df
+        x = x + dx
+
+        if x < xL || x > xR || abs(dx) / dxlr < minchange
+            x = (xR + xL) / 2
+            dx = (xR - xL) / 2
+        end
+
+        (f, df) = func(x)
+
+        if f * fL > 0
+            (fL, xL) = (f, x)
+        else
+            (fR, xR) = (f, x)
+        end
+        dxlr = xR - xL
+
+        if abs(f) < ftol && abs(dx) < atolx + rtolx * (abs(dx) + abs(x))
+            return (x, f, iter)
+        end
+    end
+    return (x, f, -maxiter)
+end
+
 
 # Plot the slip in 2D from BP1 problem
 function plot_slip(S, δNp, yf, stride_time)
@@ -165,19 +224,19 @@ function plot_slip(S, δNp, yf, stride_time)
     m = length(yf)
     no_time_steps = size(S.t)
     slip_final = S.u[end][end]
-    
+
     for i = 1:stride_time:no_time_steps[1]
-    
+
         slip_t = S.u[i][δNp+1:end] # slip at time t
         #pyplot()
         display(plot(slip_t, -yf, xtickfont=font(18),
-        ytickfont=font(18),
-        guidefont=font(18),
-        legendfont=font(18), ylabel="Depth (km)", xlabel="Slip (m)", xlims=(0, slip_final)))
+            ytickfont=font(18),
+            guidefont=font(18),
+            legendfont=font(18), ylabel="Depth (km)", xlabel="Slip (m)", xlims=(0, slip_final)))
         sleep(0.1)
     end
-    
-#nothing
+
+    #nothing
 end
 
 
