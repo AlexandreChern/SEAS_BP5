@@ -66,9 +66,12 @@ fNz_VW_VS = (fNz_VW_VS_start, fNz_VW_VS_start + fN3_VW_VS - 1)
 
 # Assembling matrices for 3D SBP-SAT
 SBPp = 2                # SBPp order
-M, RHS, H_tilde, HI_tilde, analy_sol, source, traction_operators = Assembling_3D_matrices(N_x, N_y, N_z;p=SBPp);
+M, RHS, H_tilde, HI_tilde, analy_sol, source, traction_operators, u_filters, End_operator, sigmas = Assembling_3D_matrices(N_x, N_y, N_z;p=SBPp);
 
-
+sigma_11 = sigmas[1]
+sigma_21 = sigmas[2]
+sigma_31 = sigmas[3]
+ 
 # setting up dψV, ψδ in odefun for ODEProblem()
 
 # size of ψ, dψ: (rate-and-state portion of the fault): (fN2 + 1) * (fN3 + 1)
@@ -110,6 +113,14 @@ function get_RS_indices(Nx, Ny, Nz, fNy, fNz)
     y_idx[fNy[1]:fNy[2]] .= 1
     z_idx[fNz[1]:fNz[2]] .= 1
     return kron(z_idx, y_idx, x_idx) # x->y->z is the index order, hence the kron order is z_idx<-y_idx<-x_idx
+end
+
+function get_RS_indices_2D(Ny, Nz, fNy, fNz)
+    y_idx = spzeros(Ny)
+    z_idx = spzeros(Nz)
+    y_idx[fNy[1]:fNy[2]] .= 1
+    z_idx[fNz[1]:fNz[2]] .= 1
+    return kron(z_idx, y_idx)
 end
 
 function get_uniform_indices(Nx, Ny, Nz, fNy_VW, fNz_VW)
@@ -156,6 +167,7 @@ let
 end
 
 RS_filter = get_RS_indices(Nx, Ny, Nz, fNy, fNz)
+RS_filter_2D = get_RS_indices_2D(Ny, Nz, fNy, fNz)
 VW_filter = get_uniform_indices(Nx, Ny, Nz, fNy_VW, fNz_VW)
 VW_favorite_filter = get_favorite_indices(Nx, Ny, Nz, fNy_VW_favorite, fNz_VW)
 VW_VS_transition_filter = get_transition_indices(Nx, Ny, Nz, fNy_VW, fNz_VW, fNy_VW_VS, fNz_VW_VS)
