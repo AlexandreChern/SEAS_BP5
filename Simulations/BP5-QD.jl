@@ -38,15 +38,9 @@ function main()
             x2 = (i - 1) * BP5_coeff.Δz/1000 - BP5_coeff.lf/2
             x3 = (j - 1) * BP5_coeff.Δz/1000
             RSa[index] = a_func(x2, x3, BP5_coeff)
-            # RSa[index] = x3
         end
     end
     RSa_reshaped = reshape(RSa, fN2, fN3)'
-
-
-
-
-
 
     
 end
