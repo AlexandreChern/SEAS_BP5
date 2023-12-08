@@ -11,6 +11,7 @@ odeparam = (
     reject_step = [false],                          # to reject a step or not
     Vp = BP5_coeff.Vp,                              # plate rate
     M = M,                                          # LHS of the linear system M*u=RHS
+    M_GPU = M_GPU,                                  # GPU array of the LHS system
     u = zeros(size(RHS)),                           # solution for the linear system 
     u_old = zeros(size(RHS)),                       # solution from the previous step
     Δτb = zeros(2 * (N_x + 1) * (N_y + 1)),          # store the traction computed
@@ -96,10 +97,10 @@ function odefun(dψV, ψδ, p, t)
     # End if reject block
 
     # Solving linear system using iterative methods
-    u_iterative, history = cg(M, RHS, log=true);    # solving with non preconditioned cg
+    u_iterative, history = cg(M_GPU, CuArray(RHS), log=true);    # solving with non preconditioned cg
                                                     # this can be replaced with MGCG in future 
     @show history.iters
-    u[:] .= u_iterative
+    u[:] .= Array(u_iterative)
     # End of solving 
 
     # Setting up ratees of change for state and slip
