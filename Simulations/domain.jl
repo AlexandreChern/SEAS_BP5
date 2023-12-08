@@ -164,9 +164,9 @@ let
 
     test_transition_indices = get_transition_indices(Nx, Ny, Nz, fNy_VW, fNz_VW, fNy_VW_VS, fNz_VW_VS)
     test_uniform_indices.nzind
-    reshape(test_transition_indices.nzind, fN2_VW_VS, fN3_VW_VS)'
+    # reshape(test_transition_indices.nzind, fN2_VW_VS, fN3_VW_VS)'
 
-    # reshape((test_transition_indices + test_uniform_indices).nzind, fN2_VW_VS, fN3_VW_VS)'
+    reshape((test_transition_indices + test_uniform_indices).nzind, fN2_VW_VS, fN3_VW_VS)'
 end
 
 RS_filter = get_RS_indices(Nx, Ny, Nz, fNy, fNz)
