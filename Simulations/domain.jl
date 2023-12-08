@@ -50,7 +50,7 @@ fNz_VW = (fNz_VW_start, fNz_VW_start + fN3_VW - 1)
 
 
 # VW-VS transition region
-fN2_VW_VS = (BP5_coeff.l /2 + BP5_coeff.ht) / (BP5_coeff.Δz / 1000) 
+fN2_VW_VS = (BP5_coeff.l + 2 * BP5_coeff.ht) / (BP5_coeff.Δz / 1000) + 1
 fN2_VW_VS = round(Int, fN2_VW_VS, RoundUp)
 
 fN3_VW_VS = (BP5_coeff.H + BP5_coeff.ht * 2) / (BP5_coeff.Δz / 1000) + 1
@@ -141,6 +141,7 @@ function get_transition_indices(Nx, Ny, Nz, fNy_VW, fNz_VW, fNy_VW_VS, fNz_VW_VS
     x_idx[1] = 1 # the fault is on the first face
     y_idx[fNy_VW_VS[1]:fNy_VW_VS[2]] .= 1
     z_idx[fNz_VW_VS[1]:fNz_VW_VS[2]] .= 1
+    # return kron(z_idx, y_idx, x_idx)
     return kron(z_idx, y_idx, x_idx) - get_uniform_indices(Nx, Ny, Nz, fNy_VW, fNz_VW)
 end
 
@@ -163,8 +164,9 @@ let
 
     test_transition_indices = get_transition_indices(Nx, Ny, Nz, fNy_VW, fNz_VW, fNy_VW_VS, fNz_VW_VS)
     test_uniform_indices.nzind
+    reshape(test_transition_indices.nzind, fN2_VW_VS, fN3_VW_VS)'
 
-    reshape((test_transition_indices + test_uniform_indices).nzind, fN2_VW_VS, fN3_VW_VS)'
+    # reshape((test_transition_indices + test_uniform_indices).nzind, fN2_VW_VS, fN3_VW_VS)'
 end
 
 RS_filter = get_RS_indices(Nx, Ny, Nz, fNy, fNz)
