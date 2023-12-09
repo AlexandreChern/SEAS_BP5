@@ -346,7 +346,7 @@ function mg_solver_CUDA(mg_struct_CUDA, f_in;
 end
 
 
-function mgcg_CUDA(mg_struct_CUDA;nx=64,ny=64,nz=64,n_levels=3,v1=5,v2=5,v3=5, ω=1.0, ω_richardson=2/1000, max_cg_iter=10, max_mg_iterations=1,iter_algo_num=3, precond=true,dynamic_richardson_ω=false,scaling_factor=1)
+function mgcg_CUDA(mg_struct_CUDA;nx=64,ny=64,nz=64,n_levels=3,v1=5,v2=5,v3=5, ω=1.0, ω_richardson=2/1000, max_cg_iter=10, max_mg_iterations=1,iter_algo_num=3, precond=true,dynamic_richardson_ω=false,scaling_factor=1, print_results=false, rel_tol=sqrt(eps(Float64)))
     if nx != mg_struct_CUDA.lnx_mg[1]
         clear_mg_struct_CUDA(mg_struct_CUDA)
         initialize_mg_struct_CUDA(mg_struct_CUDA, nx, ny, nz, n_levels = n_levels)
@@ -354,7 +354,8 @@ function mgcg_CUDA(mg_struct_CUDA;nx=64,ny=64,nz=64,n_levels=3,v1=5,v2=5,v3=5, �
    
     mg_struct_CUDA.r_CUDA[1][:] .= mg_struct_CUDA.b_mg[1][:] .- mg_struct_CUDA.A_mg[1] * mg_struct_CUDA.x_CUDA[1][:]
 
-    init_rms = norm(mg_struct_CUDA.r_CUDA[1])
+    # init_rms = norm(mg_struct_CUDA.r_CUDA[1])
+    init_rms = norm(mg_struct_CUDA.b_mg[1][:])
     # z_CUDA = CuArray(zeros(nx+1,ny+1))
 
     if precond == true
@@ -385,12 +386,13 @@ function mgcg_CUDA(mg_struct_CUDA;nx=64,ny=64,nz=64,n_levels=3,v1=5,v2=5,v3=5, �
 
         norm_v_initial_norm = norm(mg_struct_CUDA.r_new_CUDA[1]) / init_rms
 
-        @show k, norm_v_initial_norm
-
+        if print_results
+            @show k, norm_v_initial_norm
+        end
         # println("")
 
         # if norm(mg_struct_CUDA.r_new_CUDA[1]) < 1e-8 * init_rms
-        if norm(mg_struct_CUDA.r_new_CUDA[1]) ≤ sqrt(eps(Float64)) * init_rms
+        if norm(mg_struct_CUDA.r_new_CUDA[1]) ≤ rel_tol * init_rms
             break
         end
 

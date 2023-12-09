@@ -41,6 +41,10 @@ mgcg_CUDA(mg_struct_CUDA,nx=128,ny=128,nz=128,n_levels=7,precond=true,max_mg_ite
 
 mg_struct_CUDA.A_CPU_mg[1]
 
+@benchmark for _ in 1:1
+    mg_struct_CUDA.x_CUDA[1] .= 0
+    mgcg_CUDA(mg_struct_CUDA,nx=128,ny=128,nz=128,n_levels=7,precond=true,max_mg_iterations=1, v1=5, v2=100, v3=5, max_cg_iter=30,scaling_factor=1, rel_tol=1e-7) 
+end
 
 
 ############################### N = 256 ######################################
