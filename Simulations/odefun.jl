@@ -155,9 +155,13 @@ function odefun(dψV, ψδ, p, t)
             V2_index = V[2 * index - 1]
             V3_index = V[2 * index]
             V_abs = sqrt(V2_index^2 + V3_index^2)
-            obj_rs(V) = rateandstate(V, ψn, σn, τn, η, an, RSV0)
-            (Vn, _, iter) = newtbndv(obj_rs, VL, VR, Vn; ftol = 1e-9,
-                                 atolx = 1e-9, rtolx = 1e-9)
+            # obj_rs(V) = rateandstate(V, ψn, σn, τn, η, an, RSV0)
+            # (Vn, _, iter) = newtbndv(obj_rs, VL, VR, Vn; ftol = 1e-9,
+            #                      atolx = 1e-9, rtolx = 1e-9)
+
+            obj_rs(V2, V3) = rateandstate(V2_index, V3_index, ψ_index, σn, τ, τz, η, an, RSV0)
+            (Vn2, Vn3, f, g, iter) = newtbndv(obj_rs, Vn1, Vn2; ftol = 1e-12,
+                            atolx = 1e-12, rtolx = 1e-12)
         end
     end
 

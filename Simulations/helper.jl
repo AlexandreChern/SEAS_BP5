@@ -169,52 +169,109 @@ end
 #     a_func(20,20,BP5_coeff)
 # end
 
-# rate and state function scalar values
-function rateandstate(V, psi, σn, ϕ, η, a, V0)
+# # rate and state function scalar values
+# function rateandstate(V, psi, σn, ϕ, η, a, V0)
+#     Y = (1 ./ (2 .* V0)) .* exp.(psi ./ a)
+#     f = a .* asinh.(V .* Y)
+#     dfdV = a .* (1 ./ sqrt.(1 + (V .* Y) .^ 2)) .* Y
+
+#     g = σn .* f + η .* V - ϕ
+#     dgdV = σn .* dfdV + η
+#     (g, dgdV)
+# end
+
+# # newtom method for solving V
+# function newtbndv(func, xL, xR, x; ftol=1e-6, maxiter=500, minchange=0,
+#     atolx=1e-4, rtolx=1e-4)
+#     (fL, _) = func(xL)
+#     (fR, _) = func(xR)
+#     if fL .* fR > 0
+#         return (typeof(x)(NaN), typeof(x)(NaN), -maxiter)
+#     end
+
+#     (f, df) = func(x)
+#     dxlr = xR - xL
+
+#     for iter = 1:maxiter
+#         dx = -f / df
+#         x = x + dx
+
+#         if x < xL || x > xR || abs(dx) / dxlr < minchange
+#             x = (xR + xL) / 2
+#             dx = (xR - xL) / 2
+#         end
+
+#         (f, df) = func(x)
+
+#         if f * fL > 0
+#             (fL, xL) = (f, x)
+#         else
+#             (fR, xR) = (f, x)
+#         end
+#         dxlr = xR - xL
+
+#         if abs(f) < ftol && abs(dx) < atolx + rtolx * (abs(dx) + abs(x))
+#             return (x, f, iter)
+#         end
+#     end
+#     return (x, f, -maxiter)
+# end
+
+
+function rateandstate(V2, V3, psi, σn, τ2, τ3, η, a, V0)
+
+    V = sqrt(V2^2 + V3^2)
+    dV_dV2 = 0.5*(V2^2 + V3^2)^(-0.5) .* 2 .* V2
+    dV_dV3 = 0.5*(V2^2 + V3^2)^(-0.5) .* 2 .* V3
+    
     Y = (1 ./ (2 .* V0)) .* exp.(psi ./ a)
-    f = a .* asinh.(V .* Y)
-    dfdV = a .* (1 ./ sqrt.(1 + (V .* Y) .^ 2)) .* Y
+    f = a .* asinh.(V .* Y)  # compute friction coefficient 
+    df_dV2  = a .* (1 ./ sqrt.(1 + (V .* Y).^2)) .* (dV_dV2 .* Y)  # derivative wrt V_2
+    df_dV3  = a .* (1 ./ sqrt.(1 + (V .* Y).^2)) .* (dV_dV3 .* Y)  # derivative wrt V_2
 
-    g = σn .* f + η .* V - ϕ
-    dgdV = σn .* dfdV + η
-    (g, dgdV)
+    g1 = σn .* f .* V2 / V   + η .* V2 - τ2
+    g2 = σn .* f .* V3 / V   + η .* V3 - τ3
+   
+
+    A2 = V2/V
+    A3 = V3/V
+
+    dA2_dV2 = (V - V2*dV_dV2)/V^2
+    dA2_dV3 = (-V2*dV_dV3)/V^2
+    dA3_dV2 = (-V3*dV_dV2)/V^2
+    dA3_dV3 = (V - V3*dV_dV3)/V^2
+
+    dg1_dV2 = σn .* (df_dV2 .* V2 / V + f .* dA2_dV2) + η
+    dg1_dV3 = σn .* (df_dV3 .* V2 / V + f .* dA2_dV3)
+
+    dg2_dV2 = σn .* (df_dV2 .* V3 / V + f .* dA3_dV2) 
+    dg2_dV3 = σn .* (df_dV3 .* V3 / V + f .* dA3_dV3) + η 
+
+    return (g1, g2, dg1_dV2, dg1_dV3, dg2_dV2, dg2_dV3)
 end
+  
 
-# newtom method for solving V
-function newtbndv(func, xL, xR, x; ftol=1e-6, maxiter=500, minchange=0,
-    atolx=1e-4, rtolx=1e-4)
-    (fL, _) = func(xL)
-    (fR, _) = func(xR)
-    if fL .* fR > 0
-        return (typeof(x)(NaN), typeof(x)(NaN), -maxiter)
-    end
+function newtbndv(func, x, y; ftol = 1e-12, maxiter = 500, 
+                    atolx = 1e-4, rtolx = 1e-4)
 
-    (f, df) = func(x)
-    dxlr = xR - xL
-
+    (f, g, dfx, dfy, dgx, dgy) = func(x, y)
     for iter = 1:maxiter
-        dx = -f / df
+
+        z = [x; y] 
+        (f, g, dfx, dfy, dgx, dgy) = func(x, y)
+      
+        J = [dfx dfy; dgx dgy] 
+        dx, dy = -J\[f; g]
+      
         x = x + dx
-
-        if x < xL || x > xR || abs(dx) / dxlr < minchange
-            x = (xR + xL) / 2
-            dx = (xR - xL) / 2
-        end
-
-        (f, df) = func(x)
-
-        if f * fL > 0
-            (fL, xL) = (f, x)
-        else
-            (fR, xR) = (f, x)
-        end
-        dxlr = xR - xL
-
-        if abs(f) < ftol && abs(dx) < atolx + rtolx * (abs(dx) + abs(x))
-            return (x, f, iter)
-        end
+        y = y + dy
+  
+       if abs(f) < ftol && abs(dx) < atolx + rtolx * (abs(dx) + abs(x)) && abs(g) < ftol && abs(dy) < atolx + rtolx * (abs(dy) + abs(y))
+            
+            return (x, y, f, g, iter)
+       end
     end
-    return (x, f, -maxiter)
+    return (x, y, f, g, -maxiter)
 end
 
 
