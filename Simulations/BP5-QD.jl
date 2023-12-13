@@ -22,6 +22,7 @@ function main()
 
     # setting b = b0
     b = BP5_coeff.b0
+    Vzero = 1e-20
 
    
 
@@ -31,16 +32,48 @@ function main()
     dψ, V, ψ, δ = create_view(dψV, ψδ)
 
     # 
-    RSa = zeros(fN2 * fN3)
+    RSas = zeros(fN2 * fN3)
     for i in 1:fN2
         for j in 1:fN3
             index = i + (j - 1) * fN2
             x2 = (i - 1) * BP5_coeff.Δz/1000 - BP5_coeff.lf/2
             x3 = (j - 1) * BP5_coeff.Δz/1000
-            RSa[index] = a_func(x2, x3, BP5_coeff)
+            RSas[index] = a_func(x2, x3, BP5_coeff)
         end
     end
-    RSa_reshaped = reshape(RSa, fN2, fN3)'
+    # RSa_reshaped = reshape(RSa, fN2, fN3)'
+
+    # initializing \boldsymbol{V} over the entire region
+    for i in 1:Ny
+        for j in 1:Nz
+            index = i + (j - 1) * Ny
+            V[2*index - 1] = BP5_coeff.Vinit
+            V[2*index] = Vzero
+        end
+    end
+
+    # initializing \boldsymbol{τ}^0 for the entire domain
+    V_norm = norm([BP5_coeff.Vinit, Vzero])
+    τ0 = @view τb[1:2:length(τb)]
+    τz0 = @view τb[2:2:length(τb)]
+
+    # only using \tau values for the RS zone
+
+    for i in 1:Ny
+        for j in 1:Nz
+            index = i + (j - 1) * Ny
+            τ[index] = BP5_coeff.Vinit
+        end
+    end
+
+    τ0 = BP5_coeff.σn * BP5_coeff.amax * asinh(BP5_coeff.Vinit / (2 * BP5_coeff.V0) *
+            exp.((BP5_coeff.f0 + BP5_coeff.b0 * log.(BP5_coeff.V0 / BP5_coeff.Vinit)) /
+            BP5_coeff.amax)) + η * BP5_coeff.Vinit
+    # τb = τ0 * V / V_norm
+
+    τz0 = 
+
+
 
     
 end

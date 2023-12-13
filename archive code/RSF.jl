@@ -145,21 +145,21 @@ obj_rs(V2, V3) = rateandstate(V2, V3, ψn, σn, τ, τz, η, an, RSV0)
 
 
 
-# TESTING:
-ψn = 0.6
-an = 0.015
-η = 32/6
-σn = 50
-RSV0 = 1e-6
-V1_actual = 1
-V2_actual = 2
-Vactual = sqrt(V1_actual^2 + V2_actual^2)
-τ = σn * an * asinh(Vactual/(2*RSV0) * exp(ψn/an)) * V1_actual/Vactual + η*V1_actual
-τz =  σn * an * asinh(Vactual/(2*RSV0) * exp(ψn/an)) * V2_actual/Vactual + η*V2_actual
-Vn1 = V1_actual               #initial guess
-Vn2 = V2_actual + .00001      #initial guess
+# # TESTING:
+# ψn = 0.6
+# an = 0.015
+# η = 32/6
+# σn = 50
+# RSV0 = 1e-6
+# V1_actual = 1
+# V2_actual = 2
+# Vactual = sqrt(V1_actual^2 + V2_actual^2)
+# τ = σn * an * asinh(Vactual/(2*RSV0) * exp(ψn/an)) * V1_actual/Vactual + η*V1_actual
+# τz =  σn * an * asinh(Vactual/(2*RSV0) * exp(ψn/an)) * V2_actual/Vactual + η*V2_actual
+# Vn1 = V1_actual               #initial guess
+# Vn2 = V2_actual + .00001      #initial guess
 
-obj_rs(V2, V3) = rateandstate(V2, V3, ψn, σn, τ, τz, η, an, RSV0)
-(Vn2, Vn3, f, g, iter) = newtbndv(obj_rs, Vn1, Vn2; ftol = 1e-12,
-                            atolx = 1e-12, rtolx = 1e-12)
+# obj_rs(V2, V3) = rateandstate(V2, V3, ψn, σn, τ, τz, η, an, RSV0)
+# (Vn2, Vn3, f, g, iter) = newtbndv(obj_rs, Vn1, Vn2; ftol = 1e-12,
+#                             atolx = 1e-12, rtolx = 1e-12)
 

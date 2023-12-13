@@ -86,6 +86,12 @@ sigma_31 = sigmas[3]
 # size of ψδ = size(ψ) + size(δ) =  fN2 * fN3 + 2 * N2 * N3
 # ψδ = zeros(fN2 * fN3 + 2 * N2 * N3)
 
+# δ: slip     V = dδ/dt
+# ψ: ψ = f0 + b * ln(V0 * θ / L)
+# θ0 = L / Vinit
+# dθ/dt = 1 - Vθ/L
+# dψ/dt = (b - V0/L) * exp(())
+
 function create_ψVδ()
     dψV = zeros(fN2 * fN3 + 2 * (Ny) * (Nz))
     ψδ = zeros(fN2 * fN3 + 2 * (Ny) * (Nz))
