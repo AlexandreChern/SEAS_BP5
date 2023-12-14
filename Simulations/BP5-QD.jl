@@ -54,15 +54,22 @@ function main()
 
     # initializing \boldsymbol{τ}^0 for the entire domain
     V_norm = norm([BP5_coeff.Vinit, Vzero])
-    τ0 = @view τb[1:2:length(τb)]
-    τz0 = @view τb[2:2:length(τb)]
+    τ = @view τb[1:2:length(τb)]
+    τz = @view τb[2:2:length(τb)]
 
     # only using \tau values for the RS zone
 
-    for i in 1:Ny
-        for j in 1:Nz
-            index = i + (j - 1) * Ny
-            τ[index] = BP5_coeff.Vinit
+    for i in 1:fN2
+        for j in 1:fN3
+            index = i + (j - 1) * fN2
+            tau_index = RS_filter_2D_nzind[index]
+            # τ[tau_index] = BP5_coeff.Vinit
+            # τz[tau_index] = Vzero
+            τ0 = BP5_coeff.σn * RSas[index] * asinh( (BP5_coeff.Vinit / (2*BP5_coeff.V0) * 
+                            exp((BP5_coeff.f0 + BP5_coeff.b0 * log(BP5_coeff.V0 / BP5_coeff.Vinit)) / 
+                            RSas[index]))  + η * BP5_coeff.Vinit) 
+            τ[tau_index] = τ0 * BP5_coeff.Vinit / V_norm
+            τz[tau_index] = τ0 * Vzero / V_norm
         end
     end
 

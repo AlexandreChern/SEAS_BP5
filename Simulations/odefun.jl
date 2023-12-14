@@ -14,8 +14,8 @@ odeparam = (
     M_GPU = M_GPU,                                  # GPU array of the LHS system
     u = zeros(size(RHS)),                           # solution for the linear system 
     u_old = zeros(size(RHS)),                       # solution from the previous step
-    Δτb = zeros(2 * (N_x + 1) * (N_y + 1)),         # store the traction computed
-    τb = zeros(2 * (N_x + 1) * (N_y + 1)),          # shear stress vector \boldsymbol{τ} = [τ; τ_z]
+    Δτb = spzeros(2 * (N_x + 1) * (N_y + 1)),         # store the traction computed
+    τb = spzeros(2 * (N_x + 1) * (N_y + 1)),          # shear stress vector \boldsymbol{τ} = [τ; τ_z]
     counter = [],                                   # counter for slip with Vmax >= threshold
     RHS = RHS,                                      # RHS of the linear system
     μshear = BP5_coeff.cs^2 * BP5_coeff.ρ ,         # constant?
