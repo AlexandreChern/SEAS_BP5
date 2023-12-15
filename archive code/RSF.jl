@@ -204,7 +204,9 @@ a_long = fill(0.015, N_elements)
 τ2_long = fill(τ, N_elements)
 τ3_long = fill(τz, N_elements)
 
-rateandstate_vectorized(V2_long, V3_long, psi_long, σn, τ2_long, τ3_long, a_long, V0)
+(f_v, g_v, dfx_v, dfy_v, dgx_v, dgy_v) = rateandstate_vectorized(V2_long, V3_long, psi_long, σn, τ2_long, τ3_long, η, a_long, V0)
+inv_J = map_jacobian_inv.(dfx_v, dfy_v, dgx_v, dgy_v)
+
 
 # # TESTING:
 # ψn = 0.6
