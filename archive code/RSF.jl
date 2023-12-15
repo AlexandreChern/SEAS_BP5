@@ -123,10 +123,10 @@ end
 
 function rateandstate_vectorized(V2, V3, psi_v, σn, τ2_v, τ3_v, η, a_v, V0)
     V  = sqrt.(V2.^2 .+ V3.^2) 
-    dV_dV2 = 0.5 .* sqrt.(V2.^2 .+ V3.^2) .* 2 .* V2
-    dV_dV3 = 0.5 .* sqrt.(V2.^2 .+ V3.^2) .* 2 .* V3
+    dV_dV2 = 0.5 ./ sqrt.(V2.^2 .+ V3.^2) .* 2 .* V2
+    dV_dV3 = 0.5 ./ sqrt.(V2.^2 .+ V3.^2) .* 2 .* V3
 
-    Y = (1 ./ (2 .* V0)) .* exp.(psi_v ./ 2)
+    Y = (1 ./ (2 .* V0)) .* exp.(psi_v ./ a_v)
     f = a_v .* asinh.(V .* Y)
     df_dV2 = a_v .* (1 ./ sqrt.(1 .+ (V .* Y).^2)) .* (dV_dV2 .* Y)
     df_dV3 = a_v .* (1 ./ sqrt.(1 .+ (V .* Y).^2)) .* (dV_dV3 .* Y)
@@ -142,7 +142,7 @@ function rateandstate_vectorized(V2, V3, psi_v, σn, τ2_v, τ3_v, η, a_v, V0)
     dg1_dV2 = σn .* (df_dV2 .* V2 ./ V .+ f .* dA2_dV2) .+ η
     dg1_dV3 = σn .* (df_dV3 .* V2 ./ V .+ f .* dA2_dV3)
 
-    dg2_dV2 = σn .* (df_dV3 .* V3 ./ V .+ f .* dA3_dV2)
+    dg2_dV2 = σn .* (df_dV2 .* V3 ./ V .+ f .* dA3_dV2)
     dg2_dV3 = σn .* (df_dV3 .* V3 ./ V .+ f .* dA3_dV3) .+ η
 
     return (g1, g2, dg1_dV2, dg1_dV3, dg2_dV2, dg2_dV3)
@@ -154,7 +154,7 @@ function newtbndv_vectorized(rateandstate_vectorized, V2, V3, psi_v, σn, τ2_v,
         (f_v, g_v, dfx_v, dfy_v, dgx_v, dgy_v) = rateandstate_vectorized(V2, V3,  
                                         psi_v, σn, τ2_v, τ3_v, η, a_v, V0)
         inv_J = map_jacobian_inv.(dfx_v, dfy_v, dgx_v, dgy_v)
-        dV2V3 =  -inv_J .* map_cat.(V2, V3)
+        dV2V3 =  -inv_J .* map_cat.(f_v, g_v)
         dV2 = get_first.(dV2V3)
         dV3 = get_second.(dV2V3)
         V2 = V2 + dV2
@@ -181,16 +181,19 @@ Vactual = sqrt(V1_actual^2 + V2_actual^2)
 Vn1 = 2              #initial guess
 Vn2 = 1      #initial guess
 
+x = Vn1
+y = Vn2
+
 obj_rs(V2, V3) = rateandstate(V2, V3, ψn, σn, τ, τz, η, an, RSV0)
 (Vn2, Vn3, f, g, iter) = newtbndv(obj_rs, Vn1, Vn2; ftol = 1e-12,
                             atolx = 1e-12, rtolx = 1e-12)
 
 
 # Testing vectorized 
-V2=[1,1,1]
-V3=[2,2,2]
+V2=[2,2,2]
+V3=[1,1,1]
 psi_v = [0.6, 0.6, 0.6]
-a_v = [0.015, 0.015, 0.6]
+a_v = [0.015, 0.015, 0.015]
 τ2_v = [τ, τ, τ]
 τ3_v = [τz, τz, τz]
 
@@ -202,8 +205,8 @@ newtbndv_vectorized(rateandstate_vectorized, V2, V3, psi_v, σn, τ2_v, τ3_v, �
 
 # long test
 N_elements = 1000
-V2_long = fill(1,N_elements)
-V3_long = fill(2,N_elements)
+V2_long = fill(2,N_elements)
+V3_long = fill(1,N_elements)
 psi_long = fill(0.6, N_elements)
 a_long = fill(0.015, N_elements)
 τ2_long = fill(τ, N_elements)
@@ -212,6 +215,9 @@ a_long = fill(0.015, N_elements)
 (f_v, g_v, dfx_v, dfy_v, dgx_v, dgy_v) = rateandstate_vectorized(V2_long, V3_long, psi_long, σn, τ2_long, τ3_long, η, a_long, V0)
 inv_J = map_jacobian_inv.(dfx_v, dfy_v, dgx_v, dgy_v)
 newtbndv_vectorized(rateandstate_vectorized, V2_long, V3_long, psi_long, σn, τ2_long, τ3_long, η, a_long, V0; ftol=1e-12, maxiter=10, atolx=1e-4, rtolx=1e-4)
+
+@benchmark newtbndv_vectorized(rateandstate_vectorized, V2_long, V3_long, psi_long, σn, τ2_long, τ3_long, η, a_long, V0; ftol=1e-12, maxiter=10, atolx=1e-4, rtolx=1e-4)
+
 
 
 # # TESTING:

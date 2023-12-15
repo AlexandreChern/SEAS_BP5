@@ -275,6 +275,76 @@ function newtbndv(func, x, y; ftol = 1e-12, maxiter = 500,
 end
 
 
+function rateandstate_vectorized(V2, V3, psi_v, σn, τ2_v, τ3_v, η, a_v, V0)
+    V  = sqrt.(V2.^2 .+ V3.^2) 
+    dV_dV2 = 0.5 ./ sqrt.(V2.^2 .+ V3.^2) .* 2 .* V2
+    dV_dV3 = 0.5 ./ sqrt.(V2.^2 .+ V3.^2) .* 2 .* V3
+
+    Y = (1 ./ (2 .* V0)) .* exp.(psi_v ./ a_v)
+    f = a_v .* asinh.(V .* Y)
+    df_dV2 = a_v .* (1 ./ sqrt.(1 .+ (V .* Y).^2)) .* (dV_dV2 .* Y)
+    df_dV3 = a_v .* (1 ./ sqrt.(1 .+ (V .* Y).^2)) .* (dV_dV3 .* Y)
+
+    g1 = σn .* f .* V2 ./ V .+ η .* V2 .- τ2_v
+    g2 = σn .* f .* V3 ./ V .+ η .* V3 .- τ3_v
+
+    dA2_dV2 = (V .- V2 .* dV_dV2) ./ V.^2
+    dA2_dV3 = (-V2 .* dV_dV3) ./ V.^2
+    dA3_dV2 = (-V3 .* dV_dV2) ./ V.^2
+    dA3_dV3 = (V .- V3 .* dV_dV3) ./ V.^2
+
+    dg1_dV2 = σn .* (df_dV2 .* V2 ./ V .+ f .* dA2_dV2) .+ η
+    dg1_dV3 = σn .* (df_dV3 .* V2 ./ V .+ f .* dA2_dV3)
+
+    dg2_dV2 = σn .* (df_dV2 .* V3 ./ V .+ f .* dA3_dV2)
+    dg2_dV3 = σn .* (df_dV3 .* V3 ./ V .+ f .* dA3_dV3) .+ η
+
+    return (g1, g2, dg1_dV2, dg1_dV3, dg2_dV2, dg2_dV3)
+end
+
+function newtbndv_vectorized(rateandstate_vectorized, V2, V3, psi_v, σn, τ2_v, τ3_v, η, a_v, V0,;  
+                            ftol=1e-12, maxiter=10, atolx = 1e-4, rtolx=1e-4)
+    for iter = 1:maxiter
+        (f_v, g_v, dfx_v, dfy_v, dgx_v, dgy_v) = rateandstate_vectorized(V2, V3,  
+                                        psi_v, σn, τ2_v, τ3_v, η, a_v, V0)
+        inv_J = map_jacobian_inv.(dfx_v, dfy_v, dgx_v, dgy_v)
+        dV2V3 =  -inv_J .* map_cat.(f_v, g_v)
+        dV2 = get_first.(dV2V3)
+        dV3 = get_second.(dV2V3)
+        V2 = V2 + dV2
+        V3 = V3 + dV3
+        
+        # TODO vectorized control flow
+        if all(abs.(f_v) .< ftol) && all(abs.(dV2) .< atolx .+ rtolx .* (abs.(dV2) .+ abs.(V2))) && all(abs.(g_v) .< ftol) && all(abs.(dV2) .< atolx .+ rtolx .* (abs.(dV3) .+ abs.(V3)))
+            return (V2, V3, f_v, g_v, iter)
+        end
+    end
+    return (V2, V3, f_v, g_v, -maxiter)
+end
+
+
+function map_jacobian(x, y, a, b)
+    return [x y; a b]
+end
+
+function map_jacobian_inv(x, y, a, b)
+    return inv([x y; a b])
+end
+
+function map_cat(x,y)
+    return [x;y]
+end
+
+function get_first(a)
+    return a[1]
+end
+
+function get_second(a)
+    return a[2]
+end
+
+
+
 # Plot the slip in 2D from BP1 problem
 function plot_slip(S, δNp, yf, stride_time)
 
