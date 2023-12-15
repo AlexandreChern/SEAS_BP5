@@ -161,6 +161,7 @@ function newtbndv_vectorized(rateandstate_vectorized, V2, V3;
         
         # TODO vectorized control flow
         if all(abs(f_v) .< ftol) && all(abs(df_v) .< atolx .+ rtolx .* (abs.(df_v) + abs(x))) && abs(g) < ftol && abs(dy) < atolx + rtolx * (abs(dy) + abs(y))
+        end
     end
 end
 # TESTING:
@@ -193,6 +194,18 @@ a_v = [0.015, 0.015, 0.6]
 rateandstate_vectorized(V2, V3, psi_v, σn, τ2_v, τ3_v, η, a_v, V0)
 
 
+
+# long test
+N_elements = 1000
+V2_long = fill(1,N_elements)
+V3_long = fill(1,N_elements)
+psi_long = fill(0.6, N_elements)
+a_long = fill(0.015, N_elements)
+τ2_long = fill(τ, N_elements)
+τ3_long = fill(τz, N_elements)
+
+rateandstate_vectorized(V2_long, V3_long, psi_long, σn, τ2_long, τ3_long, a_long, V0)
+
 # # TESTING:
 # ψn = 0.6
 # an = 0.015
@@ -223,3 +236,13 @@ end
 function map_cat(x,y)
     return [x;y]
 end
+
+
+
+# dfx_v_cu = CuArray(dfx_v)
+# dfy_v_cu = CuArray(dfy_v)
+# dgx_v_cu = CuArray(dgx_v) 
+# dgy_v_cu = CuArray(dgy_v)
+
+# CuArray.(map_jacobian_inv.(dfx_v, dfy_v, dgx_v, dgy_v))
+# map_jacobian.(dfx_v_cu, dfy_v_cu, dgx_v_cu, dgy_v_cu)
