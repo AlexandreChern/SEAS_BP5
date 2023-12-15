@@ -148,21 +148,24 @@ function rateandstate_vectorized(V2, V3, psi_v, σn, τ2_v, τ3_v, η, a_v, V0)
     return (g1, g2, dg1_dV2, dg1_dV3, dg2_dV2, dg2_dV3)
 end
 
-function newtbndv_vectorized(rateandstate_vectorized, V2, V3; 
-                            ftol=1e-12, maxiter=500, atolx = 1e-4, rtolx=1e-4)
+function newtbndv_vectorized(rateandstate_vectorized, V2, V3, psi_v, σn, τ2_v, τ3_v, η, a_v, V0,;  
+                            ftol=1e-12, maxiter=10, atolx = 1e-4, rtolx=1e-4)
     for iter = 1:maxiter
         (f_v, g_v, dfx_v, dfy_v, dgx_v, dgy_v) = rateandstate_vectorized(V2, V3,  
                                         psi_v, σn, τ2_v, τ3_v, η, a_v, V0)
         inv_J = map_jacobian_inv.(dfx_v, dfy_v, dgx_v, dgy_v)
-        dV2, dV3 = -inv_J .* map_cat.(f_v, g_v)
-
-        V2 .+= df_v
-        V3 .+= dg_v
+        dV2V3 =  -inv_J .* map_cat.(V2, V3)
+        dV2 = get_first.(dV2V3)
+        dV3 = get_second.(dV2V3)
+        V2 = V2 + dV2
+        V3 = V3 + dV3
         
         # TODO vectorized control flow
-        if all(abs(f_v) .< ftol) && all(abs(df_v) .< atolx .+ rtolx .* (abs.(df_v) + abs(x))) && abs(g) < ftol && abs(dy) < atolx + rtolx * (abs(dy) + abs(y))
+        if all(abs.(f_v) .< ftol) && all(abs.(dV2) .< atolx .+ rtolx .* (abs.(dV2) .+ abs.(V2))) && all(abs.(g_v) .< ftol) && all(abs.(dV2) .< atolx .+ rtolx .* (abs.(dV3) .+ abs.(V3)))
+            return (V2, V3, f_v, g_v, iter)
         end
     end
+    return (V2, V3, f_v, g_v, -maxiter)
 end
 # TESTING:
 ψn = 0.6
@@ -184,8 +187,8 @@ obj_rs(V2, V3) = rateandstate(V2, V3, ψn, σn, τ, τz, η, an, RSV0)
 
 
 # Testing vectorized 
-V2=[1,2,3]
-V3=[1,3,4]
+V2=[1,1,1]
+V3=[2,2,2]
 psi_v = [0.6, 0.6, 0.6]
 a_v = [0.015, 0.015, 0.6]
 τ2_v = [τ, τ, τ]
@@ -193,12 +196,14 @@ a_v = [0.015, 0.015, 0.6]
 
 rateandstate_vectorized(V2, V3, psi_v, σn, τ2_v, τ3_v, η, a_v, V0)
 
+newtbndv_vectorized(rateandstate_vectorized, V2, V3, psi_v, σn, τ2_v, τ3_v, η, a_v, V0; ftol=1e-12, maxiter=10, atolx=1e-4, rtolx=1e-4)
+
 
 
 # long test
 N_elements = 1000
 V2_long = fill(1,N_elements)
-V3_long = fill(1,N_elements)
+V3_long = fill(2,N_elements)
 psi_long = fill(0.6, N_elements)
 a_long = fill(0.015, N_elements)
 τ2_long = fill(τ, N_elements)
@@ -206,6 +211,7 @@ a_long = fill(0.015, N_elements)
 
 (f_v, g_v, dfx_v, dfy_v, dgx_v, dgy_v) = rateandstate_vectorized(V2_long, V3_long, psi_long, σn, τ2_long, τ3_long, η, a_long, V0)
 inv_J = map_jacobian_inv.(dfx_v, dfy_v, dgx_v, dgy_v)
+newtbndv_vectorized(rateandstate_vectorized, V2_long, V3_long, psi_long, σn, τ2_long, τ3_long, η, a_long, V0; ftol=1e-12, maxiter=10, atolx=1e-4, rtolx=1e-4)
 
 
 # # TESTING:
@@ -239,7 +245,13 @@ function map_cat(x,y)
     return [x;y]
 end
 
+function get_first(a)
+    return a[1]
+end
 
+function get_second(a)
+    return a[2]
+end
 
 # dfx_v_cu = CuArray(dfx_v)
 # dfy_v_cu = CuArray(dfy_v)
