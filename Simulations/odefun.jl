@@ -145,8 +145,8 @@ function odefun(dψV, ψδ, p, t)
     Vn1 = 1e-10 # use very small values
     Vn2 = 1e-10 # use very small values
 
-    for i in 1:fN2
-        for j in 1:fN3
+    for i in 1:5:fN2
+        for j in 1:5:fN3
             # TODOq
             # Solve for Vn using newton's method newtbndv in BP1
             # Use rateandstate function to calculate RS
@@ -160,13 +160,15 @@ function odefun(dψV, ψδ, p, t)
             VL = -VR
             V2_index = V[2 * index - 1]
             V3_index = V[2 * index]
-            # obj_rs(V) = rateandstate(V, ψn, σn, τn, η, an, RSV0)
-            # (Vn, _, iter) = newtbndv(obj_rs, VL, VR, Vn; ftol = 1e-9,
-            #                      atolx = 1e-9, rtolx = 1e-9)
 
             obj_rs(V2, V3) = rateandstate(V2, V3, ψ_index, σn, τ_index, τz_index, η, a_index, RSV0)
-            (Vn2, Vn3, f, g, iter) = newtbndv(obj_rs, Vn1, Vn2; ftol = 1e-12,
+            (Vn1_out, Vn2_out, f, g, iter) = newtbndv(obj_rs, Vn1, Vn2; ftol = 1e-12,
                             atolx = 1e-12, rtolx = 1e-12)
+
+            # if iter == -500
+            #     println("point $i $j does not converge")
+            #     break
+            # end
         end
     end
 

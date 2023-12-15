@@ -24,6 +24,7 @@ function main()
     b = BP5_coeff.b0
     Vzero = 1e-20
 
+    @unpack_namedtuple odeparam;
    
 
     # calling create_ψVδ to create variables used for odefun, create_ψVδ defined in domain.jl
@@ -73,12 +74,12 @@ function main()
         end
     end
 
-    τ0 = BP5_coeff.σn * BP5_coeff.amax * asinh(BP5_coeff.Vinit / (2 * BP5_coeff.V0) *
-            exp.((BP5_coeff.f0 + BP5_coeff.b0 * log.(BP5_coeff.V0 / BP5_coeff.Vinit)) /
-            BP5_coeff.amax)) + η * BP5_coeff.Vinit
+    # τ0 = BP5_coeff.σn * BP5_coeff.amax * asinh(BP5_coeff.Vinit / (2 * BP5_coeff.V0) *
+    #         exp.((BP5_coeff.f0 + BP5_coeff.b0 * log.(BP5_coeff.V0 / BP5_coeff.Vinit)) /
+    #         BP5_coeff.amax)) + η * BP5_coeff.Vinit
     # τb = τ0 * V / V_norm
 
-    τz0 = 
+    
 
 
 
