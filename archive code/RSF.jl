@@ -201,6 +201,7 @@ rateandstate_vectorized(V2, V3, psi_v, σn, τ2_v, τ3_v, η, a_v, V0)
 
 newtbndv_vectorized(rateandstate_vectorized, V2, V3, psi_v, σn, τ2_v, τ3_v, η, a_v, V0; ftol=1e-12, maxiter=10, atolx=1e-4, rtolx=1e-4)
 
+newtbndv_vectorized(rateandstate_vectorized, Vn1_v, Vn2_v, ψ, σn, τ2, τ3, RSas, η, RSV0; ftol=1e-12, maxiter=10, atolx=1e-4, rtolx=1e-4)
 
 
 # long test
@@ -217,6 +218,16 @@ inv_J = map_jacobian_inv.(dfx_v, dfy_v, dgx_v, dgy_v)
 newtbndv_vectorized(rateandstate_vectorized, V2_long, V3_long, psi_long, σn, τ2_long, τ3_long, η, a_long, V0; ftol=1e-12, maxiter=10, atolx=1e-4, rtolx=1e-4)
 
 @benchmark newtbndv_vectorized(rateandstate_vectorized, V2_long, V3_long, psi_long, σn, τ2_long, τ3_long, η, a_long, V0; ftol=1e-12, maxiter=10, atolx=1e-4, rtolx=1e-4)
+
+
+
+Vn1_v
+Vn2_v
+Vector(ψ)
+RSas
+Vector(τ2)
+Vector(τ3)
+newtbndv_vectorized(rateandstate_vectorized, Vn1_v, Vn2_v, ψ, σn, Vector(τ2), Vector(τ3), RSas, η, RSV0; ftol=1e-12, maxiter=10, atolx=1e-4, rtolx=1e-4)
 
 
 

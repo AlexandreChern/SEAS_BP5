@@ -145,36 +145,14 @@ function odefun(dψV, ψδ, p, t)
     Vn1 = 1e-10 # use very small values
     Vn2 = 1e-10 # use very small values
 
-    for i in 1:5:fN2
-        for j in 1:5:fN3
-            # TODOq
-            # Solve for Vn using newton's method newtbndv in BP1
-            # Use rateandstate function to calculate RS
-            # use the same newtbndv to calculate V
-            index = i + (j - 1) * fN2
-            ψ_index = ψ[index]
-            a_index = RSas[index]
-            τ_index = Δτ[RS_filter_2D_nzind[index]] # because Δτ has the size of Ny * Nz
-            τz_index = Δτz[RS_filter_2D_nzind[index]]
-            VR = abs(τ_index / η)
-            VL = -VR
-            V2_index = V[2 * index - 1]
-            V3_index = V[2 * index]
+    Vn1_v = fill(Vn1, fN2 * fN3)
+    Vn2_v = fill(Vn2, fN2 * fN3)
 
-            obj_rs(V2, V3) = rateandstate(V2, V3, ψ_index, σn, τ_index, τz_index, η, a_index, RSV0)
-            (Vn1_out, Vn2_out, f, g, iter) = newtbndv(obj_rs, Vn1, Vn2; ftol = 1e-12,
-                            atolx = 1e-12, rtolx = 1e-12)
+    τ2 = Δτ[RS_filter_2D_nzind]
+    τ3 = Δτz[RS_filter_2D_nzind]
 
-            # if iter == -500
-            #     println("point $i $j does not converge")
-            #     break
-            # end
-        end
-    end
-
-    # TODO 
-    # update V
-
+    
+    (V2_v, V3_v, f_v, g_v, maxiter) = newtbndv_vectorized(rateandstate_vectorized, Vn1_v, Vn2_v, ψ, σn, Vector(τ2), Vector(τ3), RSas, η, RSV0; ftol=1e-12, maxiter=10, atolx=1e-4, rtolx=1e-4)
 
 
 end
