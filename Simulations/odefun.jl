@@ -116,7 +116,8 @@ function odefun(dψV, ψδ, p, t)
     ## End setting up dψV and ψδ
 
     # Updating RHS using δ
-
+    RHS .+= updators[1] * δ[1:2:end]
+    RHS .+= updators[2] * δ[2:2:end]
     # End updating RHS using δ
 
     # Solving linear system using iterative methods
@@ -132,8 +133,7 @@ function odefun(dψV, ψδ, p, t)
     # updating values TODO
     # computate tractions using u: similar to calculation in 
     # assembling 3D matrices
-    RHS
-
+  
 
     # do non-linear solve for corresponding slip rate TODO
     # given traction on the fault and state variables   
