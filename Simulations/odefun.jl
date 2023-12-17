@@ -29,6 +29,8 @@ odeparam = (
     RSf0 = BP5_coeff.f0,                            # rate-and-state reference friction coefficient 
     N = N_x,                                        # number of grids in each direction, assuming idential of grid in x,y,z directions
     δNp = N_x + 1,                                  # number of grid points in each direction, assuming idential of grid in x,y,z directions
+    Face_operators,
+    updators,
 );
 
 struct odeparam_struct

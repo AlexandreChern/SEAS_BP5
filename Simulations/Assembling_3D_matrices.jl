@@ -548,6 +548,31 @@ function Assembling_3D_matrices(N_x, N_y, N_z;p=2)
         +   (T_33_2_new' .- Z_33_2_new') * (e_2 * H_2 * g₃²[:])
     );
 
+    # Traction updating operators
+    δ2_update = (
+            u1_filter' * H_tilde * (T_21_1_new' .- Z_21_1_new') * (e_1 * H_1)
+        +   u2_filter' * H_tilde * (T_22_1_new' .- Z_22_1_new') * (e_1 * H_1)
+        +   u3_filter' * H_tilde * (T_23_1_new' .- Z_23_1_new') * (e_1 * H_1)
+    )
+
+    δ3_update = (
+            u1_filter' * H_tilde* (T_31_1_new' .- Z_31_1_new') * (e_1 * H_1)
+        +   u2_filter' * H_tilde* (T_32_1_new' .- Z_32_1_new') * (e_1 * H_1)
+        +   u3_filter' * H_tilde * (T_33_1_new' .- Z_33_1_new') * (e_1 * H_1)
+    )
+
+    face_2_V2_update = (
+            u1_filter' * H_tilde * (T_21_2_new' .- Z_21_2_new') * (e_2 * H_2)
+        +   u2_filter' * H_tilde * (T_22_2_new' .- Z_22_2_new') * (e_2 * H_2)
+        +   u3_filter' * H_tilde * (T_23_2_new' .- Z_23_2_new') * (e_2 * H_2)
+    )
+
+    face_2_V3_update = (
+            u1_filter' * H_tilde * (T_31_2_new' .- Z_31_2_new') * (e_2 * H_2)
+        +   u2_filter' * H_tilde * (T_32_2_new' .- Z_31_2_new') * (e_2 * H_2)
+        +   u3_filter' * H_tilde * (T_33_2_new' .- Z_33_2_new') * (e_2 * H_2)
+    )
+
 
 
     # Assembling LHS of the linear system
@@ -569,6 +594,7 @@ function Assembling_3D_matrices(N_x, N_y, N_z;p=2)
 
     return M_new, RHS_new, H_tilde, HI_tilde, analy_sol, source, 
             [T_11_1_new, T_12_1_new, T_13_1_new, T_21_1_new, T_22_1_new, T_23_1_new, T_31_1_new, T_32_1_new, T_33_1_new], [u1_filter, u2_filter, u3_filter], 
-            End_operator, 
+            [End_operator, Front_operator], 
             [sigma_11_new, sigma_21_new, sigma_31_new];
+            [δ2_update, δ3_update, face_2_V2_update, face_2_V3_update];
 end
