@@ -96,17 +96,9 @@ function odefun(dψV, ψδ, p, t)
     end
     # End if reject block
 
-    # Solving linear system using iterative methods
-    u_iterative, history = cg(M_GPU, CuArray(RHS), log=true);    # solving with non preconditioned cg
-                                                    # this can be replaced with MGCG in future 
-    @show history.iters
-    if typeof(u_iterative) == CuArray{Float64, 1, CUDA.Mem.DeviceBuffer}
-        u_iterative = Array(u_iterative)
-    end
-    u[:] .= u_iterative;
-    # End of solving 
+   
 
-    # Setting up ratees of change for state and slip
+    ## Setting up ratees of change for state and slip
 
     # ψ = @view ψδ[1:(fN2 + 1)*(fN3 + 1)]
     # δ = @view ψδ[(fN2 + 1)*(fN3 + 1) + 1:end]
@@ -118,7 +110,21 @@ function odefun(dψV, ψδ, p, t)
 
     dψ .= 0;
     V .= 0;
-    # End setting up dψV and ψδ
+    ## End setting up dψV and ψδ
+
+    # Updating RHS using δ
+
+    # End updating RHS using δ
+
+    # Solving linear system using iterative methods
+    u_iterative, history = cg(M_GPU, CuArray(RHS), log=true);    # solving with non preconditioned cg
+    # this can be replaced with MGCG in future 
+    @show history.iters
+    if typeof(u_iterative) == CuArray{Float64, 1, CUDA.Mem.DeviceBuffer}
+    u_iterative = Array(u_iterative)
+    end
+    u[:] .= u_iterative;
+    # End of solving 
 
     # updating values TODO
     # computate tractions using u: similar to calculation in 
@@ -154,5 +160,6 @@ function odefun(dψV, ψδ, p, t)
     
     (V2_v, V3_v, f_v, g_v, maxiter) = newtbndv_vectorized(rateandstate_vectorized, Vn1_v, Vn2_v, ψ, σn, Vector(τ2), Vector(τ3), RSas, η, RSV0; ftol=1e-12, maxiter=10, atolx=1e-4, rtolx=1e-4)
 
-
+    V[2 .* RS_filter_2D_nzind .- 1] .= V2_v
+    V[2 .* RS_filter_2D_nzind] .= V3_v
 end

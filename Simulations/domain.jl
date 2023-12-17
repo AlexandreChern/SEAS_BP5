@@ -176,6 +176,7 @@ let
 end
 
 RS_filter = get_RS_indices(Nx, Ny, Nz, fNy, fNz)
+RS_filter_nzind = RS_filter.nzind
 RS_filter_2D = get_RS_indices_2D(Ny, Nz, fNy, fNz)
 RS_filter_2D_nzind = RS_filter_2D.nzind
 VW_filter = get_uniform_indices(Nx, Ny, Nz, fNy_VW, fNz_VW)
