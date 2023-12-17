@@ -29,8 +29,9 @@ odeparam = (
     RSf0 = BP5_coeff.f0,                            # rate-and-state reference friction coefficient 
     N = N_x,                                        # number of grids in each direction, assuming idential of grid in x,y,z directions
     δNp = N_x + 1,                                  # number of grid points in each direction, assuming idential of grid in x,y,z directions
-    Face_operators,
-    updators,
+    Face_operators,                                 # getting face values from 3D SparseArrays
+    updators,                                       # updating RHS values using SBP-SAT operators for Dirichlet Operations
+    u_filters,                                      # filtering u1, u2, u3 from stacked u
 );
 
 struct odeparam_struct
@@ -131,6 +132,7 @@ function odefun(dψV, ψδ, p, t)
     # updating values TODO
     # computate tractions using u: similar to calculation in 
     # assembling 3D matrices
+    RHS
 
 
     # do non-linear solve for corresponding slip rate TODO
