@@ -303,7 +303,9 @@ function rateandstate_vectorized(V2, V3, psi_v, σn, τ2_v, τ3_v, η, a_v, V0)
 end
 
 function newtbndv_vectorized(rateandstate_vectorized, V2, V3, psi_v, σn, τ2_v, τ3_v, η, a_v, V0,;  
-                            ftol=1e-12, maxiter=10, atolx = 1e-4, rtolx=1e-4)
+                            ftol=1e-12, maxiter=100, atolx = 1e-4, rtolx=1e-4)
+    (f_v, g_v, dfx_v, dfy_v, dgx_v, dgy_v) = rateandstate_vectorized(V2, V3,  
+                        psi_v, σn, τ2_v, τ3_v, η, a_v, V0)
     for iter = 1:maxiter
         (f_v, g_v, dfx_v, dfy_v, dgx_v, dgy_v) = rateandstate_vectorized(V2, V3,  
                                         psi_v, σn, τ2_v, τ3_v, η, a_v, V0)

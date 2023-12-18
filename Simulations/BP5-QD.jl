@@ -81,7 +81,10 @@ function main()
 
     
 
+    tspan = (0, sim_years * year_seconds)
+    prob = ODEProblem(odefun, ψδ, tspan, odeparam)
 
+    sol = solve(prob, Tsit5(); dt=0.2)
 
     
 end

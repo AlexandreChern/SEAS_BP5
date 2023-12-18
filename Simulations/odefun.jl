@@ -99,6 +99,8 @@ function odefun(dψV, ψδ, p, t)
     end
     # End if reject block
 
+    @show t
+
    
 
     ## Setting up ratees of change for state and slip
@@ -118,6 +120,10 @@ function odefun(dψV, ψδ, p, t)
     # Updating RHS using δ
     RHS .+= updators[1] * δ[1:2:end]
     RHS .+= updators[2] * δ[2:2:end]
+
+    # Updating RHS using remote loading for face 2 for V2
+    RHS .+= updators[3] * (fill(t .* Vp, div(length(δ),2)))
+
     # End updating RHS using δ
 
     # Solving linear system using iterative methods
@@ -149,8 +155,8 @@ function odefun(dψV, ψδ, p, t)
     Δτz = @view Δτb[2:2:length(Δτb)]
 
     # Δτz .= compute_traction_τz() # TODO
-    Δτ .= End_operator * sigma_21 * u_iterative
-    Δτz .= End_operator * sigma_31 * u_iterative
+    Δτ .= Face_operators[1] * sigma_21 * u_iterative
+    Δτz .= Face_operators[1] * sigma_31 * u_iterative
     
     Vn1 = 1e-10 # use very small values
     Vn2 = 1e-10 # use very small values
@@ -162,7 +168,8 @@ function odefun(dψV, ψδ, p, t)
     τ3 = Δτz[RS_filter_2D_nzind]
 
     
-    (V2_v, V3_v, f_v, g_v, maxiter) = newtbndv_vectorized(rateandstate_vectorized, Vn1_v, Vn2_v, ψ, σn, Vector(τ2), Vector(τ3), RSas, η, RSV0; ftol=1e-12, maxiter=10, atolx=1e-4, rtolx=1e-4)
+    (V2_v, V3_v, _, _, iter) = newtbndv_vectorized(rateandstate_vectorized, Vn1_v, Vn2_v, ψ, σn, Vector(τ2), Vector(τ3), RSas, η, RSV0; ftol=1e-12, maxiter=100, atolx=1e-4, rtolx=1e-4)
+    @show iter
 
     # out side of RS, V2 = Vp, V3 = 0
     V[1:2:end] .= Vp
