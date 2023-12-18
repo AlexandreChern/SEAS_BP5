@@ -70,6 +70,9 @@ SBPp = 2                # SBPp order
     u_filters, Face_operators, sigmas, updators, u_filters) = Assembling_3D_matrices(N_x, N_y, N_z;p=SBPp);
 M_GPU = CUDA.CUSPARSE.CuSparseMatrixCSR(M);
 
+# set RHS to be zero at the beginning
+RHS .= 0
+
 sigma_11 = sigmas[1]
 sigma_21 = sigmas[2]
 sigma_31 = sigmas[3]
