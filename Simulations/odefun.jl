@@ -123,7 +123,7 @@ function odefun(dψV, ψδ, p, t)
     # Solving linear system using iterative methods
     u_iterative, history = cg(M_GPU, CuArray(RHS), log=true);    # solving with non preconditioned cg
     # this can be replaced with MGCG in future 
-    @show history.iters
+    # @show history.iters
     if typeof(u_iterative) == CuArray{Float64, 1, CUDA.Mem.DeviceBuffer}
     u_iterative = Array(u_iterative)
     end
@@ -164,6 +164,16 @@ function odefun(dψV, ψδ, p, t)
     
     (V2_v, V3_v, f_v, g_v, maxiter) = newtbndv_vectorized(rateandstate_vectorized, Vn1_v, Vn2_v, ψ, σn, Vector(τ2), Vector(τ3), RSas, η, RSV0; ftol=1e-12, maxiter=10, atolx=1e-4, rtolx=1e-4)
 
+    # out side of RS, V2 = Vp, V3 = 0
+    V[1:2:end] .= Vp
+    V[2:2:end] .= 0
+
+    # inside RS, set V2 and V3 with solutions
     V[2 .* RS_filter_2D_nzind .- 1] .= V2_v
     V[2 .* RS_filter_2D_nzind] .= V3_v
+
+    # Update ψ
+    # dψ[n] = (RSb * RSV0 / RSDc) * (exp((RSf0 - ψn) / RSb) - abs(Vn) / RSV0) # BP1
+    dψ .= (RSb * RSV0 / RSL) .* (exp.((RSf0 .- ψ) ./ RSb) .- sqrt.(V2_v.^2 .+ V3_v.^2) ./ RSV0)
+    nothing
 end
