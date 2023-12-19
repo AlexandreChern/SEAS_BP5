@@ -59,7 +59,7 @@ end
 
 
 # ODE function
-function odefun(dψV, ψδ, p, t)
+function odefun(dψV, ψδ, odeparam, t)
 
     # # Unpacking named tuple p 
     # reject_step = p.reject_step
@@ -91,7 +91,7 @@ function odefun(dψV, ψδ, p, t)
 
     # automatically unpacking named tuples p
     # which is a variable for function odefun
-    @unpack_namedtuple p;
+    @unpack_namedtuple odeparam;
 
     # If reject return
     if reject_step[1]

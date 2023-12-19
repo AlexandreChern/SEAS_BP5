@@ -71,6 +71,12 @@ function main()
                             RSas[index]))  + η * BP5_coeff.Vinit) 
             τ[tau_index] = τ0 * BP5_coeff.Vinit / V_norm
             τz[tau_index] = τ0 * Vzero / V_norm
+
+            θ0 = BP5_coeff.L / BP5_coeff.V0 * exp(RSas[index] / BP5_coeff.b0 * 
+            log(2 * BP5_coeff.V0 / BP5_coeff.Vinit * sinh((τ0 - η * BP5_coeff.Vinit ) / (RSas[index] * BP5_coeff.σn)) )
+            - BP5_coeff.f0 / BP5_coeff.b0)
+            ψ0 = BP5_coeff.f0 + BP5_coeff.b0 * log(BP5_coeff.V0 * θ0 / BP5_coeff.L)
+            ψ[index] = ψ0
         end
     end
 
