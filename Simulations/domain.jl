@@ -192,4 +192,16 @@ VS_filter = RS_filter - VW_filter - VW_VS_transition_filter
 # friction region
 @assert length(VW_filter.nzind) + length(VW_VS_transition_filter.nzind) + length(VS_filter.nzind) == fN2 * fN3
 
+
+
+
+# Time series
+# On-Fault series
+of_pt1 = [0, -36, 0]
+pt2 = [0, -16, 0]
+pt3 = [0, 0, 0]
+pt4 = 
+
+
+
 nothing # avoid printing out results 

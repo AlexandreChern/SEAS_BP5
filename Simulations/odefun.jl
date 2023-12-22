@@ -123,6 +123,8 @@ function odefun(dψV, ψδ, odeparam, t)
 
     # Updating RHS using remote loading for face 2 for V2
     RHS .+= updators[3] * (fill(t .* Vp, div(length(δ),2)))
+    # Updating RHS using remote loading for face 2 for V3
+    # RSH .+= updators[3] * (fill(0, div(length(δ),2)))
 
     # End updating RHS using δ
 
