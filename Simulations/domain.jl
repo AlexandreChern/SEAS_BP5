@@ -197,10 +197,38 @@ VS_filter = RS_filter - VW_filter - VW_VS_transition_filter
 
 # Time series
 # On-Fault series
-of_pt1 = [0, -36, 0]
-pt2 = [0, -16, 0]
-pt3 = [0, 0, 0]
-pt4 = 
+fltst = [
+    [0, -36, 0],
+    [0, -16, 0],
+    [0, 0, 0],
+    [0, 16, 0],
+    [0, 36, 0],
+    [0, -24, 10],
+    [0, -16, 10],
+    [0, 0, 10],
+    [0, 16, 10],
+    [0, 0, 22]
+]
+
+function find_flt_indices(indices, lf, fN2)
+    x2 = indices[2]
+    x3 = indices[3]
+    j = Int(round(x2 - (-lf / 2) + 1))
+    k = Int(round(x3 - 0))
+    return j + k * fN2
+end
+
+path="./output/"
+station_indices = find_flt_indices.(fltst,BP5_coeff.lf,Nz)
+station_strings = ["-36dp+00", "-16dp+00", "00dp+00", "16dp+00", "+36dp+00",
+                    "-24dp+10", "-16dp+10", "+00dp+10","+16dp+10",
+                    "+00dp+22"]
+# t = 0
+# τz0 = 26.546122365133364
+# θ = [3199]
+# station_indices = [1,2,3]
+
+create_text_files(path, station_strings, station_indices,t)
 
 
 

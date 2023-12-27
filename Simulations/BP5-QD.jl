@@ -31,6 +31,9 @@ function main()
     dψV, ψδ = create_ψVδ()
     # calling create_view to create "views" for dψ, V, ψ, δ, create_view defined in domain.jl
     dψ, V, ψ, δ = create_view(dψV, ψδ)
+    
+    # adding temporate θ
+    θ = zeros(size(ψ))
 
     # 
     RSas = zeros(fN2 * fN3)
@@ -77,6 +80,7 @@ function main()
             - BP5_coeff.f0 / BP5_coeff.b0)
             ψ0 = BP5_coeff.f0 + BP5_coeff.b0 * log(BP5_coeff.V0 * θ0 / BP5_coeff.L)
             ψ[index] = ψ0
+            θ[index] = θ0
         end
     end
 
@@ -85,7 +89,6 @@ function main()
     #         BP5_coeff.amax)) + η * BP5_coeff.Vinit
     # τb = τ0 * V / V_norm
 
-    
 
     tspan = (0, sim_years * year_seconds)
     prob = ODEProblem(odefun, ψδ, tspan, odeparam)

@@ -381,3 +381,86 @@ function test_unpack(p)
     #     @show @eval $(i)
     # end
 end
+
+
+function create_text_files(path, station_strings, station_indices,t)
+
+    # path_to_slip = path * "slip.dat"
+    # io = open(path_to_slip, "w")
+    # write(io, "0.0 0.0 ")
+    # for  i in 1:length(flt_loc)
+    #     write(io, "$(station_strings[i])")
+    # end
+    # write(io,"\n")
+    # close(io)
+
+    # vv = Array{Float64}(undef, 1, 2+length(flt_loc))
+    # vv[1] = t
+    # vv[2] = log10(RSVinit)
+    # vv[3:end] = δ[flt_loc_indices]
+
+    # io = open(path_to_slip, "a")
+    # writedlm(io, vv)
+    # close(io)
+
+    for n = 1:length(station_strings)
+        XXX = path * "fltst_strk" * station_strings[n] * ".txt"
+        ww = Array{Float64}(undef, 1, 8)
+        ww[1] = t
+        RS_index = RS_filter_2D_nzind[station_indices[n]]
+        ww[2] = δ[2 * RS_index-1]
+        ww[3] = δ[2 * RS_index]
+        ww[4] = log10(BP5_coeff.Vinit)
+        ww[5] = log10(Vzero)
+        ww[6] = τ[2 * RS_index - 1]
+        ww[7] = τ[2 * RS_index]
+        ww[8] = log10(θ[station_indices[n]])  # 
+        open(XXX, "w") do io
+            write(io, "This is the file header")
+            write(io, "# problem=SEAS Benchmark BP5-QD\n")  # 
+            write(io, "# code=Thrase\n")
+            write(io, "# modeler=B. A. Erickson\n")
+            write(io, "# date=2023/01/09\n")
+            write(io, "# element size=1000 m\n")
+            write(io, "#location=on fault, 0km along strike, 8km away from the fault, 0km depth")
+            write(io, "# minimum_time_step=0.1\n")
+            write(io, "# maximum_time_step=3.157e6\n")
+            write(io, "# num_time_steps=2400\n")
+            write(io, "# Column #1 = Time(s)\n")
+            write(io, "# Column #2 = Slip_2(m)\n")
+            write(io, "# Column #3 = Slip_3(m)\n")
+            write(io, "# Column #4 = Slip_rate_2(log10 m/s)\n")
+            write(io, "# Column #5 = Slip_rate_3(log10 m/s)\n")
+            write(io, "# Column #6 = Shear_stress_2 (MPa)\n")
+            write(io, "# Column #7 = Shear_stress_3 (MPa)\n")
+            write(io, "# Column #8 = State (log10 s)\n")
+            writedlm(io, ww)
+        end
+    end
+
+end
+
+
+
+function write_to_file(path, ψδ, t, i)
+    if isdefined(i, :fsallast)
+        dψV = i.fsallast
+        dψ, V, ψ, δ = create_view(dψV, ψδ)
+        for n = 1:length(station_strings)
+            XXX = path * "fltst_strk" * station_strings[n] * ".txt"
+            ww = Array{Float64}(undef, 1, 8)
+            ww[1] = t
+            RS_index = RS_filter_2D_nzind[station_indices[n]]
+            ww[2] = δ[2 * RS_index-1]
+            ww[3] = δ[2 * RS_index]
+            ww[4] = log10(V[2 * RS_index-1])
+            ww[5] = log10(V[2 * RS_index])
+            ww[6] = τ[2 * RS_index - 1]
+            ww[7] = τ[2 * RS_index]
+            ww[8] = log10(θ[station_indices[n]])  # 
+            open(XXX, "a") do io
+                writedlm(io, ww)
+            end
+        end
+    end
+end
