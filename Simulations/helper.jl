@@ -383,7 +383,7 @@ function test_unpack(p)
 end
 
 
-function create_text_files(path, station_strings, station_indices,t)
+function create_text_files(path, station_strings, station_indices, t)
 
     # path_to_slip = path * "slip.dat"
     # io = open(path_to_slip, "w")
@@ -442,25 +442,31 @@ end
 
 
 
-function write_to_file(path, ψδ, t, i)
-    if isdefined(i, :fsallast)
-        dψV = i.fsallast
-        dψ, V, ψ, δ = create_view(dψV, ψδ)
-        for n = 1:length(station_strings)
-            XXX = path * "fltst_strk" * station_strings[n] * ".txt"
-            ww = Array{Float64}(undef, 1, 8)
-            ww[1] = t
-            RS_index = RS_filter_2D_nzind[station_indices[n]]
-            ww[2] = δ[2 * RS_index-1]
-            ww[3] = δ[2 * RS_index]
-            ww[4] = log10(V[2 * RS_index-1])
-            ww[5] = log10(V[2 * RS_index])
-            ww[6] = τ[2 * RS_index - 1]
-            ww[7] = τ[2 * RS_index]
-            ww[8] = log10(θ[station_indices[n]])  # 
-            open(XXX, "a") do io
-                writedlm(io, ww)
+function write_to_file(path, ψδ, t, i, odeparam, station_strings, station_indices)
+    # @unpack_namedtuple odeparam;
+    Vmax = 0.0
+    # if t == (sim_years ./ 31556926)
+    if t >= 0
+        if isdefined(i, :fsallast)
+            dψV = i.fsallast
+            dψ, V, ψ, δ = create_view(dψV, ψδ)
+            for n = 1:length(station_strings)
+                XXX = path * "fltst_strk" * station_strings[n] * ".txt"
+                ww = Array{Float64}(undef, 1, 8)
+                ww[1] = t
+                RS_index = RS_filter_2D_nzind[station_indices[n]]
+                ww[2] = δ[2 * RS_index-1]
+                ww[3] = δ[2 * RS_index]
+                ww[4] = (V[2 * RS_index-1])
+                ww[5] = (V[2 * RS_index])
+                ww[6] = τfb[2 * RS_index - 1]
+                ww[7] = τfb[2 * RS_index]
+                ww[8] = ψ[station_indices[n]]  # 
+                open(XXX, "a") do io
+                    writedlm(io, ww)
+                end
             end
         end
     end
+    Vmax
 end

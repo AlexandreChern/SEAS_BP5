@@ -14,8 +14,9 @@ odeparam = (
     M_GPU = M_GPU,                                  # GPU array of the LHS system
     u = zeros(size(RHS)),                           # solution for the linear system 
     u_old = zeros(size(RHS)),                       # solution from the previous step
-    Δτb = spzeros(2 * (N_x + 1) * (N_y + 1)),         # store the traction computed
-    τb = spzeros(2 * (N_x + 1) * (N_y + 1)),          # shear stress vector \boldsymbol{τ} = [τ; τ_z]
+    Δτb = spzeros(2 * (N_x + 1) * (N_y + 1)),       # store the traction computed
+    τb = spzeros(2 * (N_x + 1) * (N_y + 1)),        # shear stress vector \boldsymbol{τ} = [τ; τ_z]
+    τfb = spzeros(2 * (N_x + 1) * (N_y + 1)),
     counter = [],                                   # counter for slip with Vmax >= threshold
     RHS = RHS,                                      # RHS of the linear system
     μshear = BP5_coeff.cs^2 * BP5_coeff.ρ ,         # constant?
@@ -156,6 +157,9 @@ function odefun(dψV, ψδ, odeparam, t)
     Δτ = @view Δτb[1:2:length(Δτb)] 
     Δτz = @view Δτb[2:2:length(Δτb)]
 
+    τ0 = @view τb[1:2:length(τb)]
+    τz0 =  @view τb[2:2:length(τb)]
+
     # Δτz .= compute_traction_τz() # TODO
     Δτ .= Face_operators[1] * sigma_21 * u_iterative
     Δτz .= Face_operators[1] * sigma_31 * u_iterative
@@ -166,8 +170,10 @@ function odefun(dψV, ψδ, odeparam, t)
     Vn1_v = fill(Vn1, fN2 * fN3)
     Vn2_v = fill(Vn2, fN2 * fN3)
 
-    τ2 = Δτ[RS_filter_2D_nzind]
-    τ3 = Δτz[RS_filter_2D_nzind]
+    τfb = τb + Δτb 
+
+    τ2 = (τ0 + Δτ)[RS_filter_2D_nzind]
+    τ3 = (τz0 + Δτz)[RS_filter_2D_nzind]
 
     
     (V2_v, V3_v, _, _, iter) = newtbndv_vectorized(rateandstate_vectorized, Vn1_v, Vn2_v, ψ, σn, Vector(τ2), Vector(τ3), RSas, η, RSV0; ftol=1e-12, maxiter=100, atolx=1e-4, rtolx=1e-4)

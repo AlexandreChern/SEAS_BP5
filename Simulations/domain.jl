@@ -228,7 +228,7 @@ station_strings = ["-36dp+00", "-16dp+00", "00dp+00", "16dp+00", "+36dp+00",
 # θ = [3199]
 # station_indices = [1,2,3]
 
-create_text_files(path, station_strings, station_indices,t)
+# create_text_files(path, station_strings, station_indices,t)
 
 
 

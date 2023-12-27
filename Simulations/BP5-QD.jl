@@ -90,10 +90,18 @@ function main()
     # τb = τ0 * V / V_norm
 
 
+    # Creating output
+    callback_func = SavingCallback(
+        (ψδ, t, i)->write_to_file(path, ψδ, t, i, odeparam, station_strings, station_indices)
+                    ,SavedValues(Float64, Float64))
+    create_text_files(path, station_strings, station_indices,0)
+
+
     tspan = (0, sim_years * year_seconds)
     prob = ODEProblem(odefun, ψδ, tspan, odeparam)
 
-    sol = solve(prob, Tsit5(); dt=0.2, abstol = 1e-5, reltol = 1e-5, gamma=0.2)
+    sol = solve(prob, Tsit5(); dt=0.2, abstol = 1e-5, reltol = 1e-5, gamma=0.2,save_everystep=true,
+        callback=callback_func)
 
     
 end
