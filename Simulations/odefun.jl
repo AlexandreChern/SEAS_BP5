@@ -7,6 +7,8 @@ include("coefficients.jl")
 include("helper.jl")
 include("domain.jl")
 
+global const ctr = Ref{Int64}(1)
+
 odeparam = (
     reject_step = [false],                          # to reject a step or not
     Vp = BP5_coeff.Vp,                              # plate rate
@@ -33,6 +35,7 @@ odeparam = (
     Face_operators,                                 # getting face values from 3D SparseArrays
     updators,                                       # updating RHS values using SBP-SAT operators for Dirichlet Operations
     u_filters,                                      # filtering u1, u2, u3 from stacked u
+    stride_time = 5
 );
 
 struct odeparam_struct

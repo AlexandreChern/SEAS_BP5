@@ -446,10 +446,11 @@ function write_to_file(path, ψδ, t, i, odeparam, station_strings, station_indi
     # @unpack_namedtuple odeparam;
     Vmax = 0.0
     # if t == (sim_years ./ 31556926)
-    if t >= 0
-        if isdefined(i, :fsallast)
-            dψV = i.fsallast
-            dψ, V, ψ, δ = create_view(dψV, ψδ)
+   
+    if isdefined(i, :fsallast)
+        dψV = i.fsallast
+        dψ, V, ψ, δ = create_view(dψV, ψδ)
+        if mod(ctr[], odeparam.stride_time) == 0
             for n = 1:length(station_strings)
                 XXX = path * "fltst_strk" * station_strings[n] * ".txt"
                 ww = Array{Float64}(undef, 1, 8)
@@ -467,6 +468,8 @@ function write_to_file(path, ψδ, t, i, odeparam, station_strings, station_indi
                 end
             end
         end
+        global ctr[] += 1
+        @show ctr[]
     end
     Vmax
 end
