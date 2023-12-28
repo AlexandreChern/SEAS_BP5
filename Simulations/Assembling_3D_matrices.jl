@@ -593,9 +593,9 @@ function Assembling_3D_matrices(N_x, N_y, N_z;p=2)
             + u3_filter' * H_tilde * SAT_tilde_3_RHS_new);
 
     return M_new, RHS_new, H_tilde, HI_tilde, analy_sol, source, 
-            [T_11_1_new, T_12_1_new, T_13_1_new, T_21_1_new, T_22_1_new, T_23_1_new, T_31_1_new, T_32_1_new, T_33_1_new], [u1_filter, u2_filter, u3_filter], 
+            [T_11_1_new, T_12_1_new, T_13_1_new, T_21_1_new, T_22_1_new, T_23_1_new, T_31_1_new, T_32_1_new, T_33_1_new], 
+            [u1_filter, u2_filter, u3_filter], 
             [End_operator, Front_operator], 
             [sigma_11_new, sigma_21_new, sigma_31_new],
-            [δ2_update, δ3_update, face_2_V2_update, face_2_V3_update],
-            [u1_filter, u2_filter, u3_filter];
+            [δ2_update, δ3_update, face_2_V2_update, face_2_V3_update];
 end

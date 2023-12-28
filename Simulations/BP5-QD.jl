@@ -94,6 +94,7 @@ function main()
     callback_func = SavingCallback(
         (ψδ, t, i)->write_to_file(path, ψδ, t, i, odeparam, station_strings, station_indices)
                     ,SavedValues(Float64, Float64))
+    global ctr[] = 1
     create_text_files(path, station_strings, station_indices,0)
 
 
