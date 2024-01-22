@@ -39,6 +39,7 @@ odeparam = (
 );
 
 struct odeparam_struct
+    #=
     # reject_step
     # Vp
     # M
@@ -59,13 +60,14 @@ struct odeparam_struct
     # RSf0
     # δNp
     # N
+    =#
 end 
 
 
 # ODE function
 function odefun(dψV, ψδ, odeparam, t)
 
-    # # Unpacking named tuple p 
+    #= Unpacking named tuple p 
     # reject_step = p.reject_step
     # Vp = p.Vp
     # Δτ = p.Δτ
@@ -92,9 +94,11 @@ function odefun(dψV, ψδ, odeparam, t)
     # u_old = p.u_old
 
     # # End of unpacking
+    =#
 
     # automatically unpacking named tuples p
     # which is a variable for function odefun
+
     @unpack_namedtuple odeparam;
 
     # If reject return

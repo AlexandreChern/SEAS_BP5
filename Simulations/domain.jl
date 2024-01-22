@@ -14,6 +14,11 @@ Nx = N_x + 1
 Ny = N_y + 1
 Nz = N_z + 1
 
+u1_filter_matrix = get_u1(Nx, Ny, Nz)
+u2_filter_matrix = get_u2(Nx, Ny, Nz)
+u3_filter_matrix = get_u3(Nx, Ny, Nz)
+
+
 # RS friction region test purpose at this moment
 # fN2 and fN3 represents number of points in the fault region
 
@@ -67,7 +72,7 @@ fNz_VW_VS = (fNz_VW_VS_start, fNz_VW_VS_start + fN3_VW_VS - 1)
 # Assembling matrices for 3D SBP-SAT
 SBPp = 2                # SBPp order
 (M, RHS, H_tilde, HI_tilde, analy_sol, source, traction_operators, 
-    u_filters, Face_operators, sigmas, updators, u_filters) = Assembling_3D_matrices(N_x, N_y, N_z;p=SBPp);
+    u_filters, Face_operators, sigmas, updators) = Assembling_3D_matrices(N_x, N_y, N_z;p=SBPp);
 M_GPU = CUDA.CUSPARSE.CuSparseMatrixCSR(M);
 
 # set RHS to be zero at the beginning

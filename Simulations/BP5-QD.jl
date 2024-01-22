@@ -10,6 +10,8 @@ include("domain.jl")
 # loading odefun defined for ODEProblem
 include("odefun.jl")
 
+CUDA.allowscalar(false)
+
 function main()
     # loading coefficients for BP5 problem
     # create coefficents if not defined
@@ -89,6 +91,11 @@ function main()
     #         BP5_coeff.amax)) + η * BP5_coeff.Vinit
     # τb = τ0 * V / V_norm
 
+    try
+        mkdir(path)
+    catch
+        # folder already exists
+    end
 
     # Creating output
     callback_func = SavingCallback(
@@ -106,3 +113,6 @@ function main()
 
     
 end
+
+
+main()

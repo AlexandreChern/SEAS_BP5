@@ -561,7 +561,7 @@ function Assembling_3D_matrices(N_x, N_y, N_z;p=2)
         +   u3_filter' * H_tilde * (T_33_1_new' .- Z_33_1_new') * (e_1 * H_1)
     )
 
-    face_2_V2_update = (
+    face_2_V2_update = ( # something not quite right here
             u1_filter' * H_tilde * (T_21_2_new' .- Z_21_2_new') * (e_2 * H_2)
         +   u2_filter' * H_tilde * (T_22_2_new' .- Z_22_2_new') * (e_2 * H_2)
         +   u3_filter' * H_tilde * (T_23_2_new' .- Z_23_2_new') * (e_2 * H_2)
