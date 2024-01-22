@@ -67,38 +67,6 @@ end
 # ODE function
 function odefun(dψV, ψδ, odeparam, t)
 
-    #= Unpacking named tuple p 
-    # reject_step = p.reject_step
-    # Vp = p.Vp
-    # Δτ = p.Δτ
-    # τ = p.τ
-    # τ0 = p.τ0
-
-    # counter = p.counter
-    # μshear = p.μshear
-    # RSa = p.RSa
-    # RSb = p.RSb
-    # σn = p.σn
-    # η = p.η
-    # RSV0 = p.RSV0
-    # RSf0 = p.RSf0
-
-    # # domain information
-    # N = p.N
-    # δNp = p.δNp
-    
-    # # linear system
-    # M = p.M
-    # RHS = p.RHS
-    # u = p.u
-    # u_old = p.u_old
-
-    # # End of unpacking
-    =#
-
-    # automatically unpacking named tuples p
-    # which is a variable for function odefun
-
     @unpack_namedtuple odeparam;
 
     # If reject return
@@ -109,15 +77,7 @@ function odefun(dψV, ψδ, odeparam, t)
 
     @show t
 
-   
 
-    ## Setting up ratees of change for state and slip
-
-    # ψ = @view ψδ[1:(fN2 + 1)*(fN3 + 1)]
-    # δ = @view ψδ[(fN2 + 1)*(fN3 + 1) + 1:end]
-
-    # dψ = @view dψV[1:(fN2 + 1)*(fN3 + 1)]
-    # V = @view dψV[(fN2 + 1)*(fN3 + 1) + 1:end]
 
     dψ, V, ψ, δ = create_view(dψV, ψδ) # creating "views" to get dψ, V, ψ, δ
 
@@ -131,12 +91,8 @@ function odefun(dψV, ψδ, odeparam, t)
 
     # Updating RHS using remote loading for face 2 for V2
     RHS .+= updators[3] * (fill(t .* Vp, div(length(δ),2)))
-    # Updating RHS using remote loading for face 2 for V3
-    # RSH .+= updators[3] * (fill(0, div(length(δ),2)))
 
-    # End updating RHS using δ
-
-    # Solving linear system using iterative methods
+ 
     u_iterative, history = cg(M_GPU, CuArray(RHS), log=true);    # solving with non preconditioned cg
     # this can be replaced with MGCG in future 
     # @show history.iters
@@ -144,6 +100,11 @@ function odefun(dψV, ψδ, odeparam, t)
     u_iterative = Array(u_iterative)
     end
     u[:] .= u_iterative;
+
+    u1 = u1_filter_matrix * u
+    u2 = u2_filter_matrix * u
+    u3 = u3_filter_matrix * u
+
     # End of solving 
 
     # updating values TODO

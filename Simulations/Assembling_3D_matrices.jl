@@ -13,7 +13,7 @@ using SparseArrays
 using CUDA
 
 
-function Assembling_3D_matrices(N_x, N_y, N_z;p=2)
+function Assembling_3D_matrices(N_x, N_y, N_z;SBPp=2)
     hx = 1 / N_x;
     hy = 1 / N_y;
     hz = 1 / N_z;
@@ -26,16 +26,16 @@ function Assembling_3D_matrices(N_x, N_y, N_z;p=2)
     Ny = N_y + 1;
     Nz = N_z + 1;
 
-    (D1x, HIx, H1x, r1x) = diagonal_sbp_D1(p,N_x,xc=(0,1));
-    (D2x, S0x, SNx, HI2x, H2x, r2x) = diagonal_sbp_D2(p,N_x,xc=(0,1));
+    (D1x, HIx, H1x, r1x) = diagonal_sbp_D1(SBPp,N_x,xc=(0,1));
+    (D2x, S0x, SNx, HI2x, H2x, r2x) = diagonal_sbp_D2(SBPp,N_x,xc=(0,1));
 
 
-    (D1y, HIy, H1y, r1y) = diagonal_sbp_D1(p,N_y,xc=(0,1));
-    (D2y, S0y, SNy, HI2y, H2y, r2y) = diagonal_sbp_D2(p,N_y,xc=(0,1));
+    (D1y, HIy, H1y, r1y) = diagonal_sbp_D1(SBPp,N_y,xc=(0,1));
+    (D2y, S0y, SNy, HI2y, H2y, r2y) = diagonal_sbp_D2(SBPp,N_y,xc=(0,1));
 
 
-    (D1z, HIz, H1z, r1z) = diagonal_sbp_D1(p,N_y,xc=(0,1));
-    (D2z, S0z, SNz, HI2z, H2z, r2z) = diagonal_sbp_D2(p,N_y,xc=(0,1));
+    (D1z, HIz, H1z, r1z) = diagonal_sbp_D1(SBPp,N_y,xc=(0,1));
+    (D2z, S0z, SNz, HI2z, H2z, r2z) = diagonal_sbp_D2(SBPp,N_y,xc=(0,1));
 
     BSx = sparse(SNx - S0x);
     BSy = sparse(SNy - S0y);
