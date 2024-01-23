@@ -549,25 +549,25 @@ function Assembling_3D_matrices(N_x, N_y, N_z;SBPp=2)
     );
 
     # Traction updating operators
-    δ2_update = (
+    δ2_update = - (
             u1_filter' * H_tilde * HI_tilde * (T_21_1_new' .- Z_21_1_new') * (e_1 * H_1)
         +   u2_filter' * H_tilde * HI_tilde * (T_22_1_new' .- Z_22_1_new') * (e_1 * H_1)
         +   u3_filter' * H_tilde * HI_tilde * (T_23_1_new' .- Z_23_1_new') * (e_1 * H_1)
     )
 
-    δ3_update = (
+    δ3_update = - (
             u1_filter' * H_tilde * HI_tilde * (T_31_1_new' .- Z_31_1_new') * (e_1 * H_1)
         +   u2_filter' * H_tilde * HI_tilde * (T_32_1_new' .- Z_32_1_new') * (e_1 * H_1)
         +   u3_filter' * H_tilde * HI_tilde * (T_33_1_new' .- Z_33_1_new') * (e_1 * H_1)
     )
 
-    face_2_V2_update = ( # something not quite right here
+    face_2_V2_update = - ( # something not quite right here
             u1_filter' * H_tilde * HI_tilde * (T_21_2_new' .- Z_21_2_new') * (e_2 * H_2)
         +   u2_filter' * H_tilde * HI_tilde * (T_22_2_new' .- Z_22_2_new') * (e_2 * H_2)
         +   u3_filter' * H_tilde * HI_tilde * (T_23_2_new' .- Z_23_2_new') * (e_2 * H_2)
     )
 
-    face_2_V3_update = (
+    face_2_V3_update = - (
             u1_filter' * H_tilde * HI_tilde * (T_31_2_new' .- Z_31_2_new') * (e_2 * H_2)
         +   u2_filter' * H_tilde * HI_tilde * (T_32_2_new' .- Z_31_2_new') * (e_2 * H_2)
         +   u3_filter' * H_tilde * HI_tilde * (T_33_2_new' .- Z_33_2_new') * (e_2 * H_2)
