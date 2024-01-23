@@ -94,6 +94,7 @@ function odefun(dψV, ψδ, odeparam, t)
 
  
     u_iterative, history = cg(M_GPU, CuArray(RHS), log=true);    # solving with non preconditioned cg
+    u_iterative, history = cg(M_GPU, CuArray(RHS_new), log=true);    # solving with non preconditioned cg
     # this can be replaced with MGCG in future 
     # @show history.iters
     if typeof(u_iterative) == CuArray{Float64, 1, CUDA.Mem.DeviceBuffer}
@@ -104,6 +105,11 @@ function odefun(dψV, ψδ, odeparam, t)
     u1 = u1_filter_matrix * u
     u2 = u2_filter_matrix * u
     u3 = u3_filter_matrix * u
+
+    get_front_face(reshape(u1, Nx, Ny, Nz))
+    get_front_face(reshape(u2, Nx, Ny, Nz))
+    get_front_face(reshape(u3, Nx, Ny, Nz))
+
 
     # End of solving 
 

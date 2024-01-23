@@ -525,7 +525,7 @@ function Assembling_3D_matrices(N_x, N_y, N_z;SBPp=2)
             (T_11_1_new' .- Z_11_1_new') * (e_1 * H_1 * g₁¹[:])
         +   (T_21_1_new' .- Z_21_1_new') * (e_1 * H_1 * g₂¹[:])
         +   (T_31_1_new' .- Z_31_1_new') * (e_1 * H_1 * g₃¹[:])
-        +   (T_11_2_new' .- Z_11_2_new') * (e_2 * H_2 * g₁²[:])
+        +   (T_11_2_new' .- Z_11_2_new') * (e_2 * H_2 * g₁²[:]) # face 1 Dirichlet
         +   (T_21_2_new' .- Z_21_2_new') * (e_2 * H_2 * g₂²[:])
         +   (T_31_2_new' .- Z_31_2_new') * (e_2 * H_2 * g₃²[:])
     );
@@ -534,7 +534,7 @@ function Assembling_3D_matrices(N_x, N_y, N_z;SBPp=2)
             (T_12_1_new' .- Z_12_1_new') * (e_1 * H_1 * g₁¹[:])
         +   (T_22_1_new' .- Z_22_1_new') * (e_1 * H_1 * g₂¹[:])
         +   (T_32_1_new' .- Z_32_1_new') * (e_1 * H_1 * g₃¹[:])
-        +   (T_12_2_new' .- Z_12_2_new') * (e_2 * H_2 * g₁²[:])
+        +   (T_12_2_new' .- Z_12_2_new') * (e_2 * H_2 * g₁²[:]) # face 1 Dirichlet
         +   (T_22_2_new' .- Z_22_2_new') * (e_2 * H_2 * g₂²[:])
         +   (T_32_2_new' .- Z_31_2_new') * (e_2 * H_2 * g₃²[:])
     );
@@ -543,34 +543,34 @@ function Assembling_3D_matrices(N_x, N_y, N_z;SBPp=2)
             (T_13_1_new' .- Z_13_1_new') * (e_1 * H_1 * g₁¹[:])
         +   (T_23_1_new' .- Z_23_1_new') * (e_1 * H_1 * g₂¹[:])
         +   (T_33_1_new' .- Z_33_1_new') * (e_1 * H_1 * g₃¹[:])
-        +   (T_13_2_new' .- Z_13_2_new') * (e_2 * H_2 * g₁²[:])
+        +   (T_13_2_new' .- Z_13_2_new') * (e_2 * H_2 * g₁²[:]) # face 1 Dirichlet
         +   (T_23_2_new' .- Z_23_2_new') * (e_2 * H_2 * g₂²[:])
         +   (T_33_2_new' .- Z_33_2_new') * (e_2 * H_2 * g₃²[:])
     );
 
     # Traction updating operators
     δ2_update = (
-            u1_filter' * H_tilde * (T_21_1_new' .- Z_21_1_new') * (e_1 * H_1)
-        +   u2_filter' * H_tilde * (T_22_1_new' .- Z_22_1_new') * (e_1 * H_1)
-        +   u3_filter' * H_tilde * (T_23_1_new' .- Z_23_1_new') * (e_1 * H_1)
+            u1_filter' * H_tilde * HI_tilde * (T_21_1_new' .- Z_21_1_new') * (e_1 * H_1)
+        +   u2_filter' * H_tilde * HI_tilde * (T_22_1_new' .- Z_22_1_new') * (e_1 * H_1)
+        +   u3_filter' * H_tilde * HI_tilde * (T_23_1_new' .- Z_23_1_new') * (e_1 * H_1)
     )
 
     δ3_update = (
-            u1_filter' * H_tilde* (T_31_1_new' .- Z_31_1_new') * (e_1 * H_1)
-        +   u2_filter' * H_tilde* (T_32_1_new' .- Z_32_1_new') * (e_1 * H_1)
-        +   u3_filter' * H_tilde * (T_33_1_new' .- Z_33_1_new') * (e_1 * H_1)
+            u1_filter' * H_tilde * HI_tilde * (T_31_1_new' .- Z_31_1_new') * (e_1 * H_1)
+        +   u2_filter' * H_tilde * HI_tilde * (T_32_1_new' .- Z_32_1_new') * (e_1 * H_1)
+        +   u3_filter' * H_tilde * HI_tilde * (T_33_1_new' .- Z_33_1_new') * (e_1 * H_1)
     )
 
     face_2_V2_update = ( # something not quite right here
-            u1_filter' * H_tilde * (T_21_2_new' .- Z_21_2_new') * (e_2 * H_2)
-        +   u2_filter' * H_tilde * (T_22_2_new' .- Z_22_2_new') * (e_2 * H_2)
-        +   u3_filter' * H_tilde * (T_23_2_new' .- Z_23_2_new') * (e_2 * H_2)
+            u1_filter' * H_tilde * HI_tilde * (T_21_2_new' .- Z_21_2_new') * (e_2 * H_2)
+        +   u2_filter' * H_tilde * HI_tilde * (T_22_2_new' .- Z_22_2_new') * (e_2 * H_2)
+        +   u3_filter' * H_tilde * HI_tilde * (T_23_2_new' .- Z_23_2_new') * (e_2 * H_2)
     )
 
     face_2_V3_update = (
-            u1_filter' * H_tilde * (T_31_2_new' .- Z_31_2_new') * (e_2 * H_2)
-        +   u2_filter' * H_tilde * (T_32_2_new' .- Z_31_2_new') * (e_2 * H_2)
-        +   u3_filter' * H_tilde * (T_33_2_new' .- Z_33_2_new') * (e_2 * H_2)
+            u1_filter' * H_tilde * HI_tilde * (T_31_2_new' .- Z_31_2_new') * (e_2 * H_2)
+        +   u2_filter' * H_tilde * HI_tilde * (T_32_2_new' .- Z_31_2_new') * (e_2 * H_2)
+        +   u3_filter' * H_tilde * HI_tilde * (T_33_2_new' .- Z_33_2_new') * (e_2 * H_2)
     )
 
 
