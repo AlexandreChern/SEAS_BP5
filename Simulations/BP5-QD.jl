@@ -2,7 +2,7 @@
 include("helper.jl")
 
 # loading coefficients for BP5 problem
-include("coefficients.jl")
+# include("coefficients.jl") # now included in domain.jl
 
 # loading computational domain and linear system
 include("domain.jl")

@@ -26,7 +26,8 @@ BP5_coeff = coefficients(
     40,                     # Wf
     100,                    # lf
     12,                     # w
-    1000,                   # Δz
+    # 1000,                   # Δz
+    4000,                     # change it to 4000 km
     1800                    # tf
 )
 

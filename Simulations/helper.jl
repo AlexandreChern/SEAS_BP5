@@ -2,6 +2,7 @@
 using DifferentialEquations
 using Printf
 using Plots
+using CUDA
 
 function _unpack(x::NamedTuple)
     kk = keys(x)
@@ -412,7 +413,7 @@ function create_text_files(path, station_strings, station_indices, t)
         ww[3] = δ[2 * RS_index]
         ww[4] = log10(BP5_coeff.Vinit)
         ww[5] = log10(Vzero)
-        ww[6] = τ[2 * RS_index - 1]
+        ww[6] = τ[2 * RS_index - 1] # need to define this
         ww[7] = τ[2 * RS_index]
         ww[8] = log10(θ[station_indices[n]])  # 
         open(XXX, "w") do io
@@ -460,7 +461,7 @@ function write_to_file(path, ψδ, t, i, odeparam, station_strings, station_indi
                 ww[3] = δ[2 * RS_index]
                 ww[4] = (V[2 * RS_index-1])
                 ww[5] = (V[2 * RS_index])
-                ww[6] = τfb[2 * RS_index - 1]
+                ww[6] = τfb[2 * RS_index - 1] # need to define this
                 ww[7] = τfb[2 * RS_index]
                 ww[8] = ψ[station_indices[n]]  # 
                 open(XXX, "a") do io
