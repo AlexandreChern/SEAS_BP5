@@ -5,7 +5,8 @@ include("helper.jl")
 # include("coefficients.jl") # now included in domain.jl
 
 # loading computational domain and linear system
-include("domain.jl")
+domain_file = "domain_4km.jl"
+include(domain_file)
 
 # loading odefun defined for ODEProblem
 include("odefun.jl")
@@ -38,7 +39,7 @@ function main()
     θ = zeros(size(ψ))
 
     # 
-    RSas = zeros(fN2 * fN3)
+    # RSas = zeros(fN2 * fN3)
     for i in 1:fN2
         for j in 1:fN3
             index = i + (j - 1) * fN2
@@ -97,12 +98,13 @@ function main()
         # folder already exists
     end
 
+    global ctr[] = 1
+    create_text_files(path, station_strings, station_indices, δ, τb, θ, 0)
     # Creating output
     callback_func = SavingCallback(
         (ψδ, t, i)->write_to_file(path, ψδ, t, i, odeparam, station_strings, station_indices)
                     ,SavedValues(Float64, Float64))
-    global ctr[] = 1
-    create_text_files(path, station_strings, station_indices,0)
+
 
 
     tspan = (0, sim_years * year_seconds)

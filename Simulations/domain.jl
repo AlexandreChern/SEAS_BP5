@@ -252,8 +252,8 @@ fltst = [
 function find_flt_indices(indices, lf, fN2)
     x2 = indices[2]
     x3 = indices[3]
-    j = Int(round(x2 - (-lf / 2) + 1))
-    k = Int(round(x3 - 0))
+    j = Int(round( (x2 - (-lf / 2)) / (BP5_coeff.Δz / 1000))) + 1 # starting with 1
+    k = Int(round((x3 - 0) / (BP5_coeff.Δz / 1000))) # starting with 0 (multiplied by fN2) no +1
     return j + k * fN2
 end
 

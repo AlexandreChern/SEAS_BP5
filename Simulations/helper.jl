@@ -384,7 +384,7 @@ function test_unpack(p)
 end
 
 
-function create_text_files(path, station_strings, station_indices, t)
+function create_text_files(path, station_strings, station_indices, δ, τb, θ, t)
 
     # path_to_slip = path * "slip.dat"
     # io = open(path_to_slip, "w")
@@ -403,7 +403,7 @@ function create_text_files(path, station_strings, station_indices, t)
     # io = open(path_to_slip, "a")
     # writedlm(io, vv)
     # close(io)
-
+    Vzero = 1e-20
     for n = 1:length(station_strings)
         XXX = path * "fltst_strk" * station_strings[n] * ".txt"
         ww = Array{Float64}(undef, 1, 8)
@@ -413,8 +413,8 @@ function create_text_files(path, station_strings, station_indices, t)
         ww[3] = δ[2 * RS_index]
         ww[4] = log10(BP5_coeff.Vinit)
         ww[5] = log10(Vzero)
-        ww[6] = τ[2 * RS_index - 1] # need to define this
-        ww[7] = τ[2 * RS_index]
+        ww[6] = τb[2 * RS_index - 1] # need to define this
+        ww[7] = τb[2 * RS_index]
         ww[8] = log10(θ[station_indices[n]])  # 
         open(XXX, "w") do io
             write(io, "This is the file header")
@@ -444,7 +444,7 @@ end
 
 
 function write_to_file(path, ψδ, t, i, odeparam, station_strings, station_indices)
-    # @unpack_namedtuple odeparam;
+    @unpack_namedtuple odeparam;
     Vmax = 0.0
     # if t == (sim_years ./ 31556926)
    

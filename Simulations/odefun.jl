@@ -3,9 +3,9 @@ using Printf
 using DelimitedFiles
 using IterativeSolvers
 
-include("coefficients.jl")
+# include("coefficients.jl")
 include("helper.jl")
-include("domain.jl")
+# include("domain.jl")
 
 global const ctr = Ref{Int64}(1)
 
@@ -35,7 +35,8 @@ odeparam = (
     Face_operators,                                 # getting face values from 3D SparseArrays
     updators,                                       # updating RHS values using SBP-SAT operators for Dirichlet Operations
     u_filters,                                      # filtering u1, u2, u3 from stacked u
-    stride_time = 5
+    stride_time = 5,                                 # 
+    RSas = zeros(fN2 * fN3)                         # RSas 
 );
 
 struct odeparam_struct
@@ -177,7 +178,7 @@ function odefun(dψV, ψδ, odeparam, t)
     Vn1_v = fill(Vn1, fN2 * fN3)
     Vn2_v = fill(Vn2, fN2 * fN3)
 
-    τfb = τb + Δτb 
+    odeparam.τfb .= τb .+ Δτb 
 
     τ2 = (τ0 + Δτ)[RS_filter_2D_nzind]
     τ3 = (τz0 + Δτz)[RS_filter_2D_nzind]

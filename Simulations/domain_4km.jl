@@ -253,12 +253,12 @@ fltst = [
 function find_flt_indices(indices, lf, fN2)
     x2 = indices[2]
     x3 = indices[3]
-    j = Int(round(x2 - (-lf / 2) + 1))
-    k = Int(round(x3 - 0))
+    j = Int(round( (x2 - (-lf / 2)) / (BP5_coeff.Δz / 1000))) + 1 # starting with 1
+    k = Int(round((x3 - 0) / (BP5_coeff.Δz / 1000))) # starting with 0 (multiplied by fN2) no +1
     return j + k * fN2
 end
 
-path="./output/"
+path="./output_4km/"
 station_indices = find_flt_indices.(fltst,BP5_coeff.lf,Nz)
 station_strings = ["-36dp+00", "-16dp+00", "00dp+00", "16dp+00", "+36dp+00",
                     "-24dp+10", "-16dp+10", "+00dp+10","+16dp+10",
