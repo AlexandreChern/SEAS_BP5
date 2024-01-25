@@ -130,8 +130,8 @@ function odefun(dψV, ψδ, odeparam, t)
 
     # Updating RHS using δ
     RHS .= 0 # Resetting RHS
-    RHS .+= updators[1] * δ[1:2:end]
-    RHS .+= updators[2] * δ[2:2:end]
+    RHS .+= updators[1] * δ[1:2:end] ./ 2 # divide slip by half to get displacements
+    RHS .+= updators[2] * δ[2:2:end] ./ 2
 
     # Updating RHS using remote loading for face 2 for V2
     RHS .+= updators[3] * (fill(t .* Vp / 2, div(length(δ),2)))
@@ -204,7 +204,6 @@ function odefun(dψV, ψδ, odeparam, t)
 
     V[2 .* RS_filter_2D_nzind .- 1] .= V2_v
     V[2 .* RS_filter_2D_nzind] .= V3_v
-
     # Update ψ
     # dψ[n] = (RSb * RSV0 / RSDc) * (exp((RSf0 - ψn) / RSb) - abs(Vn) / RSV0) # BP1
     # dψ .= (RSb * RSV0 / RSL) .* (exp.((RSf0 .- ψ) ./ RSb) .- sqrt.(V2_v.^2 .+ V3_v.^2) ./ RSV0)
