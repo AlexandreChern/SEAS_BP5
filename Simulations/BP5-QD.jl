@@ -5,7 +5,8 @@ include("helper.jl")
 # include("coefficients.jl") # now included in domain.jl
 
 # loading computational domain and linear system
-domain_file = "domain_4km.jl"
+# domain_file = "domain_4km.jl"
+domain_file = "domain.jl"
 include(domain_file)
 
 # loading odefun defined for ODEProblem

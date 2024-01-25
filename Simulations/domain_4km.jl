@@ -260,7 +260,7 @@ end
 
 path="./output_4km/"
 station_indices = find_flt_indices.(fltst,BP5_coeff.lf,Nz)
-station_strings = ["-36dp+00", "-16dp+00", "00dp+00", "16dp+00", "+36dp+00",
+station_strings = ["-36dp+00", "-16dp+00", "+00dp+00", "+16dp+00", "+36dp+00",
                     "-24dp+10", "-16dp+10", "+00dp+10","+16dp+10",
                     "+00dp+22"]
 # t = 0
