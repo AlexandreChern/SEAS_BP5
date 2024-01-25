@@ -19,6 +19,8 @@ odeparam = (
     Δτb = spzeros(2 * (N_x + 1) * (N_y + 1)),       # store the traction computed
     τb = spzeros(2 * (N_x + 1) * (N_y + 1)),        # shear stress vector \boldsymbol{τ} = [τ; τ_z]
     τfb = spzeros(2 * (N_x + 1) * (N_y + 1)),
+    V2_v = fill(1e-10, fN2 * fN3),
+    V3_v = fill(1e-10, fN2 * fN3),
     counter = [],                                   # counter for slip with Vmax >= threshold
     RHS = RHS,                                      # RHS of the linear system
     μshear = BP5_coeff.cs^2 * BP5_coeff.ρ ,         # constant?
@@ -174,11 +176,11 @@ function odefun(dψV, ψδ, odeparam, t)
     Δτz .= Face_operators[1] * sigma_31 * u_iterative
     
     # TODO use previously solved solutions
-    Vn1 = 1e-10 # use very small values 
-    Vn2 = 1e-10 # use very small values
+    # Vn1 = 1e-10 # use very small values 
+    # Vn2 = 1e-10 # use very small values
 
-    Vn1_v = fill(Vn1, fN2 * fN3)
-    Vn2_v = fill(Vn2, fN2 * fN3)
+    # Vn1_v = fill(Vn1, fN2 * fN3)
+    # Vn2_v = fill(Vn2, fN2 * fN3)
 
     odeparam.τfb .= τb .+ Δτb 
 
@@ -186,7 +188,10 @@ function odefun(dψV, ψδ, odeparam, t)
     τ3 = (τz0 + Δτz)[RS_filter_2D_nzind]
 
     
-    (V2_v, V3_v, _, _, iter) = newtbndv_vectorized(rateandstate_vectorized, Vn1_v, Vn2_v, ψ, σn, Vector(τ2), Vector(τ3), RSas, η, RSV0; ftol=1e-12, maxiter=100, atolx=1e-4, rtolx=1e-4)
+    # (V2_v, V3_v, _, _, iter) = newtbndv_vectorized(rateandstate_vectorized, Vn1_v, Vn2_v, ψ, σn, Vector(τ2), Vector(τ3), RSas, η, RSV0; ftol=1e-12, maxiter=100, atolx=1e-4, rtolx=1e-4)
+    (V2_tmp, V3_tmp, _, _, iter) = newtbndv_vectorized(rateandstate_vectorized, V2_v, V3_v, ψ, σn, Vector(τ2), Vector(τ3), RSas, η, RSV0; ftol=1e-12, maxiter=100, atolx=1e-4, rtolx=1e-4)
+    V2_v .= V2_tmp
+    V3_v .= V3_tmp
     @show iter
 
     # out side of RS, V2 = Vp, V3 = 0
@@ -194,11 +199,15 @@ function odefun(dψV, ψδ, odeparam, t)
     V[2:2:end] .= 0
 
     # inside RS, set V2 and V3 with solutions
+    # V[2 .* RS_filter_2D_nzind .- 1] .= V2_v
+    # V[2 .* RS_filter_2D_nzind] .= V3_v
+
     V[2 .* RS_filter_2D_nzind .- 1] .= V2_v
     V[2 .* RS_filter_2D_nzind] .= V3_v
 
     # Update ψ
     # dψ[n] = (RSb * RSV0 / RSDc) * (exp((RSf0 - ψn) / RSb) - abs(Vn) / RSV0) # BP1
+    # dψ .= (RSb * RSV0 / RSL) .* (exp.((RSf0 .- ψ) ./ RSb) .- sqrt.(V2_v.^2 .+ V3_v.^2) ./ RSV0)
     dψ .= (RSb * RSV0 / RSL) .* (exp.((RSf0 .- ψ) ./ RSb) .- sqrt.(V2_v.^2 .+ V3_v.^2) ./ RSV0)
     nothing
 end
