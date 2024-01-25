@@ -127,11 +127,12 @@ function odefun(dψV, ψδ, odeparam, t)
     ## End setting up dψV and ψδ
 
     # Updating RHS using δ
+    RHS .= 0 # Resetting RHS
     RHS .+= updators[1] * δ[1:2:end]
     RHS .+= updators[2] * δ[2:2:end]
 
     # Updating RHS using remote loading for face 2 for V2
-    RHS .+= updators[3] * (fill(t .* Vp, div(length(δ),2)))
+    RHS .+= updators[3] * (fill(t .* Vp / 2, div(length(δ),2)))
     # Updating RHS using remote loading for face 2 for V3
     # RSH .+= updators[3] * (fill(0, div(length(δ),2)))
 
@@ -172,7 +173,8 @@ function odefun(dψV, ψδ, odeparam, t)
     Δτ .= Face_operators[1] * sigma_21 * u_iterative
     Δτz .= Face_operators[1] * sigma_31 * u_iterative
     
-    Vn1 = 1e-10 # use very small values
+    # TODO use previously solved solutions
+    Vn1 = 1e-10 # use very small values 
     Vn2 = 1e-10 # use very small values
 
     Vn1_v = fill(Vn1, fN2 * fN3)
