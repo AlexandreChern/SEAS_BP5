@@ -110,9 +110,12 @@ function main()
     tspan = (0, sim_years * year_seconds)
     prob = ODEProblem(odefun, ψδ, tspan, odeparam)
 
-    sol = solve(prob, Tsit5(); dt=0.2, abstol = 1e-5, reltol = 1e-5, gamma=0.2,save_everystep=true,
-        callback=callback_func)
+    # sol = solve(prob, Tsit5(); dt=0.2, abstol = 1e-5, reltol = 1e-5, gamma=0.2,save_everystep=true,
+    #     callback=callback_func)
 
+
+    sol = solve(prob, Tsit5(); dt=0.2, abstol = 1e-5, reltol = 1e-5, save_everystep=true,
+        callback=callback_func)
     
 end
 
