@@ -459,11 +459,13 @@ function write_to_file(path, ψδ, t, i, odeparam, station_strings, station_indi
                 RS_index = RS_filter_2D_nzind[station_indices[n]]
                 ww[2] = δ[2 * RS_index-1]
                 ww[3] = δ[2 * RS_index]
-                ww[4] = (V[2 * RS_index-1])
-                ww[5] = (V[2 * RS_index])
+                ww[4] = log10(abs((V[2 * RS_index-1])))
+                ww[5] = log10(abs((V[2 * RS_index])))
                 ww[6] = τfb[2 * RS_index - 1] # need to define this
                 ww[7] = τfb[2 * RS_index]
-                ww[8] = ψ[station_indices[n]]  # 
+                θ = BP5_coeff.L / BP5_coeff.V0 * exp((ψ[station_indices[n]] - BP5_coeff.f0)/BP5_coeff.b0)
+                # ww[8] = ψ[station_indices[n]]  # 
+                ww[8] = log10(θ)
                 open(XXX, "a") do io
                     writedlm(io, ww)
                 end

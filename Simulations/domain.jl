@@ -22,7 +22,7 @@ BP5_coeff = coefficients(
     25,                     # σn
     0.14,                   # L or Dc 
     1E-9,                   # Vp
-    1E-9,                   # Vinit
+    1E-9,                   # Vinit initial value 1E-9, change it to 1E-3
     1E-6,                   # V0
     0.6,                    # f0
     2,                      # hs

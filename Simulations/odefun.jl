@@ -172,8 +172,8 @@ function odefun(dψV, ψδ, odeparam, t)
     τz0 =  @view τb[2:2:length(τb)]
 
     # Δτz .= compute_traction_τz() # TODO
-    Δτ .= Face_operators[1] * sigma_21 * u_iterative
-    Δτz .= Face_operators[1] * sigma_31 * u_iterative
+    Δτ .= Face_operators[1] * sigma_21 * u_iterative ./ N_y # adjusting grid spacing for traction
+    Δτz .= Face_operators[1] * sigma_31 * u_iterative ./ N_z
     
     # TODO use previously solved solutions
     # Vn1 = 1e-10 # use very small values 
