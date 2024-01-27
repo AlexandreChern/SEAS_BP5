@@ -75,8 +75,8 @@ fNz = (1, fN3)                   # z direction
 
 fN2_VW = BP5_coeff.l /(BP5_coeff.Δz / 1000) + 1
 fN2_VW = round(Int, fN2_VW, RoundUp)
-fN2_VW_favorible = BP5_coeff.w / (BP5_coeff.Δz / 1000) + 1
-fN2_VW_favorible = round(Int, fN2_VW_favorible, RoundUp)
+fN2_VW_favorable = BP5_coeff.w / (BP5_coeff.Δz / 1000) + 1
+fN2_VW_favorable = round(Int, fN2_VW_favorable, RoundUp)
 fN3_VW = BP5_coeff.H / (BP5_coeff.Δz / 1000) + 1
 fN3_VW = round(Int, fN3_VW, RoundUp)
 
@@ -84,7 +84,7 @@ fN3_VW = round(Int, fN3_VW, RoundUp)
 fNy_VW_start = (Ly - BP5_coeff.l) / (2 * BP5_coeff.Δz / 1000) + 1
 fNy_VW_start = round(Int, fNy_VW_start, RoundUp)
 fNy_VW = (fNy_VW_start, fNy_VW_start + fN2_VW - 1)
-fNy_VW_favorible = (fNy_VW_start, fNy_VW_start + fN2_VW_favorible - 1)
+fNy_VW_favorable = (fNy_VW_start, fNy_VW_start + fN2_VW_favorable - 1)
 fNz_VW_start = round(Int, (BP5_coeff.hs + BP5_coeff.ht) / (BP5_coeff.Δz / 1000), RoundUp) + 1
 fNz_VW = (fNz_VW_start, fNz_VW_start + fN3_VW - 1)
 
@@ -204,20 +204,20 @@ function get_transition_indices(Nx, Ny, Nz, fNy_VW, fNz_VW, fNy_VW_VS, fNz_VW_VS
     return kron(z_idx, y_idx, x_idx) - get_uniform_indices(Nx, Ny, Nz, fNy_VW, fNz_VW)
 end
 
-function get_favorible_indices(Nx, Ny, Nz, fNy_VW_favorible, fNz_VW)
+function get_favorable_indices(Nx, Ny, Nz, fNy_VW_favorable, fNz_VW)
     x_idx = spzeros(Nx)
     y_idx = spzeros(Ny)
     z_idx = spzeros(Nz)
     x_idx[1] = 1 # the fault is on the first face
-    y_idx[fNy_VW_favorible[1]:fNy_VW_favorible[2]] .= 1
+    y_idx[fNy_VW_favorable[1]:fNy_VW_favorable[2]] .= 1
     z_idx[fNz_VW[1]:fNz_VW[2]] .= 1
     return kron(z_idx, y_idx, x_idx)
 end
 
-function get_favorible_indices_2D(Ny, Nz, fNy_VW_favorible, fNz_VW)
+function get_favorable_indices_2D(Ny, Nz, fNy_VW_favorable, fNz_VW)
     y_idx = spzeros(Ny)
     z_idx = spzeros(Nz)
-    y_idx[fNy_VW_favorible[1]:fNy_VW_favorible[2]] .= 1
+    y_idx[fNy_VW_favorable[1]:fNy_VW_favorable[2]] .= 1
     z_idx[fNz_VW[1]:fNz_VW[2]] .= 1
     return kron(z_idx, y_idx)
 end
@@ -243,10 +243,10 @@ RS_filter_2D_nzind = RS_filter_2D.nzind
 VW_filter = get_uniform_indices(Nx, Ny, Nz, fNy_VW, fNz_VW)
 VW_filter_2D = get_uniform_indices_2D(Ny, Nz, fNy_VW, fNz_VW)
 VW_filter_2D_nzind = VW_filter_2D.nzind
-VW_favorible_filter = get_favorible_indices(Nx, Ny, Nz, fNy_VW_favorible, fNz_VW)
-VW_favorible_filter_nzind = VW_favorible_filter.nzind
-VW_favorible_filter_2D = get_favorible_indices_2D(Ny, Nz, fNy_VW_favorible, fNz_VW)
-VW_favorible_filter_2D_nzind = VW_favorible_filter_2D.nzind
+VW_favorable_filter = get_favorable_indices(Nx, Ny, Nz, fNy_VW_favorable, fNz_VW)
+VW_favorable_filter_nzind = VW_favorable_filter.nzind
+VW_favorable_filter_2D = get_favorable_indices_2D(Ny, Nz, fNy_VW_favorable, fNz_VW)
+VW_favorable_filter_2D_nzind = VW_favorable_filter_2D.nzind
 VW_VS_transition_filter = get_transition_indices(Nx, Ny, Nz, fNy_VW, fNz_VW, fNy_VW_VS, fNz_VW_VS)
 VS_filter = RS_filter - VW_filter - VW_VS_transition_filter
 
