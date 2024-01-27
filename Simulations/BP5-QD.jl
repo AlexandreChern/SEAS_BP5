@@ -25,6 +25,8 @@ function main()
         BP5_coeff = coefficients() # calling default constructor
     end
 
+    @show BP5_coeff.Δz
+
     # setting b = b0
     b = BP5_coeff.b0
     Vzero = 1e-20
@@ -56,8 +58,8 @@ function main()
     for i in 1:Ny
         for j in 1:Nz
             index = i + (j - 1) * Ny
-            V[2*index - 1] = BP5_coeff.Vinit
-            V[2*index] = Vzero
+            V[2*index - 1] = BP5_coeff.Vinit / (Ly * 1000)
+            V[2*index] = Vzero / (Lz * 1000)
         end
     end
     
@@ -91,8 +93,8 @@ function main()
         end
     end
 
-    for index in VW_favorible_filter_2D_nzind
-        V[2* index - 1] = 0.03
+    for index in VW_favorable_filter_2D_nzind
+        V[2* index - 1] = 0.03 / (Ly * 1000)
         δ[2* index - 1] = BP5_coeff.L
         τ0 = BP5_coeff.σn * RSas[index] * asinh( (BP5_coeff.Vinit / (2*BP5_coeff.V0) * 
                             exp((BP5_coeff.f0 + BP5_coeff.b0 * log(BP5_coeff.V0 / BP5_coeff.Vinit)) / 

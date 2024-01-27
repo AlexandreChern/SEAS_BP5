@@ -172,8 +172,8 @@ function odefun(dψV, ψδ, odeparam, t)
     τz0 =  @view τb[2:2:length(τb)]
 
     # Δτz .= compute_traction_τz() # TODO
-    Δτ .= Face_operators[1] * sigma_21 * u_iterative ./ N_y # adjusting grid spacing for traction
-    Δτz .= Face_operators[1] * sigma_31 * u_iterative ./ N_z
+    Δτ .= Face_operators[1] * sigma_21 * u_iterative
+    Δτz .= Face_operators[1] * sigma_31 * u_iterative
     
     # TODO use previously solved solutions
     # Vn1 = 1e-10 # use very small values 
@@ -195,15 +195,15 @@ function odefun(dψV, ψδ, odeparam, t)
     @show iter
 
     # out side of RS, V2 = Vp, V3 = 0
-    V[1:2:end] .= Vp
-    V[2:2:end] .= 0
+    V[1:2:end] .= Vp / (Ly * 1000)
+    V[2:2:end] .= 0 / (Lz * 1000)
 
     # inside RS, set V2 and V3 with solutions
     # V[2 .* RS_filter_2D_nzind .- 1] .= V2_v
     # V[2 .* RS_filter_2D_nzind] .= V3_v
 
-    V[2 .* RS_filter_2D_nzind .- 1] .= V2_v
-    V[2 .* RS_filter_2D_nzind] .= V3_v
+    V[2 .* RS_filter_2D_nzind .- 1] .= V2_v / (Ly * 1000)
+    V[2 .* RS_filter_2D_nzind] .= V3_v / (Lz * 1000)
     # Update ψ
     # dψ[n] = (RSb * RSV0 / RSDc) * (exp((RSf0 - ψn) / RSb) - abs(Vn) / RSV0) # BP1
     # dψ .= (RSb * RSV0 / RSL) .* (exp.((RSf0 .- ψ) ./ RSb) .- sqrt.(V2_v.^2 .+ V3_v.^2) ./ RSV0)
