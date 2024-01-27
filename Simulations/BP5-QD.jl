@@ -61,14 +61,6 @@ function main()
         end
     end
     
-    for index in VW_favorible_filter_2D_nzind
-        V[2* index - 1] = 0.03
-        δ[2* index - 1] = BP5_coeff.L
-        τ0 = BP5_coeff.σn * RSas[index] * asinh( (BP5_coeff.Vinit / (2*BP5_coeff.V0) * 
-                            exp((BP5_coeff.f0 + BP5_coeff.b0 * log(BP5_coeff.V0 / BP5_coeff.Vinit)) / 
-                            RSas[index]))  + η * 0.03) 
-                            
-    end
     
 
     # initializing \boldsymbol{τ}^0 for the entire domain
@@ -99,6 +91,15 @@ function main()
         end
     end
 
+    for index in VW_favorible_filter_2D_nzind
+        V[2* index - 1] = 0.03
+        δ[2* index - 1] = BP5_coeff.L
+        τ0 = BP5_coeff.σn * RSas[index] * asinh( (BP5_coeff.Vinit / (2*BP5_coeff.V0) * 
+                            exp((BP5_coeff.f0 + BP5_coeff.b0 * log(BP5_coeff.V0 / BP5_coeff.Vinit)) / 
+                            RSas[index]))  + η * 0.03) 
+        τ[2*index - 1] = τ0                            
+    end
+
 
     # τ0 = BP5_coeff.σn * BP5_coeff.amax * asinh(BP5_coeff.Vinit / (2 * BP5_coeff.V0) *
     #         exp.((BP5_coeff.f0 + BP5_coeff.b0 * log.(BP5_coeff.V0 / BP5_coeff.Vinit)) /
@@ -123,7 +124,7 @@ function main()
     tspan = (0, sim_years * year_seconds)
     prob = ODEProblem(odefun, ψδ, tspan, odeparam)
 
-    sol = solve(prob, Tsit5(); dt=0.2, abstol = 1e-5, reltol = 1e-5, gamma=0.2,save_everystep=true,
+    sol = solve(prob, Tsit5(); dt=0.001, abstol = 1e-6, reltol = 1e-6, gamma=0.2,save_everystep=true,
         callback=callback_func)
 
 

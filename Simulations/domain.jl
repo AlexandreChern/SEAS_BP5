@@ -184,6 +184,15 @@ function get_uniform_indices(Nx, Ny, Nz, fNy_VW, fNz_VW)
     return kron(z_idx, y_idx, x_idx)
 end
 
+function get_uniform_indices_2D(Ny, Nz, fNy_VW, fNz_VW)
+    y_idx = spzeros(Ny)
+    z_idx = spzeros(Nz)
+    y_idx[fNy_VW[1]:fNy_VW[2]] .= 1
+    z_idx[fNz_VW[1]:fNz_VW[2]] .= 1
+    return kron(z_idx, y_idx)
+end
+
+
 function get_transition_indices(Nx, Ny, Nz, fNy_VW, fNz_VW, fNy_VW_VS, fNz_VW_VS)
     x_idx = spzeros(Nx)
     y_idx = spzeros(Ny)
@@ -232,6 +241,8 @@ RS_filter_nzind = RS_filter.nzind
 RS_filter_2D = get_RS_indices_2D(Ny, Nz, fNy, fNz)
 RS_filter_2D_nzind = RS_filter_2D.nzind
 VW_filter = get_uniform_indices(Nx, Ny, Nz, fNy_VW, fNz_VW)
+VW_filter_2D = get_uniform_indices_2D(Ny, Nz, fNy_VW, fNz_VW)
+VW_filter_2D_nzind = VW_filter_2D.nzind
 VW_favorible_filter = get_favorible_indices(Nx, Ny, Nz, fNy_VW_favorible, fNz_VW)
 VW_favorible_filter_nzind = VW_favorible_filter.nzind
 VW_favorible_filter_2D = get_favorible_indices_2D(Ny, Nz, fNy_VW_favorible, fNz_VW)
