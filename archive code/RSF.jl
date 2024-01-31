@@ -196,6 +196,10 @@ psi_v = [0.6, 0.6, 0.6]
 a_v = [0.015, 0.015, 0.015]
 τ2_v = [τ, τ, τ]
 τ3_v = [τz, τz, τz]
+V0 = RSV0
+
+Vn1_v = V2
+Vn2_v = V3
 
 rateandstate_vectorized(V2, V3, psi_v, σn, τ2_v, τ3_v, η, a_v, V0)
 
