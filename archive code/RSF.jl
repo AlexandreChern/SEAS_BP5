@@ -153,12 +153,15 @@ function newtbndv_vectorized(rateandstate_vectorized, V2, V3, psi_v, σn, τ2_v,
     for iter = 1:maxiter
         (f_v, g_v, dfx_v, dfy_v, dgx_v, dgy_v) = rateandstate_vectorized(V2, V3,  
                                         psi_v, σn, τ2_v, τ3_v, η, a_v, V0)
+        @show dfx_v[1], dfy_v[1], dgx_v[1], dgy_v[1]
         inv_J = map_jacobian_inv.(dfx_v, dfy_v, dgx_v, dgy_v)
+        @show inv_J[1]
         dV2V3 =  -inv_J .* map_cat.(f_v, g_v)
         dV2 = get_first.(dV2V3)
         dV3 = get_second.(dV2V3)
         V2 = V2 + dV2
         V3 = V3 + dV3
+        @show dV2[1], dV3[1]
         
         # TODO vectorized control flow
         if all(abs.(f_v) .< ftol) && all(abs.(dV2) .< atolx .+ rtolx .* (abs.(dV2) .+ abs.(V2))) && all(abs.(g_v) .< ftol) && all(abs.(dV2) .< atolx .+ rtolx .* (abs.(dV3) .+ abs.(V3)))
@@ -168,10 +171,10 @@ function newtbndv_vectorized(rateandstate_vectorized, V2, V3, psi_v, σn, τ2_v,
     return (V2, V3, f_v, g_v, -maxiter)
 end
 # TESTING:
-ψn = 0.6
-an = 0.015
+ψn = 0.8                # default value 0.6 in this test
+an = 0.04              # default value 0.015 in this test
 η = 32/6
-σn = 50
+σn = 25
 RSV0 = 1e-6
 V1_actual = 1
 V2_actual = 2
@@ -212,16 +215,18 @@ newtbndv_vectorized(rateandstate_vectorized, Vn1_v, Vn2_v, ψ, σn, τ2, τ3, RS
 N_elements = 1000
 V2_long = fill(2,N_elements)
 V3_long = fill(1,N_elements)
-psi_long = fill(0.6, N_elements)
-a_long = fill(0.015, N_elements)
+psi_long = fill(0.8, N_elements)
+a_long = fill(0.04, N_elements)
 τ2_long = fill(τ, N_elements)
 τ3_long = fill(τz, N_elements)
+V0 = RSV0
 
 (f_v, g_v, dfx_v, dfy_v, dgx_v, dgy_v) = rateandstate_vectorized(V2_long, V3_long, psi_long, σn, τ2_long, τ3_long, η, a_long, V0)
 inv_J = map_jacobian_inv.(dfx_v, dfy_v, dgx_v, dgy_v)
-newtbndv_vectorized(rateandstate_vectorized, V2_long, V3_long, psi_long, σn, τ2_long, τ3_long, η, a_long, V0; ftol=1e-12, maxiter=10, atolx=1e-4, rtolx=1e-4)
+V2_tmp, V3_tmp, _, _, iter = newtbndv_vectorized(rateandstate_vectorized, V2_long, V3_long, psi_long, σn, τ2_long, τ3_long, η, a_long, V0; ftol=1e-12, maxiter=3, atolx=1e-4, rtolx=1e-4)
 
-@benchmark newtbndv_vectorized(rateandstate_vectorized, V2_long, V3_long, psi_long, σn, τ2_long, τ3_long, η, a_long, V0; ftol=1e-12, maxiter=10, atolx=1e-4, rtolx=1e-4)
+
+# @benchmark newtbndv_vectorized(rateandstate_vectorized, V2_long, V3_long, psi_long, σn, τ2_long, τ3_long, η, a_long, V0; ftol=1e-12, maxiter=10, atolx=1e-4, rtolx=1e-4)
 
 
 

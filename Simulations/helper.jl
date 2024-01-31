@@ -305,17 +305,22 @@ end
 
 function newtbndv_vectorized(rateandstate_vectorized, V2, V3, psi_v, σn, τ2_v, τ3_v, η, a_v, V0,;  
                             ftol=1e-12, maxiter=100, atolx = 1e-4, rtolx=1e-4)
-    (f_v, g_v, dfx_v, dfy_v, dgx_v, dgy_v) = rateandstate_vectorized(V2, V3,  
-                        psi_v, σn, τ2_v, τ3_v, η, a_v, V0)
+    # (f_v, g_v, dfx_v, dfy_v, dgx_v, dgy_v) = rateandstate_vectorized(V2, V3,  
+    #                     psi_v, σn, τ2_v, τ3_v, η, a_v, V0)
+    # @show V2[1], V3[1], psi_v[1], τ2_v[1], τ3_v[1], V0
     for iter = 1:maxiter
         (f_v, g_v, dfx_v, dfy_v, dgx_v, dgy_v) = rateandstate_vectorized(V2, V3,  
                                         psi_v, σn, τ2_v, τ3_v, η, a_v, V0)
         inv_J = map_jacobian_inv.(dfx_v, dfy_v, dgx_v, dgy_v)
+        # @show dfx_v[1], dfy_v[1], dgx_v[1], dgy_v[1]
+        # @show inv_J[1]
+        # println()
         dV2V3 =  -inv_J .* map_cat.(f_v, g_v)
         dV2 = get_first.(dV2V3)
         dV3 = get_second.(dV2V3)
         V2 = V2 + dV2
         V3 = V3 + dV3
+        # @show dV2[1], dV3[1]
         
         # TODO vectorized control flow
         if all(abs.(f_v) .< ftol) && all(abs.(dV2) .< atolx .+ rtolx .* (abs.(dV2) .+ abs.(V2))) && all(abs.(g_v) .< ftol) && all(abs.(dV2) .< atolx .+ rtolx .* (abs.(dV3) .+ abs.(V3)))
