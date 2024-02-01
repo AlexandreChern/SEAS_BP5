@@ -176,13 +176,13 @@ an = 0.04              # default value 0.015 in this test
 η = 32/6
 σn = 25
 RSV0 = 1e-6
-V1_actual = 1
-V2_actual = 2
+V1_actual = 1E-9
+V2_actual = 1E-20
 Vactual = sqrt(V1_actual^2 + V2_actual^2)
 τ = σn * an * asinh(Vactual/(2*RSV0) * exp(ψn/an)) * V1_actual/Vactual + η*V1_actual
 τz =  σn * an * asinh(Vactual/(2*RSV0) * exp(ψn/an)) * V2_actual/Vactual + η*V2_actual
-Vn1 = 2              #initial guess
-Vn2 = 1      #initial guess
+Vn1 = 1E-3              #initial guess
+Vn2 = 1E-10      #initial guess
 
 x = Vn1
 y = Vn2
