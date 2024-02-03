@@ -18,12 +18,13 @@ CUDA.allowscalar(false)
 function main()
     # loading coefficients for BP5 problem
     # create coefficents if not defined
-    if @isdefined BP5_coeff
-        println("BP5 coefficients defined, using defined values")
-    else
-        println("BP5 coefficients not defined, defining it now")
-        BP5_coeff = coefficients() # calling default constructor
-    end
+    
+    # if @isdefined BP5_coeff
+    #     println("BP5 coefficients defined, using defined values")
+    # else
+    #     println("BP5 coefficients not defined, defining it now")
+    #     BP5_coeff = coefficients() # calling default constructor
+    # end
 
     @show BP5_coeff.Δz
 
@@ -130,7 +131,7 @@ function main()
     #     callback=callback_func)
 
 
-    sol = solve(prob, Tsit5(); dt=0.2, abstol = 1e-5, reltol = 1e-5, save_everystep=true,
+    sol = solve(prob, Tsit5(); dt=0.001, abstol = 1e-5, gamma=0.5, reltol = 1e-5, save_everystep=true,
         callback=callback_func)
     
 end

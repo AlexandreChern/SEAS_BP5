@@ -16,8 +16,8 @@ BP5_coeff = coefficients(
     2670,                   # ρ
     3.464,                  # cs
     0.25,                   # ν
-    0.004,                  # a0
-    0.04,                   # amax
+    0.02,                  # a0 default value 0.004
+    0.02,                   # amax default value 0.04
     0.03,                   # b0
     25,                     # σn
     0.14,                   # L or Dc 

@@ -187,8 +187,8 @@ function odefun(dψV, ψδ, odeparam, t)
     τ2 = (τ0 + Δτ)[RS_filter_2D_nzind]
     τ3 = (τz0 + Δτz)[RS_filter_2D_nzind]
 
-    # (f_v, g_v, dfx_v, dfy_v, dgx_v, dgy_v) = rateandstate_vectorized(V2_v, V3_v, ψ, σn, τ2, τ3, η, RSas, V0)
-    (V2_tmp, V3_tmp, _, _, iter) = newtbndv_vectorized(rateandstate_vectorized, V2_v, V3_v, ψ, σn, Vector(τ2), Vector(τ3), η, RSas, RSV0; ftol=1e-12, maxiter=100, atolx=1e-4, rtolx=1e-4)
+    # (f_v, g_v, dfx_v, dfy_v, dgx_v, dgy_v) = rateandstate_vectorized(V2_v, V3_v, ψ, σn, τ2, τ3, η, RSas, RSV0)
+    (V2_tmp, V3_tmp, _, _, iter) = newtbndv_vectorized(rateandstate_vectorized, V2_v, V3_v, ψ, σn, Vector(τ2), Vector(τ3), η, RSas, RSV0; ftol=1e-12, maxiter=100, atolx=1e-8, rtolx=1e-8)
     # be careful of the order of the parameters
     V2_v .= V2_tmp
     V3_v .= V3_tmp
