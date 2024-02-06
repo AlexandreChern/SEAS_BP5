@@ -16,8 +16,8 @@ BP5_coeff = coefficients(
     2670,                   # ρ
     3.464,                  # cs
     0.25,                   # ν
-    0.02,                  # a0 default value 0.004
-    0.02,                   # amax default value 0.04
+    0.004,                  # a0 default value 0.004
+    0.04,                   # amax default value 0.04
     0.03,                   # b0
     25,                     # σn
     0.14,                   # L or Dc 
@@ -106,9 +106,9 @@ fNz_VW_VS = (fNz_VW_VS_start, fNz_VW_VS_start + fN3_VW_VS - 1)
 
 # Assembling matrices for 3D SBP-SAT
 SBPp = 2                # SBPp order
-(M, RHS, H_tilde, HI_tilde, analy_sol, source, traction_operators, 
-    u_filters, Face_operators, sigmas, updators) = Assembling_3D_matrices(N_x, N_y, N_z;SBPp=SBPp,Lx=Lx,Ly=Ly,Lz=Lz);
-M_GPU = CUDA.CUSPARSE.CuSparseMatrixCSR(M);
+# (M, RHS, H_tilde, HI_tilde, analy_sol, source, traction_operators, 
+#     u_filters, Face_operators, sigmas, updators) = Assembling_3D_matrices(N_x, N_y, N_z;SBPp=SBPp,Lx=Lx,Ly=Ly,Lz=Lz);
+# M_GPU = CUDA.CUSPARSE.CuSparseMatrixCSR(M);
 
 # set RHS to be zero at the beginning
 RHS .= 0
@@ -222,6 +222,14 @@ function get_favorable_indices_2D(Ny, Nz, fNy_VW_favorable, fNz_VW)
     return kron(z_idx, y_idx)
 end
 
+function get_favorable_indices_RS(fNy, fNz, fNy_VW_favorable, fNz_VW)
+    y_idx = spzeros(fNy[2] - fNy[1] + 1)
+    z_idx = spzeros(fNz[2] - fNz[1] + 1)
+    y_idx[fNy_VW_favorable[1] - fNy[1] + 1: fNy_VW_favorable[2] - fNy[1] + 1] .= 1
+    z_idx[fNz_VW[1]: fNz_VW[2]] .= 1
+    return kron(z_idx, y_idx)
+end
+
 let 
     test_RS_indices = get_RS_indices(Nx, Ny, Nz, fNy, fNz);
     reshape(test_RS_indices.nzind,fN2,fN3)'
@@ -247,6 +255,8 @@ VW_favorable_filter = get_favorable_indices(Nx, Ny, Nz, fNy_VW_favorable, fNz_VW
 VW_favorable_filter_nzind = VW_favorable_filter.nzind
 VW_favorable_filter_2D = get_favorable_indices_2D(Ny, Nz, fNy_VW_favorable, fNz_VW)
 VW_favorable_filter_2D_nzind = VW_favorable_filter_2D.nzind
+VW_favorable_filter_RS = get_favorable_indices_RS(fNy, fNz, fNy_VW_favorable, fNz_VW)
+VW_favorable_filter_RS_nzind = VW_favorable_filter_RS.nzind
 VW_VS_transition_filter = get_transition_indices(Nx, Ny, Nz, fNy_VW, fNz_VW, fNy_VW_VS, fNz_VW_VS)
 VS_filter = RS_filter - VW_filter - VW_VS_transition_filter
 
