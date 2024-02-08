@@ -461,7 +461,7 @@ function write_to_file(path, ψδ, t, i, odeparam, station_strings, station_indi
                 XXX = path * "fltst_strk" * station_strings[n] * ".txt"
                 ww = Array{Float64}(undef, 1, 8)
                 ww[1] = t
-                RS_index = RS_filter_2D_nzind[station_indices[n]]
+                RS_index = RS_filter_2D_nzind[station_indices[n]] # Check if should be just station_indices[n]
                 ww[2] = δ[2 * RS_index-1]
                 ww[3] = δ[2 * RS_index]
                 V2_real = abs((V[2 * RS_index-1]))
