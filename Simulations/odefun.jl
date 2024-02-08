@@ -27,7 +27,7 @@ odeparam = (
     RSa = BP5_coeff.a0,                             # rate-and-state distance a0
     RSb = BP5_coeff.b0,                             # rate-and-state distance b0
     σn = BP5_coeff.σn,                              # effective normal stress
-    η = BP5_coeff.cs * BP5_coeff.ρ / 2,             # constant?
+    η = BP5_coeff.cs * BP5_coeff.ρ / (2 * 1000) ,   # bug? should be \mu /(2 * cs) 
     RSV0 = BP5_coeff.V0,                            # rate-and-state reference slip rate
     τ0 = zeros((N_x + 1) * (N_y + 1)),              # pre-stress                                     # 
     RSL = BP5_coeff.L,                              # rate-and-state critical slip distance L
@@ -139,15 +139,21 @@ function odefun(dψV, ψδ, odeparam, t)
     # RSH .+= updators[3] * (fill(0, div(length(δ),2)))
 
     # End updating RHS using δ
+    abstol_ = norm(RHS) * sqrt(eps(Float64))
 
     # Solving linear system using iterative methods
-    u_iterative, history = cg(M_GPU, CuArray(RHS), log=true);    # solving with non preconditioned cg
+    # u_iterative, history = cg(M_GPU, CuArray(RHS), log=true);    # solving with non preconditioned cg
+    u_iterative, history = cg!(CuArray(u),M_GPU, CuArray(RHS), abstol=abstol_, log=true);    # solving with non preconditioned cg
+
     # this can be replaced with MGCG in future 
     # @show history.iters
+
     if typeof(u_iterative) == CuArray{Float64, 1, CUDA.Mem.DeviceBuffer}
     u_iterative = Array(u_iterative)
     end
-    u[:] .= u_iterative;
+
+    # u[:] .= Array(u_iterative);
+    u[:] .= u_iterative
     # End of solving 
 
     # updating values TODO
@@ -188,7 +194,7 @@ function odefun(dψV, ψδ, odeparam, t)
     τ3 = (τz0 + Δτz)[RS_filter_2D_nzind]
 
     # (f_v, g_v, dfx_v, dfy_v, dgx_v, dgy_v) = rateandstate_vectorized(V2_v, V3_v, ψ, σn, τ2, τ3, η, RSas, RSV0)
-    (V2_tmp, V3_tmp, _, _, iter) = newtbndv_vectorized(rateandstate_vectorized, V2_v, V3_v, ψ, σn, Vector(τ2), Vector(τ3), η, RSas, RSV0; ftol=1e-12, maxiter=100, atolx=1e-8, rtolx=1e-8)
+    (V2_tmp, V3_tmp, _, _, iter) = newtbndv_vectorized(rateandstate_vectorized, V2_v, V3_v, ψ, σn, Vector(τ2), Vector(τ3), η, RSas, RSV0; ftol=1e-12, maxiter=100, atolx=1e-10, rtolx=1e-10)
     # be careful of the order of the parameters
     V2_v .= V2_tmp
     V3_v .= V3_tmp

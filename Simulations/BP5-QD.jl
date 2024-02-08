@@ -94,13 +94,32 @@ function main()
         end
     end
 
-    # for index in VW_favorable_filter_2D_nzind
-    #     V[2* index - 1] = 0.03
-    #     δ[2* index - 1] = BP5_coeff.L
-    #     τ0 = BP5_coeff.σn * RSas[index] * asinh( (BP5_coeff.Vinit / (2*BP5_coeff.V0) * 
+    # initial velocity for favorable region
+    # for index in VW_favorable_filter_RS_nzind
+    #     τ_index = RS_filter_2D_nzind[index] 
+    #     V[2* τ_index - 1] = 0.03
+    #     δ[2* τ_index - 1] = BP5_coeff.L
+    #     τ0 = BP5_coeff.σn * RSas[index] * asinh( (0.03 / (2*BP5_coeff.V0) * 
     #                         exp((BP5_coeff.f0 + BP5_coeff.b0 * log(BP5_coeff.V0 / BP5_coeff.Vinit)) / 
     #                         RSas[index]))  + η * 0.03) 
-    #     τ[2*index - 1] = τ0                            
+    #     τ[2*τ_index - 1] = τ0                            
+    # end
+    for i in 1:fN2
+        for j in 1:fN3
+            index = i + (j - 1) * fN2
+            tau_index = RS_filter_2D_nzind[index]
+            if index in VW_favorable_filter_RS_nzind
+                τ0 = BP5_coeff.σn * RSas[index] * asinh( (0.03 / (2*BP5_coeff.V0) * 
+                            exp((BP5_coeff.f0 + BP5_coeff.b0 * log(BP5_coeff.V0 / BP5_coeff.Vinit)) / 
+                            RSas[index]))  + η * 0.03) 
+                τ[tau_index] = τ0
+                V2_v[index] = 0.03
+            end 
+        end 
+    end
+    # for index in VW_favorable_filter_RS_nzind
+    #     V2_v[index] = 0.03
+    #     # V3_v[index]
     # end
 
 
@@ -131,7 +150,7 @@ function main()
     #     callback=callback_func)
 
 
-    sol = solve(prob, Tsit5(); dt=0.001, abstol = 1e-5, gamma=0.5, reltol = 1e-5, save_everystep=true,
+    sol = solve(prob, Tsit5(); dt=0.001, abstol = 1e-8, gamma=0.5, reltol = 1e-8, save_everystep=true,
         callback=callback_func)
     
 end
