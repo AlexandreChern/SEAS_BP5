@@ -114,6 +114,8 @@ function main()
                             RSas[index]))  + η * 0.03) 
                 τ[tau_index] = τ0
                 V2_v[index] = 0.03
+                # δ[index] ?
+                # δ[2*tau_index - 1] = 0.13? not this meaning, it means L in the rate_and_state_vectorized use a different L for VW region
             end 
         end 
     end
