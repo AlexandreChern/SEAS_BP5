@@ -416,7 +416,8 @@ function create_text_files(path, station_strings, station_indices, δ, τb, θ, 
         RS_index = RS_filter_2D_nzind[station_indices[n]]
         ww[2] = δ[2 * RS_index-1]
         ww[3] = δ[2 * RS_index]
-        ww[4] = log10(BP5_coeff.Vinit)
+        # ww[4] = log10(BP5_coeff.Vinit)
+        ww[4] = log10(abs(V2_v[station_indices[n]]))
         ww[5] = log10(Vzero)
         ww[6] = τb[2 * RS_index - 1] # need to define this
         ww[7] = τb[2 * RS_index]
