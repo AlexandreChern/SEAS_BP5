@@ -31,6 +31,7 @@ odeparam = (
     RSV0 = BP5_coeff.V0,                            # rate-and-state reference slip rate
     τ0 = zeros((N_x + 1) * (N_y + 1)),              # pre-stress                                     # 
     RSL = BP5_coeff.L,                              # rate-and-state critical slip distance L
+    RSLs = fill(BP5_coeff.L, fN2 * fN3),            # rate-and-state critical slip distance Ls (0.13/0.14)
     RSf0 = BP5_coeff.f0,                            # rate-and-state reference friction coefficient 
     N = N_x,                                        # number of grids in each direction, assuming idential of grid in x,y,z directions
     δNp = N_x + 1,                                  # number of grid points in each direction, assuming idential of grid in x,y,z directions
@@ -213,6 +214,6 @@ function odefun(dψV, ψδ, odeparam, t)
     # Update ψ
     # dψ[n] = (RSb * RSV0 / RSDc) * (exp((RSf0 - ψn) / RSb) - abs(Vn) / RSV0) # BP1
     # dψ .= (RSb * RSV0 / RSL) .* (exp.((RSf0 .- ψ) ./ RSb) .- sqrt.(V2_v.^2 .+ V3_v.^2) ./ RSV0)
-    dψ .= (RSb * RSV0 / RSL) .* (exp.((RSf0 .- ψ) ./ RSb) .- sqrt.(V2_v.^2 .+ V3_v.^2) ./ RSV0)
+    dψ .= (RSb * RSV0 ./ RSLs) .* (exp.((RSf0 .- ψ) ./ RSb) .- sqrt.(V2_v.^2 .+ V3_v.^2) ./ RSV0)
     nothing
 end

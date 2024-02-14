@@ -114,6 +114,7 @@ function main()
                             RSas[index]))  + η * 0.03) 
                 τ[tau_index] = τ0
                 V2_v[index] = 0.03
+                RSLs[index] = 0.13
                 # δ[index] ?
                 # δ[2*tau_index - 1] = 0.13? not this meaning, it means L in the rate_and_state_vectorized use a different L for VW region
             end 
@@ -152,7 +153,7 @@ function main()
     #     callback=callback_func)
 
 
-    sol = solve(prob, Tsit5(); dt=0.001, abstol = 1e-8, gamma=0.5, reltol = 1e-8, save_everystep=true,
+    sol = solve(prob, Tsit5(); dt=0.001, gamma = 0.8, abstol = 1e-8, reltol = 1e-8, save_everystep=true,
         callback=callback_func)
     
 end
