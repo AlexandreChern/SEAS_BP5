@@ -131,21 +131,22 @@ function main()
     #         BP5_coeff.amax)) + η * BP5_coeff.Vinit
     # τb = τ0 * V / V_norm
 
+    time_string = Dates.format(now(),"yyyymmddHHMM")
+    path_time = "$path/$time_string/"
     try
-        mkdir(path)
+        mkdir(path_time)
     catch
         # folder already exists
     end
 
     global ctr[] = 1
-    create_text_files(path, station_strings, station_indices, δ, τb, θ, 0)
+    create_text_files(path_time, station_strings, station_indices, δ, τb, θ, 0)
     # Creating output
     callback_func = SavingCallback(
-        (ψδ, t, i)->write_to_file(path, ψδ, t, i, odeparam, station_strings, station_indices)
+        (ψδ, t, i)->write_to_file(path_time, ψδ, t, i, odeparam, station_strings, station_indices)
                     ,SavedValues(Float64, Float64))
 
 
-5555
     tspan = (0, sim_years * year_seconds)
     prob = ODEProblem(odefun, ψδ, tspan, odeparam)
 
@@ -153,7 +154,7 @@ function main()
     #     callback=callback_func)
 
 
-    sol = solve(prob, Tsit5(); dt=0.001, gamma = 0.95, abstol = 1e-8, reltol = 1e-8, save_everystep=true,
+    sol = solve(prob, Tsit5(); dt=0.001, gamma = 0.85, abstol = 1e-10, reltol = 1e-8, save_everystep=true,
         callback=callback_func)
     
 end

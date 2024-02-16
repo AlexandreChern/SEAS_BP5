@@ -290,8 +290,9 @@ function find_flt_indices(indices, lf, fN2)
     return j + k * fN2
 end
 
-time_string = Dates.format(now(),"yyyymmddHHMM")
-path="./output/$time_string"
+# time_string = Dates.format(now(),"yyyymmddHHMM")
+# path="./output/$time_string/"
+path="./output"
 station_indices = find_flt_indices.(fltst,BP5_coeff.lf, fN2)
 station_strings = ["-36dp+00", "-16dp+00", "+00dp+00", "+16dp+00", "+36dp+00",
                     "-24dp+10", "-16dp+10", "+00dp+10","+16dp+10",
