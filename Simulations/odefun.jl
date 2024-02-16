@@ -206,7 +206,7 @@ function odefun(dψV, ψδ, odeparam, t)
     end
 
     if iter < 0
-        println("V reject")
+        println("iter reject")
         reject_step[1] = true
         return
     end

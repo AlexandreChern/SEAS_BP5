@@ -163,7 +163,7 @@ function main()
     #     callback=callback_func)
 
 
-    sol = solve(prob, Tsit5(); isoutofdomain=stepcheck, dt=0.1, abstol=1e-8, reltol=1e-8, save_everystep=true,
+    sol = solve(prob, Tsit5(); isoutofdomain=stepcheck, gamma=0.8, dt=0.001, abstol=1e-8, reltol=1e-8, save_everystep=true,
         callback=callback_func)
 
 end
