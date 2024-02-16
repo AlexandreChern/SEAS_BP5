@@ -107,9 +107,9 @@ function odefun(dψV, ψδ, odeparam, t)
 
     # If reject return
 
-    # if reject_step[1]
-    #     return
-    # end
+    if reject_step[1]
+        return
+    end
 
     # End if reject block
 
@@ -200,13 +200,13 @@ function odefun(dψV, ψδ, odeparam, t)
     (V2_tmp, V3_tmp, _, _, iter) = newtbndv_vectorized(rateandstate_vectorized, V2_v, V3_v, ψ, σn, Vector(τ2), Vector(τ3), η, RSas, RSV0; ftol=1e-12, maxiter=100, atolx=1e-10, rtolx=1e-10)
     # be careful of the order of the parameters
     if !all(isfinite.(V2_tmp)) || !all(isfinite.(V3_tmp))
-        print("V reject")
+        println("V reject")
         reject_step[1] = true
         return
     end
 
     if iter < 0
-        print("V reject")
+        println("V reject")
         reject_step[1] = true
         return
     end
@@ -231,7 +231,7 @@ function odefun(dψV, ψδ, odeparam, t)
     dψ .= (RSb * RSV0 ./ RSLs) .* (exp.((RSf0 .- ψ) ./ RSb) .- sqrt.(V2_v.^2 .+ V3_v.^2) ./ RSV0)
 
     if !all(isfinite.(dψ))
-        print("ψ reject")
+        println("ψ reject")
         dψ .= 0
         reject_step[1] = true
         return
