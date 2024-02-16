@@ -145,7 +145,7 @@ function main()
                     ,SavedValues(Float64, Float64))
 
 
-
+5555
     tspan = (0, sim_years * year_seconds)
     prob = ODEProblem(odefun, ψδ, tspan, odeparam)
 
@@ -153,7 +153,7 @@ function main()
     #     callback=callback_func)
 
 
-    sol = solve(prob, Tsit5(); dt=0.001, gamma = 0.8, abstol = 1e-8, reltol = 1e-8, save_everystep=true,
+    sol = solve(prob, Tsit5(); dt=0.001, gamma = 0.95, abstol = 1e-8, reltol = 1e-8, save_everystep=true,
         callback=callback_func)
     
 end

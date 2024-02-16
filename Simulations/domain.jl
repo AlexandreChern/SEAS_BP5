@@ -3,7 +3,7 @@
 # N_x = N_y = N_z = 256
 # Number of grid points is 257 for each direction, beware of the trivia
 # Nx = Ny = Nz = 257
-
+using Dates
 include("helper.jl")
 const year_seconds = 31556926
 sim_years = 1000
@@ -290,7 +290,8 @@ function find_flt_indices(indices, lf, fN2)
     return j + k * fN2
 end
 
-path="./output/"
+time_string = Dates.format(now(),"yyyymmddHHMM")
+path="./output/$time_string"
 station_indices = find_flt_indices.(fltst,BP5_coeff.lf, fN2)
 station_strings = ["-36dp+00", "-16dp+00", "+00dp+00", "+16dp+00", "+36dp+00",
                     "-24dp+10", "-16dp+10", "+00dp+10","+16dp+10",
