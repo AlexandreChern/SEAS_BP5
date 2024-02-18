@@ -376,12 +376,12 @@ function plot_slip(S, δNp, yf, stride_time)
 end
 
 # Plot slipt against time 
-function plot_time_series(path, filenm, region, fieldname, col, headerlines)
+function plot_time_series(path, filenm, region, fieldname, col; headerlines=16)
     default(fontfamily = "Times", xtickfont = font(20), ytickfont = font(20), legendfont = font(20), guidefont = font(20))
 
     filename = string(path, filenm)
-    A = readdlm(filename, headerlines=headerlines)
-
+    A = readdlm(filename, skipstart=headerlines)
+    
     if region == "fault"
         T = A[:, 1] ./ (60*60*24*30) # seconds to years
         slip = A[:, 2]
