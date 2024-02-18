@@ -376,12 +376,12 @@ function plot_slip(S, δNp, yf, stride_time)
 end
 
 # Plot slipt against time 
-function plot_time_series(path, filenm, region, fieldname, col; headerlines=16)
+function plot_time_series(path, filenm, region, fieldname, col; headerlines=16, figuresize=(800,600))
     default(fontfamily = "Times", xtickfont = font(20), ytickfont = font(20), legendfont = font(20), guidefont = font(20))
 
     filename = string(path, filenm)
     A = readdlm(filename, skipstart=headerlines)
-    
+
     if region == "fault"
         T = A[:, 1] ./ (60*60*24*30) # seconds to years
         slip = A[:, 2]
@@ -390,15 +390,15 @@ function plot_time_series(path, filenm, region, fieldname, col; headerlines=16)
         state = A[:, 5]
 
         if fieldname == "slip"
-            plot(T, slip, color=col, linewidth=2)
+            plot(T, slip, color=col, linewidth=2, size=figuresize)
         elseif fieldname == "V"
-            plot(T, V, color=col, linewidth=2)
+            plot(T, V, color=col, linewidth=2, size=figuresize)
         elseif fieldname == "10toV"
-            plot(T, 10 .^ V, color=col, linewidth=2)
+            plot(T, 10 .^ V, color=col, linewidth=2, size=figuresize)
         elseif fieldname == "tau"
-            plot(T, tau, color=col, linewidth=2)
+            plot(T, tau, color=col, linewidth=2, size=figuresize)
         else
-            plot(T, state, color=col, linewidth=2)
+            plot(T, state, color=col, linewidth=2, size=figuresize)
         end
 
     elseif region == "surface"
@@ -421,6 +421,8 @@ function plot_time_series(path, filenm, region, fieldname, col; headerlines=16)
 
     xlabel!("Time (months)")
     ylabel!(fieldname)
+    output_figure_name = split(filename,'.')[1]
+    savefig("$output_figure_name.png")
     return
 end
 
