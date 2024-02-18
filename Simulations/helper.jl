@@ -3,6 +3,7 @@ using DifferentialEquations
 using Printf
 using Plots
 using CUDA
+using DelimitedFiles
 
 function _unpack(x::NamedTuple)
     kk = keys(x)
@@ -374,6 +375,54 @@ function plot_slip(S, δNp, yf, stride_time)
     #nothing
 end
 
+# Plot slipt against time 
+function plot_time_series(path, filenm, region, fieldname, col, headerlines)
+    default(fontfamily = "Times", xtickfont = font(20), ytickfont = font(20), legendfont = font(20), guidefont = font(20))
+
+    filename = string(path, filenm)
+    A = readdlm(filename, headerlines=headerlines)
+
+    if region == "fault"
+        T = A[:, 1] ./ (60*60*24*30) # seconds to years
+        slip = A[:, 2]
+        V = A[:, 3]
+        tau = A[:, 4]
+        state = A[:, 5]
+
+        if fieldname == "slip"
+            plot(T, slip, color=col, linewidth=2)
+        elseif fieldname == "V"
+            plot(T, V, color=col, linewidth=2)
+        elseif fieldname == "10toV"
+            plot(T, 10 .^ V, color=col, linewidth=2)
+        elseif fieldname == "tau"
+            plot(T, tau, color=col, linewidth=2)
+        else
+            plot(T, state, color=col, linewidth=2)
+        end
+
+    elseif region == "surface"
+        T = A[:, 1] ./ (60*60*24*30) # seconds to years
+        horiz = A[:, 2]
+        vert = A[:, 3]
+        Vhoriz = A[:, 4]
+        Vvert = A[:, 5]
+
+        if fieldname == "horiz"
+            plot(T, horiz, color=col)
+        elseif fieldname == "vert"
+            plot(T, vert, color=col)
+        elseif fieldname == "Vhoriz"
+            plot(T, Vhoriz, color=col)
+        else
+            plot(T, Vvert, color=col)
+        end
+    end
+
+    xlabel!("Time (months)")
+    ylabel!(fieldname)
+    return
+end
 
 
 ########################## Test functions, subjected to changes ################################
