@@ -162,8 +162,9 @@ function main()
     # sol = solve(prob, Tsit5(); dt=0.00001, abstol = 1e-6, reltol = 1e-6, gamma=0.2,save_everystep=true,
     #     callback=callback_func)
 
-
-    sol = solve(prob, Tsit5(); isoutofdomain=stepcheck, gamma=0.8, dt=0.001, abstol=1e-8, reltol=1e-8, save_everystep=true,
+    # check atol = 1e-12, rtol = 1e-12
+    # check save_everystep = false
+    sol = solve(prob, Tsit5(); isoutofdomain=stepcheck, gamma=0.2, dt=0.001, dtmin=1e-8, abstol=1e-12, reltol=1e-12, save_everystep=true,
         callback=callback_func)
 
 end

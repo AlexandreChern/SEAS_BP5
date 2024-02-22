@@ -149,7 +149,7 @@ function odefun(dψV, ψδ, odeparam, t)
     u_iterative, history = cg!(CuArray(u),M_GPU, CuArray(RHS), abstol=abstol_, log=true);    # solving with non preconditioned cg
 
     # this can be replaced with MGCG in future 
-    @show history.iters
+    # @show history.iters
 
     if typeof(u_iterative) == CuArray{Float64, 1, CUDA.Mem.DeviceBuffer}
     u_iterative = Array(u_iterative)
@@ -213,7 +213,9 @@ function odefun(dψV, ψδ, odeparam, t)
 
     V2_v .= V2_tmp
     V3_v .= V3_tmp
-    @show iter
+    if iter > 10
+        @show iter
+    end
 
     # out side of RS, V2 = Vp, V3 = 0
     V[1:2:end] .= Vp 
