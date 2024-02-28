@@ -277,58 +277,58 @@ function newtbndv(func, x, y; ftol = 1e-12, maxiter = 500,
 end
 
 
-function rateandstate_vectorized(V2, V3, psi_v, σn, τ2_v, τ3_v, η, a_v, V0)
-    V  = sqrt.(V2.^2 .+ V3.^2) 
-    dV_dV2 = 0.5 ./ sqrt.(V2.^2 .+ V3.^2) .* 2 .* V2
-    dV_dV3 = 0.5 ./ sqrt.(V2.^2 .+ V3.^2) .* 2 .* V3
+function rateandstate_vectorized(V2_v, V3_v, psi_v, σn, τ2_v, τ3_v, η, a_v, V0)
+    V  = sqrt.(V2_v.^2 .+ V3_v.^2) 
+    dV_dV2_v = 0.5 ./ sqrt.(V2_v.^2 .+ V3_v.^2) .* 2 .* V2_v
+    dV_dV3_v = 0.5 ./ sqrt.(V2_v.^2 .+ V3_v.^2) .* 2 .* V3_v
 
     Y = (1 ./ (2 .* V0)) .* exp.(psi_v ./ a_v)
     f = a_v .* asinh.(V .* Y)
-    df_dV2 = a_v .* (1 ./ sqrt.(1 .+ (V .* Y).^2)) .* (dV_dV2 .* Y)
-    df_dV3 = a_v .* (1 ./ sqrt.(1 .+ (V .* Y).^2)) .* (dV_dV3 .* Y)
+    df_dV2_v = a_v .* (1 ./ sqrt.(1 .+ (V .* Y).^2)) .* (dV_dV2_v .* Y)
+    df_dV3_v = a_v .* (1 ./ sqrt.(1 .+ (V .* Y).^2)) .* (dV_dV3_v .* Y)
 
-    g1 = σn .* f .* V2 ./ V .+ η .* V2 .- τ2_v
-    g2 = σn .* f .* V3 ./ V .+ η .* V3 .- τ3_v
+    g1 = σn .* f .* V2_v ./ V .+ η .* V2_v .- τ2_v
+    g2 = σn .* f .* V3_v ./ V .+ η .* V3_v .- τ3_v
 
-    dA2_dV2 = (V .- V2 .* dV_dV2) ./ V.^2
-    dA2_dV3 = (-V2 .* dV_dV3) ./ V.^2
-    dA3_dV2 = (-V3 .* dV_dV2) ./ V.^2
-    dA3_dV3 = (V .- V3 .* dV_dV3) ./ V.^2
+    dA2_dV2_v = (V .- V2_v .* dV_dV2_v) ./ V.^2
+    dA2_dV3_v = (-V2_v .* dV_dV3_v) ./ V.^2
+    dA3_dV2_v = (-V3_v .* dV_dV2_v) ./ V.^2
+    dA3_dV3_v = (V .- V3_v .* dV_dV3_v) ./ V.^2
 
-    dg1_dV2 = σn .* (df_dV2 .* V2 ./ V .+ f .* dA2_dV2) .+ η
-    dg1_dV3 = σn .* (df_dV3 .* V2 ./ V .+ f .* dA2_dV3)
+    dg1_dV2_v = σn .* (df_dV2_v .* V2_v ./ V .+ f .* dA2_dV2_v) .+ η
+    dg1_dV3_v = σn .* (df_dV3_v .* V2_v ./ V .+ f .* dA2_dV3_v)
 
-    dg2_dV2 = σn .* (df_dV2 .* V3 ./ V .+ f .* dA3_dV2)
-    dg2_dV3 = σn .* (df_dV3 .* V3 ./ V .+ f .* dA3_dV3) .+ η
+    dg2_dV2_v = σn .* (df_dV2_v .* V3_v ./ V .+ f .* dA3_dV2_v)
+    dg2_dV3_v = σn .* (df_dV3_v .* V3_v ./ V .+ f .* dA3_dV3_v) .+ η
 
-    return (g1, g2, dg1_dV2, dg1_dV3, dg2_dV2, dg2_dV3)
+    return (g1, g2, dg1_dV2_v, dg1_dV3_v, dg2_dV2_v, dg2_dV3_v)
 end
 
-function newtbndv_vectorized(rateandstate_vectorized, V2, V3, psi_v, σn, τ2_v, τ3_v, η, a_v, V0,;  
+function newtbndv_vectorized(rateandstate_vectorized, V2_v, V3_v, psi_v, σn, τ2_v, τ3_v, η, a_v, V0;  
                             ftol=1e-12, maxiter=100, atolx = 1e-4, rtolx=1e-4) # change atolx to 1e-8 and rtolx to 1e-8 for better stability
-    (f_v, g_v, dfx_v, dfy_v, dgx_v, dgy_v) = rateandstate_vectorized(V2, V3,  
+    (f_v, g_v, dfx_v, dfy_v, dgx_v, dgy_v) = rateandstate_vectorized(V2_v, V3_v,  
                         psi_v, σn, τ2_v, τ3_v, η, a_v, V0)
-    # @show V2[1], V3[1], psi_v[1], τ2_v[1], τ3_v[1], V0
+    # @show V2_v[1], V3_v[1], psi_v[1], τ2_v[1], τ3_v[1], V0
     for iter = 1:maxiter
-        (f_v, g_v, dfx_v, dfy_v, dgx_v, dgy_v) = rateandstate_vectorized(V2, V3,  
+        (f_v, g_v, dfx_v, dfy_v, dgx_v, dgy_v) = rateandstate_vectorized(V2_v, V3_v,  
                                         psi_v, σn, τ2_v, τ3_v, η, a_v, V0)
         inv_J = map_jacobian_inv.(dfx_v, dfy_v, dgx_v, dgy_v)
         # @show dfx_v[1], dfy_v[1], dgx_v[1], dgy_v[1]
         # @show inv_J[1]
         # println()
-        dV2V3 =  -inv_J .* map_cat.(f_v, g_v)
-        dV2 = get_first.(dV2V3)
-        dV3 = get_second.(dV2V3)
-        V2 = V2 + dV2
-        V3 = V3 + dV3
-        # @show dV2[1], dV3[1]
+        dV2_vV3_v =  -inv_J .* map_cat.(f_v, g_v)
+        dV2_v = get_first.(dV2_vV3_v)
+        dV3_v = get_second.(dV2_vV3_v)
+        V2_v = V2_v + dV2_v
+        V3_v = V3_v + dV3_v
+        # @show dV2_v[1], dV3_v[1]
         
         # TODO vectorized control flow
-        if all(abs.(f_v) .< ftol) && all(abs.(dV2) .< atolx .+ rtolx .* (abs.(dV2) .+ abs.(V2))) && all(abs.(g_v) .< ftol) && all(abs.(dV2) .< atolx .+ rtolx .* (abs.(dV3) .+ abs.(V3)))
-            return (V2, V3, f_v, g_v, iter)
+        if all(abs.(f_v) .< ftol) && all(abs.(dV2_v) .< atolx .+ rtolx .* (abs.(dV2_v) .+ abs.(V2_v))) && all(abs.(g_v) .< ftol) && all(abs.(dV2_v) .< atolx .+ rtolx .* (abs.(dV3_v) .+ abs.(V3_v)))
+            return (V2_v, V3_v, f_v, g_v, iter)
         end
     end
-    return (V2, V3, f_v, g_v, -maxiter)
+    return (V2_v, V3_v, f_v, g_v, -maxiter)
 end
 
 
