@@ -352,6 +352,9 @@ function get_second(a)
     return a[2]
 end
 
+function plot_RS(vector)
+    spy(reshape(vector, fN2, fN3)')
+end
 
 
 # Plot the slip in 2D from BP1 problem
