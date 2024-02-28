@@ -277,15 +277,15 @@ function newtbndv(func, x, y; ftol = 1e-12, maxiter = 500,
 end
 
 
-function rateandstate_vectorized(V2_v, V3_v, psi_v, σn, τ2_v, τ3_v, η, a_v, V0)
+function rateandstate_vectorized(V2_v, V3_v, ψ, σn, τ2_v, τ3_v, η, RSas, RSV0)
     V  = sqrt.(V2_v.^2 .+ V3_v.^2) 
     dV_dV2_v = 0.5 ./ sqrt.(V2_v.^2 .+ V3_v.^2) .* 2 .* V2_v
     dV_dV3_v = 0.5 ./ sqrt.(V2_v.^2 .+ V3_v.^2) .* 2 .* V3_v
 
-    Y = (1 ./ (2 .* V0)) .* exp.(psi_v ./ a_v)
-    f = a_v .* asinh.(V .* Y)
-    df_dV2_v = a_v .* (1 ./ sqrt.(1 .+ (V .* Y).^2)) .* (dV_dV2_v .* Y)
-    df_dV3_v = a_v .* (1 ./ sqrt.(1 .+ (V .* Y).^2)) .* (dV_dV3_v .* Y)
+    Y = (1 ./ (2 .* RSV0)) .* exp.(ψ ./ RSas)
+    f = RSas .* asinh.(V .* Y)
+    df_dV2_v = RSas .* (1 ./ sqrt.(1 .+ (V .* Y).^2)) .* (dV_dV2_v .* Y)
+    df_dV3_v = RSas .* (1 ./ sqrt.(1 .+ (V .* Y).^2)) .* (dV_dV3_v .* Y)
 
     g1 = σn .* f .* V2_v ./ V .+ η .* V2_v .- τ2_v
     g2 = σn .* f .* V3_v ./ V .+ η .* V3_v .- τ3_v
@@ -304,14 +304,14 @@ function rateandstate_vectorized(V2_v, V3_v, psi_v, σn, τ2_v, τ3_v, η, a_v, 
     return (g1, g2, dg1_dV2_v, dg1_dV3_v, dg2_dV2_v, dg2_dV3_v)
 end
 
-function newtbndv_vectorized(rateandstate_vectorized, V2_v, V3_v, psi_v, σn, τ2_v, τ3_v, η, a_v, V0;  
+function newtbndv_vectorized(rateandstate_vectorized, V2_v, V3_v, ψ, σn, τ2_v, τ3_v, η, RSas, RSV0;  
                             ftol=1e-12, maxiter=100, atolx = 1e-4, rtolx=1e-4) # change atolx to 1e-8 and rtolx to 1e-8 for better stability
     (f_v, g_v, dfx_v, dfy_v, dgx_v, dgy_v) = rateandstate_vectorized(V2_v, V3_v,  
-                        psi_v, σn, τ2_v, τ3_v, η, a_v, V0)
-    # @show V2_v[1], V3_v[1], psi_v[1], τ2_v[1], τ3_v[1], V0
+                        ψ, σn, τ2_v, τ3_v, η, RSas, RSV0)
+    # @show V2_v[1], V3_v[1], ψ[1], τ2_v[1], τ3_v[1], RSV0
     for iter = 1:maxiter
         (f_v, g_v, dfx_v, dfy_v, dgx_v, dgy_v) = rateandstate_vectorized(V2_v, V3_v,  
-                                        psi_v, σn, τ2_v, τ3_v, η, a_v, V0)
+                                        ψ, σn, τ2_v, τ3_v, η, RSas, RSV0)
         inv_J = map_jacobian_inv.(dfx_v, dfy_v, dgx_v, dgy_v)
         # @show dfx_v[1], dfy_v[1], dgx_v[1], dgy_v[1]
         # @show inv_J[1]
