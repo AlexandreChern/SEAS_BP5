@@ -27,12 +27,12 @@ VW_favorable_filter_RS_nzind
 τ3_f = τ3[VW_favorable_filter_RS_nzind]
 V2_f = V2[VW_favorable_filter_RS_nzind]
 V3_f = V3[VW_favorable_filter_RS_nzind]
-RSas_f = RSas_f[VW_favorable_filter_RS_nzind]
-ψ_f = ψ_f[VW_favorable_filter_RS_nzind]
+RSas_f = RSas[VW_favorable_filter_RS_nzind]
+ψ_f = ψ[VW_favorable_filter_RS_nzind]
 f_f, g_f, dfx_f, dfy_f, dgx_f, dgy_f = rateandstate_vectorized(V2_f, V3_f, ψ_f, σn, τ2_f, τ3_f, η, RSas_f, RSV0)
 inv_F = map_jacobian_inv.(dfx_f, dfy_f, dgx_f, dgy_f)
 V2_f_tmp, V3_f_tmp, f_f_tmp, g_f_tmp, maxiter = newtbndv_vectorized(
-    rateandstate_vectorized, V2_f, V3_f, ψ_f, σn, τ2_f, τ3_f, η, RSas_f, RSV0; maxiter=1)
+    rateandstate_vectorized, V2_f , V3_f, ψ_f, σn, τ2_f, τ3_f, η, RSas_f, RSV0; maxiter=2)
 
 
 function rateandstate_vectorized(V2_f, V3_f, ψ_f, σn, τ2_f, τ3_f, η, RSas_f, RSV0)
