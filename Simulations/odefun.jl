@@ -113,10 +113,7 @@ function odefun(dψV, ψδ, odeparam, t)
 
     # End if reject block
 
-    @show t
-
-
-
+   
     ## Setting up ratees of change for state and slip
 
     # ψ = @view ψδ[1:(fN2 + 1)*(fN3 + 1)]
@@ -126,6 +123,10 @@ function odefun(dψV, ψδ, odeparam, t)
     # V = @view dψV[(fN2 + 1)*(fN3 + 1) + 1:end]
 
     dψ, V, ψ, δ = create_view(dψV, ψδ) # creating "views" to get dψ, V, ψ, δ
+    @show t 
+    @show extrema(V2_v)
+    @show extrema(V3_v) 
+    @show extrema(dψ)
 
     dψ .= 0;
     V .= 0;
@@ -197,7 +198,8 @@ function odefun(dψV, ψδ, odeparam, t)
     τ3 = (τz0 + Δτz)[RS_filter_2D_nzind]
 
     # (f_v, g_v, dfx_v, dfy_v, dgx_v, dgy_v) = rateandstate_vectorized(V2_v, V3_v, ψ, σn, τ2, τ3, η, RSas, RSV0)
-    (V2_tmp, V3_tmp, _, _, iter) = newtbndv_vectorized(rateandstate_vectorized, V2_v, V3_v, ψ, σn, Vector(τ2), Vector(τ3), η, RSas, RSV0; ftol=1e-12, maxiter=100, atolx=1e-10, rtolx=1e-10)
+    (V2_tmp, V3_tmp, f_v, g_v, iter) = newtbndv_vectorized(rateandstate_vectorized, V2_v, V3_v, ψ, σn, Vector(τ2), Vector(τ3), 
+                    η, RSas, RSV0; ftol=1e-8, maxiter=2, atolx=1e-8, rtolx=1e-8)
     # be careful of the order of the parameters
     if !all(isfinite.(V2_tmp)) || !all(isfinite.(V3_tmp))
         println("V reject")
@@ -230,7 +232,11 @@ function odefun(dψV, ψδ, odeparam, t)
     # Update ψ
     # dψ[n] = (RSb * RSV0 / RSDc) * (exp((RSf0 - ψn) / RSb) - abs(Vn) / RSV0) # BP1
     # dψ .= (RSb * RSV0 / RSL) .* (exp.((RSf0 .- ψ) ./ RSb) .- sqrt.(V2_v.^2 .+ V3_v.^2) ./ RSV0)
-    dψ .= (RSb * RSV0 ./ RSLs) .* (exp.((RSf0 .- ψ) ./ RSb) .- sqrt.(V2_v.^2 .+ V3_v.^2) ./ RSV0)
+    if iter > 0
+        dψ .= (RSb * RSV0 ./ RSLs) .* (exp.((RSf0 .- ψ) ./ RSb) .- sqrt.(V2_v.^2 .+ V3_v.^2) ./ RSV0)
+    else
+        dψ .= 0
+    end
 
     if !all(isfinite.(dψ))
         println("ψ reject")

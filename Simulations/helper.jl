@@ -352,8 +352,14 @@ function get_second(a)
     return a[2]
 end
 
+# Auxiliary functions for debugging
+# Plut RS region
 function plot_RS(vector)
     spy(reshape(vector, fN2, fN3)')
+end
+# Plot favorible region
+function plot_f(vector)
+    spy(reshape(vector, fN2_VW_favorable, fN3_VW)')
 end
 
 

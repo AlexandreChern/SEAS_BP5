@@ -25,7 +25,7 @@ function main()
     #     println("BP5 coefficients not defined, defining it now")
     #     BP5_coeff = coefficients() # calling default constructor
     # end
-
+    time_string = Dates.format(now(), "yyyymmddHHMM")
     @show BP5_coeff.Δz
 
     # setting b = b0
@@ -132,7 +132,7 @@ function main()
     #         BP5_coeff.amax)) + η * BP5_coeff.Vinit
     # τb = τ0 * V / V_norm
 
-    time_string = Dates.format(now(), "yyyymmddHHMM")
+
     path_time = "$path/$time_string/"
     try
         mkdir(path_time)
@@ -161,10 +161,10 @@ function main()
 
     # sol = solve(prob, Tsit5(); dt=0.00001, abstol = 1e-6, reltol = 1e-6, gamma=0.2,save_everystep=true,
     #     callback=callback_func)
-
+    # gamma = 0.8 a sweet spot
     # check atol = 1e-12, rtol = 1e-12
     # check save_everystep = false
-    sol = solve(prob, Tsit5(); isoutofdomain=stepcheck, gamma=0.2, dt=0.001, dtmin=1e-8, abstol=1e-12, reltol=1e-12, save_everystep=true,
+    sol = solve(prob, Tsit5(); isoutofdomain=stepcheck, dt=0.001, dtmin=1e-8, abstol=1e-8, reltol=1e-8, save_everystep=false,
         callback=callback_func)
 
 end
