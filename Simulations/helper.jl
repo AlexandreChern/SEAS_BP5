@@ -305,7 +305,7 @@ function rateandstate_vectorized(V2_v, V3_v, ψ, σn, τ2_v, τ3_v, η, RSas, RS
 end
 
 function newtbndv_vectorized(rateandstate_vectorized, V2_v, V3_v, ψ, σn, τ2_v, τ3_v, η, RSas, RSV0;  
-                            ftol=1e-12, maxiter=100, atolx = 1e-4, rtolx=1e-4) # change atolx to 1e-8 and rtolx to 1e-8 for better stability
+                            ftol=1e-12, maxiter=100, α=1.0, atolx = 1e-4, rtolx=1e-4) # change atolx to 1e-8 and rtolx to 1e-8 for better stability
     (f_v, g_v, dfx_v, dfy_v, dgx_v, dgy_v) = rateandstate_vectorized(V2_v, V3_v,  
                         ψ, σn, τ2_v, τ3_v, η, RSas, RSV0)
     # @show V2_v[1], V3_v[1], ψ[1], τ2_v[1], τ3_v[1], RSV0
@@ -319,8 +319,8 @@ function newtbndv_vectorized(rateandstate_vectorized, V2_v, V3_v, ψ, σn, τ2_v
         dV2_vV3_v =  -inv_J .* map_cat.(f_v, g_v)
         dV2_v = get_first.(dV2_vV3_v)
         dV3_v = get_second.(dV2_vV3_v)
-        V2_v = V2_v + dV2_v
-        V3_v = V3_v + dV3_v
+        V2_v = V2_v + α * dV2_v
+        V3_v = V3_v + α * dV3_v
         # @show dV2_v[1], dV3_v[1]
         
         # TODO vectorized control flow

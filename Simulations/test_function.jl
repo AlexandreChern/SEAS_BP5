@@ -1,22 +1,36 @@
 # This is a test file to test the Newton solver
 # Will be archived later
 
-function tau(V_f;a=0.04)
+function F(V_f;a=0.04)
     ψ_f = 0.8072326581844863
     Y_f = exp(ψ_f / a) / (2 * BP5_coeff.V0)
-    return a * asinh(V_f * Y_f)
+    return σn * a * asinh(V_f * Y_f)
 end
 
 
-xs = range(-1e-10, 1e-10, length=1000)
-ys = tau.(xs)
+function tau(V_f, τ)
+    return τ - η * V_f
+end
+
+function root(V_f, τ; a = 0.004)
+    return F.(V_f;a = a) .- tau.(V_f, τ)
+end
+
+xs = range(-1e-9, 1e-9, length=1000)
+ys = F.(xs)
 plot(xs, ys)
 
 
-xs2 = range(-1e-10,1e-10,length=1000)
-ys2 = tau.(xs2; a=0.004)
+xs2 = range(-1e-3,1e-3,length=1000)
+ys2 = F.(xs2; a=0.004)
 plot(xs2, ys2)
 
+ys2_v = tau.(xs2, τ2_f[1])
+plot!(xs2, ys2_v)
+
+plot(xs2, root(xs2, τ2_f[1]; a=0.004))
+
+root(xs2, τ2_f[1]; a=0.004)
 
 using Optim
 
@@ -32,7 +46,7 @@ RSas_f = RSas[VW_favorable_filter_RS_nzind]
 f_f, g_f, dfx_f, dfy_f, dgx_f, dgy_f = rateandstate_vectorized(V2_f, V3_f, ψ_f, σn, τ2_f, τ3_f, η, RSas_f, RSV0)
 inv_F = map_jacobian_inv.(dfx_f, dfy_f, dgx_f, dgy_f)
 V2_f_tmp, V3_f_tmp, f_f_tmp, g_f_tmp, maxiter = newtbndv_vectorized(
-    rateandstate_vectorized, V2_f , V3_f, ψ_f, σn, τ2_f, τ3_f, η, RSas_f, RSV0; maxiter=2)
+    rateandstate_vectorized, V2_f, V3_f, ψ_f, σn, τ2_f, τ3_f, η, RSas_f, RSV0; maxiter=100, α=1)
 
 
 function rateandstate_vectorized(V2_f, V3_f, ψ_f, σn, τ2_f, τ3_f, η, RSas_f, RSV0)
@@ -63,7 +77,7 @@ function rateandstate_vectorized(V2_f, V3_f, ψ_f, σn, τ2_f, τ3_f, η, RSas_f
 end
 
 function newtbndv_vectorized(rateandstate_vectorized, V2_f, V3_f, ψ_f, σn, τ2_f, τ3_f, η, RSas_f, RSV0;  
-                            ftol=1e-12, maxiter=100, atolx = 1e-4, rtolx=1e-4) # change atolx to 1e-8 and rtolx to 1e-8 for better stability
+                            ftol=1e-12, maxiter=100, atolx = 1e-4, rtolx=1e-4, α=1.0) # change atolx to 1e-8 and rtolx to 1e-8 for better stability
     (f_f, g_f, dfx_f, dfy_f, dgx_f, dgy_f) = rateandstate_vectorized(V2_f, V3_f,  
                         ψ_f, σn, τ2_f, τ3_f, η, RSas_f, RSV0)
     # @show V2_f[1], V3_f[1], ψ_f[1], τ2_f[1], τ3_f[1], RSV0
@@ -77,8 +91,8 @@ function newtbndv_vectorized(rateandstate_vectorized, V2_f, V3_f, ψ_f, σn, τ2
         dV2_fV3_f =  -inv_J .* map_cat.(f_f, g_f)
         dV2_f = get_first.(dV2_fV3_f)
         dV3_f = get_second.(dV2_fV3_f)
-        V2_f = V2_f + dV2_f
-        V3_f = V3_f + dV3_f
+        V2_f = V2_f .+ α * dV2_f
+        V3_f = V3_f .+ α * dV3_f
         # @show dV2_f[1], dV3_f[1]
         
         # TODO vectorized control flow
@@ -89,3 +103,8 @@ function newtbndv_vectorized(rateandstate_vectorized, V2_f, V3_f, ψ_f, σn, τ2
     return (V2_f, V3_f, f_f, g_f, -maxiter)
 end
     
+
+index = 1:4
+f_i, g_i, dfx_i, dfy_i, dgx_i, dgy_i  = rateandstate_vectorized(V2_f[index], V3_f[index], ψ_f[index], σn, τ2[index], τ3[index], η, RSas_f[index], V0)
+V2_i_tmp, V3_i_tmp, f_i_tmp, g_i_tmp, maxiter = newtbndv_vectorized(
+    rateandstate_vectorized, V2_f[index], V3_f[index], ψ_f[index], σn, τ2_f[index], τ3_f[index], η, RSas_f[index], RSV0; maxiter=100, α=0.2)
