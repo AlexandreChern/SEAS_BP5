@@ -108,3 +108,23 @@ index = 1:4
 f_i, g_i, dfx_i, dfy_i, dgx_i, dgy_i  = rateandstate_vectorized(V2_f[index], V3_f[index], ψ_f[index], σn, τ2[index], τ3[index], η, RSas_f[index], V0)
 V2_i_tmp, V3_i_tmp, f_i_tmp, g_i_tmp, maxiter = newtbndv_vectorized(
     rateandstate_vectorized, V2_f[index], V3_f[index], ψ_f[index], σn, τ2_f[index], τ3_f[index], η, RSas_f[index], RSV0; maxiter=100, α=0.2)
+
+
+
+# Storing struct in JSON
+using JSON
+# Define a dictionary
+data = Dict(
+    "name" => "Alice",
+    "age" => 30,
+    "city" => "New York"
+)
+
+# write to json file
+open("data.json", "w") do 
+    JSON.print(file, data)
+end
+
+# load json file
+file_contents = read("data.json", String)
+json_data = JSON.parse(file_content)
