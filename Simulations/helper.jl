@@ -503,7 +503,7 @@ function create_text_files(path, station_strings, station_indices, δ, τb, θ, 
             write(io, "# Column #7 = Shear_stress_3 (MPa)\n")
             write(io, "# Column #8 = State (log10 s)\n")
             write(io, "t slip_2 slip_3 slip_rate_2 slip_rate_3 shear_stress_2 shear_stress_3 state\n")
-            write(io, "# Here is the time-series data.")
+            write(io, "# Here is the time-series data.\n")
             writedlm(io, ww)
         end
     end
@@ -545,8 +545,9 @@ function write_to_file(path, ψδ, t, i, odeparam, station_strings, station_indi
         if mod(ctr[], 1000) == 0
             restart_values = (t = t, 
             ψ = ψ,
-            δ = δ)
-            open(path * "restart_values", "w") do file
+            δ = δ,
+            V = V)
+            open(path * "restart_values.json", "w") do file
                 JSON.print(file, restart_values)
             end
         end
@@ -554,4 +555,15 @@ function write_to_file(path, ψδ, t, i, odeparam, station_strings, station_indi
         @show ctr[]
     end
     Vmax
+end
+
+
+function find_value_in_file(filename, value)
+    # Open to file
+    open(filename) do file
+        for line in each line(file)
+            columns = split(line)
+            if columns[i] == value
+        end
+    end
 end

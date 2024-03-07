@@ -140,19 +140,27 @@ function main()
         # folder already exists
     end
 
-    if !isfile(path_time * "restart_values")
+    tspan = (0, sim_years * year_seconds)
+    prob = ODEProblem(odefun, ψδ, tspan, odeparam) 
+
+    if !isfile(path_time * "restart_value.json")
         global ctr[] = 1
         create_text_files(path_time, station_strings, station_indices, δ, τb, θ, 0)
         tspan = (0, sim_years * year_seconds)
+        # tspan = (0, sim_years * year_seconds)
+        prob = ODEProblem(odefun, ψδ, tspan, odeparam)
     else
-        contents = read(path_time * "restart_values", String)
+        contents = read(path_time * "restart_values.json", String)
         json_data = JSON.parse(contents)
         ψ_restart = json_data["ψ"]
         δ_restart = json_data["δ"]
         t = json_data["t"]
+        V_restart = json_data["V"]
         tspan = (t, sim_years * year_seconds)
         ψ .= ψ_restart
         δ .= δ_restart
+        V .= V_restart
+        prob = ODEProblem(odefun, ψδ, tspan, odeparam)
     end
 
     # ψ .= ψ_restart
@@ -163,8 +171,6 @@ function main()
         (ψδ, t, i) -> write_to_file(path_time, ψδ, t, i, odeparam, station_strings, station_indices), SavedValues(Float64, Float64))
 
 
-    # tspan = (0, sim_years * year_seconds)
-    prob = ODEProblem(odefun, ψδ, tspan, odeparam)
 
     function stepcheck(_, odeparam, _)
         if odeparam.reject_step[1]
