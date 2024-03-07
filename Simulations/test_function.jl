@@ -117,14 +117,15 @@ using JSON
 data = Dict(
     "name" => "Alice",
     "age" => 30,
-    "city" => "New York"
+    "city" => "New York",
+    "vector" => [1, 2, 3]
 )
 
 # write to json file
-open("data.json", "w") do 
+open("data.json", "w") do file 
     JSON.print(file, data)
 end
 
 # load json file
 file_contents = read("data.json", String)
-json_data = JSON.parse(file_content)
+json_data = JSON.parse(file_contents)

@@ -16,6 +16,7 @@ odeparam = (
     M_GPU = M_GPU,                                  # GPU array of the LHS system
     u = zeros(size(RHS)),                           # solution for the linear system 
     u_old = zeros(size(RHS)),                       # solution from the previous step
+    u_GPU = CuArray(zeros(size(RHS))),              # GPU array for solutions
     Δτb = spzeros(2 * (N_x + 1) * (N_y + 1)),       # store the traction computed
     τb = spzeros(2 * (N_x + 1) * (N_y + 1)),        # shear stress vector \boldsymbol{τ} = [τ; τ_z]
     τfb = spzeros(2 * (N_x + 1) * (N_y + 1)),
@@ -41,6 +42,7 @@ odeparam = (
     stride_time = 5,                                 # 
     RSas = zeros(fN2 * fN3)                         # RSas 
 );
+
 
 struct odeparam_struct
     #=
@@ -124,9 +126,12 @@ function odefun(dψV, ψδ, odeparam, t)
 
     dψ, V, ψ, δ = create_view(dψV, ψδ) # creating "views" to get dψ, V, ψ, δ
     @show t 
-    @show extrema(V2_v)
-    @show extrema(V3_v) 
-    @show extrema(dψ)
+    # extrema for debugging purpose
+    # comment out extrema function for performance
+
+    # @show extrema(V2_v)
+    # @show extrema(V3_v) 
+    # @show extrema(dψ)
 
     dψ .= 0;
     V .= 0;
@@ -147,7 +152,10 @@ function odefun(dψV, ψδ, odeparam, t)
 
     # Solving linear system using iterative methods
     # u_iterative, history = cg(M_GPU, CuArray(RHS), log=true);    # solving with non preconditioned cg
+
     u_iterative, history = cg!(CuArray(u),M_GPU, CuArray(RHS), abstol=abstol_, log=true);    # solving with non preconditioned cg
+    # u_iterative, history = cg!(CuArray(u),M_GPU, CuArray(RHS), abstol=abstol_, log=true);    # solving with non preconditioned cg
+
 
     # this can be replaced with MGCG in future 
     # @show history.iters
@@ -199,7 +207,7 @@ function odefun(dψV, ψδ, odeparam, t)
 
     # (f_v, g_v, dfx_v, dfy_v, dgx_v, dgy_v) = rateandstate_vectorized(V2_v, V3_v, ψ, σn, τ2, τ3, η, RSas, RSV0)
     (V2_tmp, V3_tmp, f_v, g_v, iter) = newtbndv_vectorized(rateandstate_vectorized, V2_v, V3_v, ψ, σn, Vector(τ2), Vector(τ3), 
-                    η, RSas, RSV0; ftol=1e-8, maxiter=100, α=0.2, atolx=1e-8, rtolx=1e-8)
+                    η, RSas, RSV0; ftol=1e-8, maxiter=200, α=0.25, atolx=1e-8, rtolx=1e-8) # tested α = 0.5
     # Testing using smaller step for Newton's method
     # And increased maxiter to represent smaller steps
     # be careful of the order of the parameters

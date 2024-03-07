@@ -4,6 +4,7 @@ using Printf
 using Plots
 using CUDA
 using DelimitedFiles
+using JSON
 
 function _unpack(x::NamedTuple)
     kk = keys(x)
@@ -537,6 +538,14 @@ function write_to_file(path, ψδ, t, i, odeparam, station_strings, station_indi
                 open(XXX, "a") do io
                     writedlm(io, ww)
                 end
+            end
+        end
+        if mod(ctr[], 1000) == 0
+            restart_values = (t = t, 
+            ψ = ψ,
+            δ = δ)
+            open(path * "restart_values", "w") do file
+                JSON.print(file, restart_values)
             end
         end
         global ctr[] += 1

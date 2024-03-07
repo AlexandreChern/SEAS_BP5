@@ -140,14 +140,30 @@ function main()
         # folder already exists
     end
 
-    global ctr[] = 1
-    create_text_files(path_time, station_strings, station_indices, δ, τb, θ, 0)
+    if !isfile(path_time * "restart_values")
+        global ctr[] = 1
+        create_text_files(path_time, station_strings, station_indices, δ, τb, θ, 0)
+        tspan = (0, sim_years * year_seconds)
+    else
+        contents = read(path_time * "restart_values", String)
+        json_data = JSON.parse(contents)
+        ψ_restart = json_data["ψ"]
+        δ_restart = json_data["δ"]
+        t = json_data["t"]
+        tspan = (t, sim_years * year_seconds)
+        ψ .= ψ_restart
+        δ .= δ_restart
+    end
+
+    # ψ .= ψ_restart
+    # δ .= δ_restart
+
     # Creating output
     callback_func = SavingCallback(
         (ψδ, t, i) -> write_to_file(path_time, ψδ, t, i, odeparam, station_strings, station_indices), SavedValues(Float64, Float64))
 
 
-    tspan = (0, sim_years * year_seconds)
+    # tspan = (0, sim_years * year_seconds)
     prob = ODEProblem(odefun, ψδ, tspan, odeparam)
 
     function stepcheck(_, odeparam, _)
@@ -164,8 +180,24 @@ function main()
     # gamma = 0.8 a sweet spot
     # check atol = 1e-12, rtol = 1e-12
     # check save_everystep = false
-    sol = solve(prob, Tsit5(); isoutofdomain=stepcheck, dt=0.001, dtmin=1e-8, abstol=1e-8, reltol=1e-8, save_everystep=false,
-        callback=callback_func)
+
+    # sol = solve(prob, Tsit5(); isoutofdomain=stepcheck, dt=0.001, dtmin=1e-8, abstol=1e-8, reltol=1e-8, save_everystep=false,
+    #     callback=callback_func)
+    # takes around 2 days, killed due to memory issues
+
+    # sol = solve(prob, Tsit5(); isoutofdomain=stepcheck, dt=0.001, dtmin=1e-6, abstol=1e-6, reltol=1e-8, gamma=0.8, save_everystep=false,
+    #     callback=callback_func) # works so far breaks in the second slip
+
+    # sol = solve(prob, Tsit5(); isoutofdomain=stepcheck, dt=0.001, dtmin=1e-8, abstol=1e-7, reltol=1e-8, gamma=0.7, save_everystep=false,
+    #     callback=callback_func) # works so far but slower
+
+    # to be tested 202403061727
+    # sol = solve(prob, Tsit5(); isoutofdomain=stepcheck, dt=0.001, dtmin=1e-6, abstol=1e-6, reltol=1e-8, gamma=0.5, save_everystep=false,
+    #     callback=callback_func) 
+
+    # To be tested
+    sol = solve(prob, Tsit5(); isoutofdomain=stepcheck, dt=0.001, dtmin=1e-8, abstol=1e-6, reltol=1e-8, gamma=0.8, save_everystep=false,
+        callback=callback_func) 
 
 end
 
