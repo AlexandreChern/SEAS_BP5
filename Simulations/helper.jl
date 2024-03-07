@@ -484,7 +484,7 @@ function create_text_files(path, station_strings, station_indices, δ, τb, θ, 
         ww[7] = τb[2 * RS_index]
         ww[8] = log10(θ[station_indices[n]])  # 
         open(XXX, "w") do io
-            write(io, "This is the file header")
+            write(io, "# This is the file header")
             write(io, "# problem=SEAS Benchmark BP5-QD\n")  # 
             write(io, "# code=Thrase\n")
             write(io, "# modeler=B. A. Erickson\n")
@@ -502,6 +502,8 @@ function create_text_files(path, station_strings, station_indices, δ, τb, θ, 
             write(io, "# Column #6 = Shear_stress_2 (MPa)\n")
             write(io, "# Column #7 = Shear_stress_3 (MPa)\n")
             write(io, "# Column #8 = State (log10 s)\n")
+            write(io, "t slip_2 slip_3 slip_rate_2 slip_rate_3 shear_stress_2 shear_stress_3 state\n")
+            write(io, "# Here is the time-series data.")
             writedlm(io, ww)
         end
     end
