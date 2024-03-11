@@ -225,8 +225,8 @@ end
 
 function newtbndv_v2(func, xL, xR, x; ftol=1e-6, maxiter=500, minchange=0,
   atolx=1e-4, rtolx=1e-4)
-  fL = get_first.(func.(xL))
-  fR = get_first.(func.(xR))
+  fL = func.(xL)[1]
+  fR = func.(xR)[1]
   if fL .* fR > 0
     return (typeof(x)(NaN), typeof(x)(NaN), -maxiter)
   end
@@ -261,28 +261,31 @@ function newtbndv_v2(func, xL, xR, x; ftol=1e-6, maxiter=500, minchange=0,
 end
 
 
-Vactual_v2 = [V2_actual, V2_actual]
-ψn_v2 = [ψn, ψn]
-σn = 50
-τ_v2 = [τ, τ]
-η_v2 = [η, η]
-a_v2 = [an, an]
-RSV0_v2 = [RSV0, RSV0]
+# Vactual_v2 = [V2_actual, V2_actual]
+# ψn_v2 = [ψn, ψn]
+# σn = 50
+# τ_v2 = [τ, τ]
+# η_v2 = [η, η]
+# a_v2 = [an, an]
+# RSV0_v2 = [RSV0, RSV0]
 
-g_v2, dgdV_v2 = rateandstate_v2(Vactual_v2, ψn_v2, σn, τ_v2, η_v2, a_v2, RSV0_v2)
+# g_v2, dgdV_v2 = rateandstate_v2(Vactual_v2, ψn_v2, σn, τ_v2, η_v2, a_v2, RSV0_v2)
 
-xL = [0, 0]
-xR = τ_v2 ./ η_v2
+# xL = [0, 0]
+# xR = τ_v2 ./ η_v2
 
-func = obj_rs
+# func = obj_rs
 
-fL_v2 = get_first.(func.(xL))
-fR_v2 = get_first.(func.(xR))
+# fL_v2 = get_first.(func.(xL))
+# fR_v2 = get_first.(func.(xR))
 
-x_v2 = [Vn, Vn]
-f_v2 = get_first.(func.(x_v2))
-df_v2 = get_second.(func.(x_v2))
+# x_v2 = [Vn, Vn]
+# f_v2 = get_first.(func.(x_v2))
+# df_v2 = get_second.(func.(x_v2))
 
-dxlr = xR .- xL
+# dxlr = xR .- xL
 
-dx = f_v2 ./ df_v2
+# dx = f_v2 ./ df_v2
+
+xL = fill(0, length(τ_v))
+xR = τ_v ./ η

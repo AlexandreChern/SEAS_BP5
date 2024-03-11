@@ -343,10 +343,51 @@ function rateandstate_vectorized_v2(V_v, ψ, σn, τ_v, η, RSas, RSV0)
     return (g_v, dgdV_v)
 end
 
-function newtonbndv_vectorized(rateandstate_vectorized_v2, xL, xR, V_v, ψ, σn, τ_v, η, 
+function newtbndv_vectorized_v2(rateandstate_vectorized_v2, xL, xR, V_v, ψ, σn, τ_v, η, 
                         RSas, RSV0; ftol=1e-6, maxiter = 500, minchange = 0, atolx = 1e-4, rtolx=1e-4)
-    fL_v = get_first.(rateandstate_vectorized_v2(xL, ψ, σn, τ_v, ))
-    fR_v = get_first.(rateandstate_vectorized_v2(xR))
+    fL_v = rateandstate_vectorized_v2(xL, ψ, σn, τ_v, η, RSas, RSV0)[1]
+    fR_v = rateandstate_vectorized_v2(xR, ψ, σn, τ_v, η, RSas, RSV0)[1]
+
+    if any(x -> x > 0, fL_v .* fR_v)
+        return (fill(typeof(V_v)(NaN), length(V_v)), fill(typeof(V_v)(Nan), length(V_v)), -maxiter)
+    end
+
+    f_v = rateandstate_vectorized_v2(V_v, ψ, σn, τ_v, η, RSas, RSV0)[1]
+    df_v = rateandstate_vectorized_v2(V_v, ψ, σn, τ_v, η, RSas, RSV0)[2]
+    dxlr_v = xR .- xL
+
+    # vectorize this 
+    #  if x < xL || x > xR || abs(dx) / dxlr < minchange
+    #       x = (xR + xL) / 2
+    #       dx = (xR - xL) / 2
+    #  end
+    #
+
+    for iter = 1:maxiter
+        dV_v = -f_v ./ df_v
+        V_v = V_v .+ dV_v
+        
+        mask = (V_v .< xL) .| (V_v .> xR) .| (abs.(dV_v) ./ dxlr_v .< minchange)
+        V_v[mask] .= (xR .+ XL) / 2
+        dV_v[mask] .= (xR .- xL) / 2
+
+        f_v = rateandstate_vectorized_v2(V_v, ψ, σn, τ_v, η, RSas, RSV0)[1]
+        df_v = rateandstate_vectorized_v2(V_v, ψ, σn, τ_v, η, RSas, RSV0)[2]
+        
+        mask_2 = f_v .* fL_v .> 0
+        fL_v[mask_2] .= f_v[mask_2]
+        xL[mask_2] .= V_v[mask_2]
+        fR_v[.!mask_2] .= f_v[.!mask_2]
+        xR[.!mask_2] .= V_v[.!mask_2]
+
+        dxlr_v .= xR .- xL
+
+        if all(abs.(f_v) .< ftol) && all(abs.(dV_v .< atolx .+ rtolx .* (abs.(dV_v) .+ abs.(V_v))))
+            return (V_v, f_v, iter)
+        end
+    end
+    return (V_v, f_v, -maxiter)
+
 end
 
 
