@@ -129,3 +129,160 @@ end
 # load json file
 file_contents = read("data.json", String)
 json_data = JSON.parse(file_contents)
+
+
+# New newtonbndv solver from Brittany
+
+function rateandstate(V, psi, σn, τ, η, a, V0)
+  # V and τ both stand for absolute value of slip rate and traction vecxtors. 
+  Y = (1 ./ (2 .* V0)) .* exp.(psi ./ a)
+  f = a .* asinh.(V .* Y)
+  dfdV = a .* (1 ./ sqrt.(1 + (V .* Y) .^ 2)) .* Y
+
+  g = σn .* f + η .* V - τ
+  dgdV = σn .* dfdV + η
+  (g, dgdV)
+end
+
+
+  
+function newtbndv(func, xL, xR, x; ftol=1e-6, maxiter=500, minchange=0,
+  atolx=1e-4, rtolx=1e-4)
+  (fL, _) = func(xL)
+  (fR, _) = func(xR)
+  if fL .* fR > 0
+    return (typeof(x)(NaN), typeof(x)(NaN), -maxiter)
+  end
+
+  (f, df) = func(x)
+  dxlr = xR - xL
+
+  for iter = 1:maxiter
+    dx = -f / df
+    x = x + dx
+
+    if x < xL || x > xR || abs(dx) / dxlr < minchange
+      x = (xR + xL) / 2
+      dx = (xR - xL) / 2
+    end
+
+    (f, df) = func(x)
+
+    if f * fL > 0
+      (fL, xL) = (f, x)
+    else
+      (fR, xR) = (f, x)
+    end
+    dxlr = xR - xL
+
+    if abs(f) < ftol && abs(dx) < atolx + rtolx * (abs(dx) + abs(x))
+      return (x, f, iter)
+    end
+  end
+  return (x, f, -maxiter)
+end
+
+
+# TESTING:
+ψn = 0.6
+an = 0.015
+η = 32/6
+σn = 50
+RSV0 = 1e-6
+V2_actual = 1e-9
+V3_actual = 2e-9
+Vactual = sqrt(V2_actual^2 + V3_actual^2)
+τ2 = σn * an * asinh(Vactual/(2*RSV0) * exp(ψn/an)) * V2_actual/Vactual + η*V2_actual
+τ3 =  σn * an * asinh(Vactual/(2*RSV0) * exp(ψn/an)) * V3_actual/Vactual + η*V3_actual
+
+τ = sqrt(τ2^2 + τ3^2)
+
+Vn = 1e-3              #initial guess for V (absolute value of slip rate vector)
+
+obj_rs(V) = rateandstate(V, ψn, σn, τ, η, an, RSV0)
+(Vn, f, iter) = newtbndv(obj_rs, 0, τ/η, Vn; ftol = 1e-12,
+                            atolx = 1e-12, rtolx = 1e-12)
+ 
+# once absolute value computed, compute components of slip rate
+Vn2 = (τ2)*Vn/τ
+Vn3 = (τ3)*Vn/τ
+
+@show (Vactual, Vn)
+
+
+# Vectorized resutls
+
+function rateandstate_v2(V, psi, σn, τ, η, a, V0)
+  # V and τ both stand for absolute value of slip rate and traction vecxtors. 
+  Y = (1 ./ (2 .* V0)) .* exp.(psi ./ a)
+  f = a .* asinh.(V .* Y)
+  dfdV = a .* (1 ./ sqrt.(1 .+ (V .* Y) .^ 2)) .* Y
+
+  g = σn .* f .+ η .* V .- τ
+  dgdV = σn .* dfdV .+ η
+  return (g, dgdV)
+end
+
+function newtbndv_v2(func, xL, xR, x; ftol=1e-6, maxiter=500, minchange=0,
+  atolx=1e-4, rtolx=1e-4)
+  fL = get_first.(func.(xL))
+  fR = get_second.(func.(xR))
+  if fL .* fR > 0
+    return (typeof(x)(NaN), typeof(x)(NaN), -maxiter)
+  end
+
+  f = get_first.(func.(x))
+  df = get_second.(func.(x))
+  dxlr = xR .- xL
+
+  for iter = 1:maxiter
+    dx = -f / df
+    x = x + dx
+
+    if x < xL || x > xR || abs(dx) / dxlr < minchange
+      x = (xR + xL) / 2
+      dx = (xR - xL) / 2
+    end
+
+    (f, df) = func(x)
+
+    if f * fL > 0
+      (fL, xL) = (f, x)
+    else
+      (fR, xR) = (f, x)
+    end
+    dxlr = xR - xL
+
+    if abs(f) < ftol && abs(dx) < atolx + rtolx * (abs(dx) + abs(x))
+      return (x, f, iter)
+    end
+  end
+  return (x, f, -maxiter)
+end
+
+
+Vactual_v2 = [V2_actual, V2_actual]
+ψn_v2 = [ψn, ψn]
+σn = 50
+τ_v2 = [τ, τ]
+η_v2 = [η, η]
+a_v2 = [an, an]
+RSV0_v2 = [RSV0, RSV0]
+
+g_v2, dgdV_v2 = rateandstate_v2(Vactual_v2, ψn_v2, σn, τ_v2, η_v2, a_v2, RSV0_v2)
+
+xL = [0, 0]
+xR = τ_v2 ./ η_v2
+
+func = obj_rs
+
+fL_v2 = get_first.(func.(xL))
+fR_v2 = get_first.(func.(xR))
+
+x_v2 = [Vn, Vn]
+f_v2 = get_first.(func.(x_v2))
+df_v2 = get_second.(func.(x_v2))
+
+dxlr = xR .- xL
+
+dx = f_v2 ./ df_v2

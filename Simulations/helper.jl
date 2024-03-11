@@ -332,6 +332,17 @@ function newtbndv_vectorized(rateandstate_vectorized, V2_v, V3_v, ψ, σn, τ2_v
     return (V2_v, V3_v, f_v, g_v, -maxiter)
 end
 
+function rateandstate_vectorized_v2(V_v, ψ_v, σn, τ_v, η, RSas, RSV0)
+    # V and τ both stand for absolute value of slip rate and traction vecxtors. 
+    Y_v = (1 ./ (2 .* RSV0)) .* exp.(ψ_v ./ a)
+    f_v = RSas .* asinh.(V_v .* Y_v)
+    dfdV_v = RSas .* (1 ./ sqrt.(1 .+ (V_v .* Y_v) .^ 2)) .* Y_v
+  
+    g_v = σn .* f_v .+ η .* V_v .- τ_v
+    dgdV_v = σn .* dfdV_v .+ η
+    return (g_v, dgdV_v)
+  end
+
 
 function map_jacobian(x, y, a, b)
     return [x y; a b]
