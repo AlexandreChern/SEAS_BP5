@@ -23,9 +23,9 @@ odeparam = (
     V2_v = fill(1e-9, fN2 * fN3),                   # acutal velocity (not in logical domain)
     V3_v = fill(1e-20, fN2 * fN3),                  # actual velocity (not in logical comain)
     V_v = fill(1e-9, fN2 * fN3),                    # norm of the velocity
-    τ2_v = fill(13, fN2 * fN3),                     # traction in the second direction for the RS region
-    τ3_v = fill(0, fN2 * fN3),                      # traction in the third direction for the RS region
-    τ_v = fill(13, fN2 * fN3),                      # norm of the traction
+    τ2_v = fill(13.0, fN2 * fN3),                     # traction in the second direction for the RS region
+    τ3_v = fill(0.0, fN2 * fN3),                      # traction in the third direction for the RS region
+    τ_v = fill(13.0, fN2 * fN3),                      # norm of the traction
     counter = [],                                   # counter for slip with Vmax >= threshold
     RHS = RHS,                                      # RHS of the linear system
     μshear = BP5_coeff.cs^2 * BP5_coeff.ρ ,         # constant?
@@ -214,8 +214,10 @@ function odefun(dψV, ψδ, odeparam, t)
     (V2_tmp, V3_tmp, f_v, g_v, iter) = newtbndv_vectorized(rateandstate_vectorized, V2_v, V3_v, ψ, σn, Vector(τ2), Vector(τ3), 
                     η, RSas, RSV0; ftol=1e-8, maxiter=200, α=0.25, atolx=1e-8, rtolx=1e-8) # tested α = 0.5
 
-
-    () = newtbndv_vectorized_v2()
+    xL = fill(0.0, length(τ_v))
+    xR = τ_v ./ η
+    (V_v, f_v, iter) = newtbndv_vectorized_v2(rateandstate_vectorized_v2, xL, xR, V_v, ψ, σn, τ_v, η,
+                                    RSas, RSV0; ftol=1e-6, maxiter=500, minchange=0, atolx = 1e-4, rtolx=1e-4)
     
     # Testing using smaller step for Newton's method
     # And increased maxiter to represent smaller steps
