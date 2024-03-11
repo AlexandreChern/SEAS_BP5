@@ -211,14 +211,16 @@ function odefun(dψV, ψδ, odeparam, t)
     τ_v .= hypot.(τ2_v, τ3_v)
 
     # (f_v, g_v, dfx_v, dfy_v, dgx_v, dgy_v) = rateandstate_vectorized(V2_v, V3_v, ψ, σn, τ2, τ3, η, RSas, RSV0)
-    (V2_tmp, V3_tmp, f_v, g_v, iter) = newtbndv_vectorized(rateandstate_vectorized, V2_v, V3_v, ψ, σn, Vector(τ2), Vector(τ3), 
-                    η, RSas, RSV0; ftol=1e-8, maxiter=200, α=0.25, atolx=1e-8, rtolx=1e-8) # tested α = 0.5
+    # (V2_tmp, V3_tmp, f_v, g_v, iter) = newtbndv_vectorized(rateandstate_vectorized, V2_v, V3_v, ψ, σn, Vector(τ2), Vector(τ3), 
+    #                 η, RSas, RSV0; ftol=1e-8, maxiter=200, α=0.25, atolx=1e-8, rtolx=1e-8) # tested α = 0.5
 
     xL = fill(0.0, length(τ_v))
     xR = τ_v ./ η
-    (V_v, f_v, iter) = newtbndv_vectorized_v2(rateandstate_vectorized_v2, xL, xR, V_v, ψ, σn, τ_v, η,
+    (V_v_tmp, f_v, iter) = newtbndv_vectorized_v2(rateandstate_vectorized_v2, xL, xR, V_v, ψ, σn, τ_v, η,
                                     RSas, RSV0; ftol=1e-6, maxiter=500, minchange=0, atolx = 1e-4, rtolx=1e-4)
-    
+    V_v .= V_v_tmp
+    V2_v = V_v .* τ2_v ./ τ_v
+    V3_v = V_v .* τ3_v ./ τ_v
     # Testing using smaller step for Newton's method
     # And increased maxiter to represent smaller steps
     # be careful of the order of the parameters
@@ -234,9 +236,9 @@ function odefun(dψV, ψδ, odeparam, t)
         return
     end
 
-    V2_v .= V2_tmp
-    V3_v .= V3_tmp
-    V_v .= hypot.(V2_v, V3_v)
+    # V2_v .= V2_tmp
+    # V3_v .= V3_tmp
+    # V_v .= hypot.(V2_v, V3_v)
     if iter > 10
         @show iter
     end

@@ -364,13 +364,14 @@ function newtbndv_vectorized_v2(rateandstate_vectorized_v2, xL, xR, V_v, ψ, σn
     #
 
     for iter = 1:maxiter
-        @show iter
+        # @show iter
         dV_v = -f_v ./ df_v
         V_v = V_v .+ dV_v
         
         mask = (V_v .< xL) .| (V_v .> xR) .| (abs.(dV_v) ./ dxlr_v .< minchange)
-        V_v[mask] .= (xR .+ xL) / 2
-        dV_v[mask] .= (xR .- xL) / 2
+        # @show length(mask), sum(mask)
+        V_v[mask] .= (xR[mask] .+ xL[mask]) ./ 2
+        dV_v[mask] .= (xR[mask] .- xL[mask]) ./ 2
 
         f_v = rateandstate_vectorized_v2(V_v, ψ, σn, τ_v, η, RSas, RSV0)[1]
         df_v = rateandstate_vectorized_v2(V_v, ψ, σn, τ_v, η, RSas, RSV0)[2]
