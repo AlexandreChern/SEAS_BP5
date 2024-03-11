@@ -20,8 +20,12 @@ odeparam = (
     Δτb = spzeros(2 * (N_x + 1) * (N_y + 1)),       # store the traction computed
     τb = spzeros(2 * (N_x + 1) * (N_y + 1)),        # shear stress vector \boldsymbol{τ} = [τ; τ_z]
     τfb = spzeros(2 * (N_x + 1) * (N_y + 1)),
-    V2_v = fill(1e-9, fN2 * fN3),                  # acutal velocity (not in logical domain)
+    V2_v = fill(1e-9, fN2 * fN3),                   # acutal velocity (not in logical domain)
     V3_v = fill(1e-20, fN2 * fN3),                  # actual velocity (not in logical comain)
+    V_v = fill(1e-9, fN2 * fN3),                    # norm of the velocity
+    τ2_v = fill(13, fN2 * fN3),                     # traction in the second direction for the RS region
+    τ3_v = fill(0, fN2 * fN3),                      # traction in the third direction for the RS region
+    τ_v = fill(13, fN2 * fN3),                      # norm of the traction
     counter = [],                                   # counter for slip with Vmax >= threshold
     RHS = RHS,                                      # RHS of the linear system
     μshear = BP5_coeff.cs^2 * BP5_coeff.ρ ,         # constant?
@@ -202,12 +206,14 @@ function odefun(dψV, ψδ, odeparam, t)
 
     odeparam.τfb .= τb .+ Δτb 
 
-    τ2 = (τ0 + Δτ)[RS_filter_2D_nzind]
-    τ3 = (τz0 + Δτz)[RS_filter_2D_nzind]
+    τ2_v .= (τ0 + Δτ)[RS_filter_2D_nzind]
+    τ3_v .= (τz0 + Δτz)[RS_filter_2D_nzind]
+    τ_v .= hypot.(τ2_v, τ3_v)
 
     # (f_v, g_v, dfx_v, dfy_v, dgx_v, dgy_v) = rateandstate_vectorized(V2_v, V3_v, ψ, σn, τ2, τ3, η, RSas, RSV0)
     (V2_tmp, V3_tmp, f_v, g_v, iter) = newtbndv_vectorized(rateandstate_vectorized, V2_v, V3_v, ψ, σn, Vector(τ2), Vector(τ3), 
                     η, RSas, RSV0; ftol=1e-8, maxiter=200, α=0.25, atolx=1e-8, rtolx=1e-8) # tested α = 0.5
+                    
     # Testing using smaller step for Newton's method
     # And increased maxiter to represent smaller steps
     # be careful of the order of the parameters

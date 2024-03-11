@@ -226,7 +226,7 @@ end
 function newtbndv_v2(func, xL, xR, x; ftol=1e-6, maxiter=500, minchange=0,
   atolx=1e-4, rtolx=1e-4)
   fL = get_first.(func.(xL))
-  fR = get_second.(func.(xR))
+  fR = get_first.(func.(xR))
   if fL .* fR > 0
     return (typeof(x)(NaN), typeof(x)(NaN), -maxiter)
   end
