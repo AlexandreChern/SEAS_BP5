@@ -226,61 +226,7 @@ function newtbndv(func, x, y; ftol = 1e-12, maxiter = 500,
 end
 
 
-function rateandstate_vectorized(V2_v, V3_v, ψ, σn, τ2_v, τ3_v, η, RSas, RSV0)
-    V  = sqrt.(V2_v.^2 .+ V3_v.^2) 
-    dV_dV2_v = 0.5 ./ sqrt.(V2_v.^2 .+ V3_v.^2) .* 2 .* V2_v
-    dV_dV3_v = 0.5 ./ sqrt.(V2_v.^2 .+ V3_v.^2) .* 2 .* V3_v
-
-    Y = (1 ./ (2 .* RSV0)) .* exp.(ψ ./ RSas)
-    f = RSas .* asinh.(V .* Y)
-    df_dV2_v = RSas .* (1 ./ sqrt.(1 .+ (V .* Y).^2)) .* (dV_dV2_v .* Y)
-    df_dV3_v = RSas .* (1 ./ sqrt.(1 .+ (V .* Y).^2)) .* (dV_dV3_v .* Y)
-
-    g1 = σn .* f .* V2_v ./ V .+ η .* V2_v .- τ2_v
-    g2 = σn .* f .* V3_v ./ V .+ η .* V3_v .- τ3_v
-
-    dA2_dV2_v = (V .- V2_v .* dV_dV2_v) ./ V.^2
-    dA2_dV3_v = (-V2_v .* dV_dV3_v) ./ V.^2
-    dA3_dV2_v = (-V3_v .* dV_dV2_v) ./ V.^2
-    dA3_dV3_v = (V .- V3_v .* dV_dV3_v) ./ V.^2
-
-    dg1_dV2_v = σn .* (df_dV2_v .* V2_v ./ V .+ f .* dA2_dV2_v) .+ η
-    dg1_dV3_v = σn .* (df_dV3_v .* V2_v ./ V .+ f .* dA2_dV3_v)
-
-    dg2_dV2_v = σn .* (df_dV2_v .* V3_v ./ V .+ f .* dA3_dV2_v)
-    dg2_dV3_v = σn .* (df_dV3_v .* V3_v ./ V .+ f .* dA3_dV3_v) .+ η
-
-    return (g1, g2, dg1_dV2_v, dg1_dV3_v, dg2_dV2_v, dg2_dV3_v)
-end
-
-function newtbndv_vectorized(rateandstate_vectorized, V2_v, V3_v, ψ, σn, τ2_v, τ3_v, η, RSas, RSV0;  
-                            ftol=1e-12, maxiter=100, α=1.0, atolx = 1e-4, rtolx=1e-4) # change atolx to 1e-8 and rtolx to 1e-8 for better stability
-    (f_v, g_v, dfx_v, dfy_v, dgx_v, dgy_v) = rateandstate_vectorized(V2_v, V3_v,  
-                        ψ, σn, τ2_v, τ3_v, η, RSas, RSV0)
-    # @show V2_v[1], V3_v[1], ψ[1], τ2_v[1], τ3_v[1], RSV0
-    for iter = 1:maxiter
-        (f_v, g_v, dfx_v, dfy_v, dgx_v, dgy_v) = rateandstate_vectorized(V2_v, V3_v,  
-                                        ψ, σn, τ2_v, τ3_v, η, RSas, RSV0)
-        inv_J = map_jacobian_inv.(dfx_v, dfy_v, dgx_v, dgy_v)
-        # @show dfx_v[1], dfy_v[1], dgx_v[1], dgy_v[1]
-        # @show inv_J[1]
-        # println()
-        dV2_vV3_v =  -inv_J .* map_cat.(f_v, g_v)
-        dV2_v = get_first.(dV2_vV3_v)
-        dV3_v = get_second.(dV2_vV3_v)
-        V2_v = V2_v + α * dV2_v
-        V3_v = V3_v + α * dV3_v
-        # @show dV2_v[1], dV3_v[1]
-        
-        # TODO vectorized control flow
-        if all(abs.(f_v) .< ftol) && all(abs.(dV2_v) .< atolx .+ rtolx .* (abs.(dV2_v) .+ abs.(V2_v))) && all(abs.(g_v) .< ftol) && all(abs.(dV2_v) .< atolx .+ rtolx .* (abs.(dV3_v) .+ abs.(V3_v)))
-            return (V2_v, V3_v, f_v, g_v, iter)
-        end
-    end
-    return (V2_v, V3_v, f_v, g_v, -maxiter)
-end
-
-function rateandstate_vectorized_v2(V_v, ψ, σn, τ_v, η, RSas, RSV0)
+function rateandstate_vectorized(V_v, ψ, σn, τ_v, η, RSas, RSV0)
     # V and τ both stand for absolute value of slip rate and traction vecxtors. 
     Y_v = (1 ./ (2 .* RSV0)) .* exp.(ψ ./ RSas)
     f_v = RSas .* asinh.(V_v .* Y_v)
@@ -291,33 +237,31 @@ function rateandstate_vectorized_v2(V_v, ψ, σn, τ_v, η, RSas, RSV0)
     return (g_v, dgdV_v)
 end
 
-function newtbndv_vectorized_v2(rateandstate_vectorized_v2, xL, xR, V_v, ψ, σn, τ_v, η, 
+function newtbndv_vectorized(rateandstate_vectorized, xL, xR, V_v, ψ, σn, τ_v, η, 
                         RSas, RSV0; ftol=1e-6, maxiter = 500, minchange = 0, atolx = 1e-4, rtolx=1e-4)
-    fL_v = rateandstate_vectorized_v2(xL, ψ, σn, τ_v, η, RSas, RSV0)[1]
-    fR_v = rateandstate_vectorized_v2(xR, ψ, σn, τ_v, η, RSas, RSV0)[1]
+    fL_v = rateandstate_vectorized(xL, ψ, σn, τ_v, η, RSas, RSV0)[1]
+    fR_v = rateandstate_vectorized(xR, ψ, σn, τ_v, η, RSas, RSV0)[1]
 
     if any(x -> x > 0, fL_v .* fR_v)
         return (fill(typeof(V_v)(NaN), length(V_v)), fill(typeof(V_v)(Nan), length(V_v)), -maxiter)
     end
 
-    f_v = rateandstate_vectorized_v2(V_v, ψ, σn, τ_v, η, RSas, RSV0)[1]
-    df_v = rateandstate_vectorized_v2(V_v, ψ, σn, τ_v, η, RSas, RSV0)[2]
+    f_v = rateandstate_vectorized(V_v, ψ, σn, τ_v, η, RSas, RSV0)[1]
+    df_v = rateandstate_vectorized(V_v, ψ, σn, τ_v, η, RSas, RSV0)[2]
     dxlr_v = xR .- xL
 
  
 
     for iter = 1:maxiter
-        # @show iter
         dV_v = -f_v ./ df_v
         V_v = V_v .+ dV_v
         
         mask = (V_v .< xL) .| (V_v .> xR) .| (abs.(dV_v) ./ dxlr_v .< minchange)
-        # @show length(mask), sum(mask)
         V_v[mask] .= (xR[mask] .+ xL[mask]) ./ 2
         dV_v[mask] .= (xR[mask] .- xL[mask]) ./ 2
 
-        f_v = rateandstate_vectorized_v2(V_v, ψ, σn, τ_v, η, RSas, RSV0)[1]
-        df_v = rateandstate_vectorized_v2(V_v, ψ, σn, τ_v, η, RSas, RSV0)[2]
+        f_v = rateandstate_vectorized(V_v, ψ, σn, τ_v, η, RSas, RSV0)[1]
+        df_v = rateandstate_vectorized(V_v, ψ, σn, τ_v, η, RSas, RSV0)[2]
         
         mask_2 = f_v .* fL_v .> 0
         fL_v[mask_2] .= f_v[mask_2]
@@ -447,9 +391,6 @@ function test_unpack(p)
     @unpack_namedtuple p
     @show Vp
     @show RHS
-    # for i in keys(p)
-    #     @show @eval $(i)
-    # end
 end
 
 
@@ -522,7 +463,6 @@ function write_to_file(path, ψδ, t, i, odeparam, station_strings, station_indi
                 ww[6] = τfb[2 * RS_index - 1] # need to define this
                 ww[7] = τfb[2 * RS_index]
                 θ = BP5_coeff.L / BP5_coeff.V0 * exp((ψ[station_indices[n]] - BP5_coeff.f0)/BP5_coeff.b0)
-                # ww[8] = ψ[station_indices[n]]  # 
                 ww[8] = log10(θ)
                 open(XXX, "a") do io
                     writedlm(io, ww)
