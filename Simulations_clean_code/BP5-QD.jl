@@ -24,6 +24,7 @@ function main()
     dψV, ψδ = create_ψVδ()
     # calling create_view to create "views" for dψ, V, ψ, δ, create_view defined in domain.jl
     dψ, V, ψ, δ = create_view(dψV, ψδ)
+    θ = zeros(size(ψ))
 
     for i in 1:fN2
         for j in 1:fN3
@@ -136,9 +137,12 @@ function main()
     end
   
     # abstol = 1e-6, reltol = 1e-8, gamma = 0.8 works
-    sol = solve(prob, Tsit5(); isoutofdomain=stepcheck, dt=0.001, dtmin=1e-8, abstol=1e-6, reltol=1e-8, gamma=0.8, save_everystep=false,
-        callback=callback_func) 
+    # try larger abstol and reltol for better performance[]
+    # sol = solve(prob, Tsit5(); isoutofdomain=stepcheck, dt=0.001, dtmin=1e-8, abstol=1e-6, reltol=1e-8, gamma = 0.8, save_everystep=false,
+    #     callback=callback_func) 
 
+    sol = solve(prob, Tsit5(); isoutofdomain=stepcheck, dt=0.001, dtmin=1e-8, abstol=1e-6, reltol=1e-8, save_everystep=false,
+        callback=callback_func) 
 end
 
 

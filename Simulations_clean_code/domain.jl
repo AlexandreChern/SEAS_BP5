@@ -33,9 +33,7 @@ BP5_coeff = coefficients(
 )
 
 
-
 include("Assembling_3D_matrices.jl")
-# include("coefficients.jl")
 
 # The entire domain is 128 km by 128 km by 128 km
 Lx = Ly = Lz = 128

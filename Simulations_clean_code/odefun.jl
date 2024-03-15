@@ -59,7 +59,6 @@ function odefun(dψV, ψδ, odeparam, t)
 
     ## Setting up ratees of change for state and slip
     dψ, V, ψ, δ = create_view(dψV, ψδ) # creating "views" to get dψ, V, ψ, δ
-    @show t 
     dψ .= 0;
     V .= 0;
     ## End setting up dψV and ψδ
@@ -76,16 +75,10 @@ function odefun(dψV, ψδ, odeparam, t)
     abstol_ = norm(RHS) * sqrt(eps(Float64))
 
     # Solving linear system using iterative methods
+    u_GPU, history = cg!(CuArray(u),M_GPU, CuArray(RHS), abstol=abstol_, log=true);    # solving with non preconditioned cg
+    @show t, history.iters
 
-    u_iterative, history = cg!(CuArray(u),M_GPU, CuArray(RHS), abstol=abstol_, log=true);    # solving with non preconditioned cg
-
-    # @show history.iters
-
-    if typeof(u_iterative) == CuArray{Float64, 1, CUDA.Mem.DeviceBuffer}
-    u_iterative = Array(u_iterative)
-    end
-
-    u[:] .= u_iterative
+    u[:] .= Array(u_GPU)
     # End of solving 
 
     # updating values for traction
@@ -95,8 +88,8 @@ function odefun(dψV, ψδ, odeparam, t)
     τ0 = @view τb[1:2:length(τb)]
     τz0 =  @view τb[2:2:length(τb)]
 
-    Δτ .= Face_operators[1] * sigma_21 * u_iterative
-    Δτz .= Face_operators[1] * sigma_31 * u_iterative
+    Δτ .= Face_operators[1] * sigma_21 * u
+    Δτz .= Face_operators[1] * sigma_31 * u
     # finish updating values for traction
     
     odeparam.τfb .= τb .+ Δτb 
@@ -110,7 +103,7 @@ function odefun(dψV, ψδ, odeparam, t)
     # bisection guarded newton's method
     xL = fill(0.0, length(τ_v))
     xR = τ_v ./ η
-    (V_v_tmp, f_v, iter) = newtbndv_vectorized_v2(rateandstate_vectorized_v2, xL, xR, V_v, ψ, σn, τ_v, η,
+    (V_v_tmp, f_v, iter) = newtbndv_vectorized(rateandstate_vectorized, xL, xR, V_v, ψ, σn, τ_v, η,
                                     RSas, RSV0; ftol=1e-6, maxiter=500, minchange=0, atolx = 1e-4, rtolx=1e-4)
 
     # end of bisection guarded newton's method
@@ -123,7 +116,7 @@ function odefun(dψV, ψδ, odeparam, t)
 
     
     # rejecting if V2 or V3 has infinite entries
-    if !all(isfinite.(V2)) || !all(isfinite.(V3))
+    if !all(isfinite.(V2_v)) || !all(isfinite.(V3_v))
         println("V reject")
         reject_step[1] = true
         return
@@ -139,7 +132,7 @@ function odefun(dψV, ψδ, odeparam, t)
 
 
 
-    if iter > 10
+    if iter > 1
         @show iter
     end
 

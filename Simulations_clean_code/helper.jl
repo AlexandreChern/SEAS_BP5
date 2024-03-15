@@ -243,7 +243,7 @@ function newtbndv_vectorized(rateandstate_vectorized, xL, xR, V_v, ψ, σn, τ_v
     fR_v = rateandstate_vectorized(xR, ψ, σn, τ_v, η, RSas, RSV0)[1]
 
     if any(x -> x > 0, fL_v .* fR_v)
-        return (fill(typeof(V_v)(NaN), length(V_v)), fill(typeof(V_v)(Nan), length(V_v)), -maxiter)
+        return (fill(typeof(V_v)(NaN), length(V_v)), fill(typeof(V_v)(NaN), length(V_v)), -maxiter)
     end
 
     f_v = rateandstate_vectorized(V_v, ψ, σn, τ_v, η, RSas, RSV0)[1]
@@ -395,8 +395,6 @@ end
 
 
 function create_text_files(path, station_strings, station_indices, δ, τb, θ, t)
-
-
     Vzero = 1e-20
     for n = 1:length(station_strings)
         XXX = path * "fltst_strk" * station_strings[n] * ".txt"
@@ -485,12 +483,12 @@ function write_to_file(path, ψδ, t, i, odeparam, station_strings, station_indi
 end
 
 
-function find_value_in_file(filename, value)
-    # Open to file
-    open(filename) do file
-        for line in each line(file)
-            columns = split(line)
-            if columns[i] == value
-        end
-    end
-end
+# function find_value_in_file(filename, value)
+#     # Open to file
+#     open(filename) do file
+#         for line in each line(file)
+#             columns = split(line)
+#             if columns[i] == value
+#         end
+#     end
+# end

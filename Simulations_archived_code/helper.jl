@@ -618,12 +618,12 @@ function write_to_file(path, ψδ, t, i, odeparam, station_strings, station_indi
 end
 
 
-function find_value_in_file(filename, value)
-    # Open to file
-    open(filename) do file
-        for line in each line(file)
-            columns = split(line)
-            if columns[i] == value
-        end
-    end
-end
+# function find_value_in_file(filename, value)
+#     # Open to file
+#     open(filename) do file
+#         for line in each line(file)
+#             columns = split(line)
+#             if columns[i] == value
+#         end
+#     end
+# end
