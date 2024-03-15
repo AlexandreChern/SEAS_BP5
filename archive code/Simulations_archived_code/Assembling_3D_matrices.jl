@@ -1,9 +1,9 @@
-include("../diagonal_sbp.jl")
-include("../3D_face.jl")
-include("../analy_sol.jl")
+include("../../diagonal_sbp.jl")
+include("../../3D_face.jl")
+include("../../analy_sol.jl")
 # include("analy_sol_2.jl")
-include("../components.jl")
-include("../coefficients.jl")
+include("../../components.jl")
+include("../../coefficients.jl")
 
 using LinearAlgebra
 using IterativeSolvers
