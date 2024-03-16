@@ -36,8 +36,8 @@ BP5_coeff = coefficients(
 include("Assembling_3D_matrices.jl")
 
 # The entire domain is 128 km by 128 km by 128 km
-Lx = Ly = Lz = 128
-N_x = N_y = N_z = Int(128 / (BP5_coeff.Δz / 1000))
+Lx = Ly = Lz = 256
+N_x = N_y = N_z = Int(Lx / (BP5_coeff.Δz / 1000))
 Nx = N_x + 1
 Ny = N_y + 1
 Nz = N_z + 1
