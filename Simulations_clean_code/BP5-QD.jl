@@ -6,6 +6,7 @@ include(domain_file)
 
 # loading odefun defined for ODEProblem
 include("odefun.jl")
+include("utils_MG.jl")
 
 CUDA.allowscalar(false)
 
