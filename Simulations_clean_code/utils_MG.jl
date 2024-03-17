@@ -181,12 +181,12 @@ function get_lams(mg_struct_CUDA)
     empty!(mg_struct_CUDA.λ_mins)
     empty!(mg_struct_CUDA.λ_maxs)
     reverse_Amg = reverse(mg_struct_CUDA.A_CPU_mg)
-    if size(reverse_Amg[1])[1] > 289
+    if size(reverse_Amg[1])[1] > 375
         println("The minimal A matrix is too large for λ_min calculation")
         return 0
     end
     for k in eachindex(reverse_Amg)
-        if size(reverse_Amg[k])[1] <= 2187 # nx <= 8
+        if size(reverse_Amg[k])[1] <= 14739 # nx <= 8
             lam_min, v_min = eigs(reverse_Amg[k], nev=1, which=:SR)
             lam_min = real(lam_min[1])
 
@@ -194,11 +194,11 @@ function get_lams(mg_struct_CUDA)
             lam_max = real(lam_max[1]) # try different formulations
         else
             lam_min = mg_struct_CUDA.λ_mins[1] / 7
-            if size(reverse_Amg[k])[1] <= 16641
+            if size(reverse_Amg[k])[1] <= 14739
                 lam_max, v_max = eigs(reverse_Amg[k], nev=1, which=:LR)
                 lam_max = real(lam_max[1]) # try different formulations
             else
-                lam_max = mg_struct_CUDA.λ_maxs[1] / 2
+                lam_max = mg_struct_CUDA.λ_maxs[1] / 1.8
             end
         end
         pushfirst!(mg_struct_CUDA.λ_mins, lam_min)
@@ -319,6 +319,7 @@ function mgcg_CUDA(mg_struct_CUDA;nx=64,ny=64,nz=64,n_levels=3,v1=5,v2=5,v3=5, �
     mg_struct_CUDA.r_CUDA[1][:] .= mg_struct_CUDA.b_mg[1][:] .- mg_struct_CUDA.A_mg[1] * mg_struct_CUDA.x_CUDA[1][:]
 
     init_rms = norm(mg_struct_CUDA.b_mg[1][:])
+    @show init_rms
 
     if precond == true
         mg_solver_CUDA(mg_struct_CUDA, mg_struct_CUDA.r_CUDA[1], nx=nx, ny=ny, nz=nz, n_levels = n_levels, v1 = v1, v2 = v2, v3 = v3, max_mg_iterations=max_mg_iterations,scaling_factor=scaling_factor)
