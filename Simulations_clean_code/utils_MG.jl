@@ -18,6 +18,8 @@ mutable struct MG_CUDA
     prol_fine_mg
     rest_mg
     prol_mg
+    rest_CPU_mg
+    prol_CPU_mg
     lnx_mg
     lny_mg
     lnz_mg
@@ -33,7 +35,7 @@ mutable struct MG_CUDA
     p_CUDA
 end
 
-mg_struct_CUDA = MG_CUDA([],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[])
+mg_struct_CUDA = MG_CUDA([],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[])
 
 function clear_mg_struct_CUDA(mg_struct_CUDA)
     println("Clearing mg_struct")
@@ -52,6 +54,8 @@ function clear_mg_struct_CUDA(mg_struct_CUDA)
     mg_struct_CUDA.prol_fine_mg = []
     mg_struct_CUDA.rest_mg = []
     mg_struct_CUDA.prol_mg = []
+    mg_struct_CUDA.rest_CPU_mg = []
+    mg_struct_CUDA.prol_CPU_mg = []
     mg_struct_CUDA.lnx_mg = []
     mg_struct_CUDA.lny_mg = []
     mg_struct_CUDA.lnz_mg = []
