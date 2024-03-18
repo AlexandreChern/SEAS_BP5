@@ -411,7 +411,6 @@ function initialize_amg_struct_CUDA(mg_struct_CUDA, nx, ny, nz, n_levels)
                 push!(prol_mg, CUDA.CUSPARSE.CuSparseMatrixCSR(kron(prolongation_matrix_v0(nx,ny,nz,div(nx,2),div(ny,2),div(nz,2)),sparse(I,3,3))))
             else
                 # A, b, H_tilde, HI_tilde, analy_sol = Assembling_3D_matrices(nx,ny,nz)
-
                 push!(A_CPU_mg, A)
                 push!(A_mg, CUDA.CUSPARSE.CuSparseMatrixCSR(A))
                 push!(b_CPU_mg, b)
@@ -458,7 +457,7 @@ function amg_solver_CUDA(mg_struct_CUDA, f_in;
     iter_algos = ["Richardson", "Jacobi"]
     iter_algo = iter_algos[iter_algo_num]
     if isempty(mg_struct_CUDA.A_mg)
-        initialize_mg_struct_CUDA(mg_struct_CUDA,nx,ny,nz,n_levels)
+        initialize_amg_struct_CUDA(mg_struct_CUDA,nx,ny,nz,n_levels)
     end
     clear_urf_CUDA(mg_struct_CUDA)
     if print_results
@@ -551,7 +550,7 @@ end
 function amgcg_CUDA(mg_struct_CUDA;nx=64,ny=64,nz=64,n_levels=3,v1=5,v2=5,v3=5, ω=1.0, ω_richardson=2/1000, max_cg_iter=10, max_mg_iterations=1,iter_algo_num=3, precond=true,dynamic_richardson_ω=false,scaling_factor=1, print_results=false, rel_tol=sqrt(eps(Float64)))
     if nx != mg_struct_CUDA.lnx_mg[1]
         clear_mg_struct_CUDA(mg_struct_CUDA)
-        initialize_mg_struct_CUDA(mg_struct_CUDA, nx, ny, nz, n_levels = n_levels)
+        initialize_amg_struct_CUDA(mg_struct_CUDA, nx, ny, nz, n_levels = n_levels)
     end
    
     mg_struct_CUDA.r_CUDA[1][:] .= mg_struct_CUDA.b_mg[1][:] .- mg_struct_CUDA.A_mg[1] * mg_struct_CUDA.x_CUDA[1][:]
@@ -560,7 +559,7 @@ function amgcg_CUDA(mg_struct_CUDA;nx=64,ny=64,nz=64,n_levels=3,v1=5,v2=5,v3=5, 
     @show init_rms
 
     if precond == true
-        mg_solver_CUDA(mg_struct_CUDA, mg_struct_CUDA.r_CUDA[1], nx=nx, ny=ny, nz=nz, n_levels = n_levels, v1 = v1, v2 = v2, v3 = v3, max_mg_iterations=max_mg_iterations,scaling_factor=scaling_factor)
+        amg_solver_CUDA(mg_struct_CUDA, mg_struct_CUDA.r_CUDA[1], nx=nx, ny=ny, nz=nz, n_levels = n_levels, v1 = v1, v2 = v2, v3 = v3, max_mg_iterations=max_mg_iterations,scaling_factor=scaling_factor)
         mg_struct_CUDA.z_CUDA[1] .= mg_struct_CUDA.u_mg[1]
     else
         mg_struct_CUDA.z_CUDA[1][:] .= mg_struct_CUDA.r_CUDA[1][:]
@@ -589,7 +588,7 @@ function amgcg_CUDA(mg_struct_CUDA;nx=64,ny=64,nz=64,n_levels=3,v1=5,v2=5,v3=5, 
         end
 
         if precond == true
-            mg_solver_CUDA(mg_struct_CUDA, mg_struct_CUDA.r_new_CUDA[1], nx=nx, ny=ny, nz=nz, n_levels = n_levels, v1 = v1, v2 = v2, v3 = v3, max_mg_iterations=max_mg_iterations,scaling_factor=scaling_factor)            
+            amg_solver_CUDA(mg_struct_CUDA, mg_struct_CUDA.r_new_CUDA[1], nx=nx, ny=ny, nz=nz, n_levels = n_levels, v1 = v1, v2 = v2, v3 = v3, max_mg_iterations=max_mg_iterations,scaling_factor=scaling_factor)            
             mg_struct_CUDA.z_new_CUDA[1] .= mg_struct_CUDA.u_mg[1]
         else
             mg_struct_CUDA.z_new_CUDA[1] .= copy(mg_struct_CUDA.r_new_CUDA[1])
