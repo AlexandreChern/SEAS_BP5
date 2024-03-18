@@ -135,3 +135,27 @@ extrema(eigvals(Matrix(mg_struct_CUDA.A_CPU_mg[end])))
 extrema(eigvals(Matrix(mg_struct_CUDA.A_CPU_mg[end-1])))
 extrema(eigvals(Matrix(mg_struct_CUDA.A_CPU_mg[end-2])))
 extrema(eigvals(Matrix(mg_struct_CUDA.A_CPU_mg[end-3])))
+
+
+
+
+ans1 = mg_struct_CUDA.prol_mg[end-1] * mg_struct_CUDA.H_inv_mg[end] * mg_struct_CUDA.b_mg[end]
+ans2 = mg_struct_CUDA.H_inv_mg[end-1] * mg_struct_CUDA.b_mg[end-1]
+ans1 ./ ans2
+
+
+ans3 = mg_struct_CUDA.H_inv_mg[end] * mg_struct_CUDA.b_mg[end]
+ans4 = mg_struct_CUDA.H_inv_mg[end-1] * mg_struct_CUDA.b_mg[end-1] 
+
+
+u1_ans3 = get_u1(3,3,3) * Array(ans3)
+u1_ans4 = get_u1(5,5,5) * Array(ans4)
+
+u1_ans3_reshaped = reshape(u1_ans3, 3,3,3)
+u1_ans4_reshaped = reshape(u1_ans4, 5,5,5)
+
+
+
+ans5 = mg_struct_CUDA.H_inv_mg[end-2] * mg_struct_CUDA.b_mg[end-2]
+u1_ans5 = get_u1(9,9,9) * Array(ans5)  
+u1_ans5_reshaped = reshape(u1_ans5, 9, 9, 9)
