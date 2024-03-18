@@ -59,7 +59,7 @@ initialize_mg_struct_CUDA(mg_struct_CUDA, 256, 256, 256, 8)
 get_lams(mg_struct_CUDA)
 
 f_in = mg_struct_CUDA.b_mg[1]
-mg_solver_CUDA(mg_struct_CUDA, nx = 256, ny = 256, nz=256, f_in; max_mg_iterations=10, n_levels=8, v1=10, v2 = 10, v3 = 10, print_results=true, scaling_factor=1, iter_algo_num=1)
+mg_solver_CUDA(mg_struct_CUDA, nx=256, ny=256, nz=256, f_in; max_mg_iterations=10, n_levels=8, v1=10, v2 = 10, v3 = 10, print_results=true, scaling_factor=1, iter_algo_num=1)
 mg_struct_CUDA.x_CUDA[1] .= 0
 mgcg_CUDA(mg_struct_CUDA,nx=256,ny=256,nz=256,n_levels=8,precond=false,max_mg_iterations=1, v1=5, v2=5, v3=5, max_cg_iter=3000,scaling_factor=1) 
 
