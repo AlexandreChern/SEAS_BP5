@@ -444,7 +444,7 @@ function initialize_amg_struct_CUDA(mg_struct_CUDA, nx, ny, nz, n_levels)
             hx, hy = 2*hx, 2*hy, 2*hz
         end 
     end
-    get_lams(mg_struct_CUDA)
+    get_amg_lams(mg_struct_CUDA)
     push!(mg_struct_CUDA.odata_mg, CuArray(zeros(size(mg_struct_CUDA.b_mg[1]))))
     push!(mg_struct_CUDA.x_CUDA, CuArray(zeros(size(mg_struct_CUDA.b_mg[1]))))
     push!(mg_struct_CUDA.r_CUDA, CuArray(zeros(size(mg_struct_CUDA.b_mg[1]))))
@@ -507,7 +507,7 @@ function amg_solver_CUDA(mg_struct_CUDA, f_in;
                 mg_struct_CUDA.r_mg[k-1][:] .= mg_struct_CUDA.f_mg[k-1][:] .- mg_struct_CUDA.A_mg[k-1] * mg_struct_CUDA.u_mg[k-1]
             end
 
-            mg_struct_CUDA.f_mg[k] .= mg_struct_CUDA.H_mg[k] * mg_struct_CUDA.rest_mg[k-1] * mg_struct_CUDA.H_inv_mg[k-1] * mg_struct_CUDA.r_mg[k-1]  ./ scaling_factor# ./ 2 to modify the 3D problem
+            mg_struct_CUDA.f_mg[k] .= mg_struct_CUDA.rest_mg[k-1] * mg_struct_CUDA.r_mg[k-1]  ./ scaling_factor# ./ 2 to modify the 3D problem
 
             if k < n_levels
                 if print_results
@@ -556,6 +556,35 @@ function amg_solver_CUDA(mg_struct_CUDA, f_in;
             @show norm(mg_struct_CUDA.r_mg[1][:])
         end
     end
+end
+
+function get_amg_lams(mg_struct_CUDA)
+    empty!(mg_struct_CUDA.λ_mins)
+    empty!(mg_struct_CUDA.λ_maxs)
+    reverse_Amg = reverse(mg_struct_CUDA.A_CPU_mg)
+    if size(reverse_Amg[1])[1] > 375
+        println("The minimal A matrix is too large for λ_min calculation")
+        return 0
+    end
+    for k in eachindex(reverse_Amg)
+        if size(reverse_Amg[k])[1] <= 14739 # nx <= 8
+            lam_min, v_min = eigs(reverse_Amg[k], nev=1, which=:SR)
+            lam_min = real(lam_min[1])
+
+            lam_max, v_max = eigs(reverse_Amg[k], nev=1, which=:LR)
+            lam_max = real(lam_max[1]) # try different formulations
+        else
+            lam_min = mg_struct_CUDA.λ_mins[1] / 7
+            if size(reverse_Amg[k])[1] <= 14739
+                lam_max, v_max = eigs(reverse_Amg[k], nev=1, which=:LR)
+                lam_max = real(lam_max[1]) # try different formulations
+            else
+                lam_max = mg_struct_CUDA.λ_maxs[1] / 1.8
+            end
+        end
+        pushfirst!(mg_struct_CUDA.λ_mins, lam_min)
+        pushfirst!(mg_struct_CUDA.λ_maxs, lam_max)
+    end 
 end
 
 

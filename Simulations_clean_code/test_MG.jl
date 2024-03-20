@@ -3,21 +3,18 @@ include("utils_MG.jl")
 
 clear_mg_struct_CUDA(mg_struct_CUDA)
 initialize_mg_struct_CUDA(mg_struct_CUDA, 128, 128, 128, 6)
-initialize_amg_struct_CUDA(mg_struct_CUDA, 32, 32, 32, 4)
 
 # u_direct_1 = mg_struct_CUDA.A_CPU_mg[1] \ Array(mg_struct_CUDA.b_mg[1])
 # extrema((u_direct_1 - mg_struct_CUDA.u_exact[1]))
 
-
+clear_mg_struct_CUDA(mg_struct_CUDA)
+initialize_mg_struct_CUDA(mg_struct_CUDA, 64, 64, 64, 6)
 get_lams(mg_struct_CUDA)
-
-
 f_in = mg_struct_CUDA.b_mg[1]
-
-mg_solver_CUDA(mg_struct_CUDA, nx = 64, ny = 64, nz=64, f_in; max_mg_iterations=10, n_levels=2, v1=10, v2 = 100, v3 = 10, print_results=true, scaling_factor=1, iter_algo_num=1)
-
+mg_solver_CUDA(mg_struct_CUDA, nx = 64, ny = 64, nz=64, f_in; max_mg_iterations=10, n_levels=3, v1=10, v2 = 10, v3 = 10, print_results=true, scaling_factor=1, iter_algo_num=1)
 mg_struct_CUDA.x_CUDA[1] .= 0
-mgcg_CUDA(mg_struct_CUDA,nx=64,ny=64,nz=64,n_levels=6,precond=true,max_mg_iterations=1, v1=5, v2=100, v3=5, max_cg_iter=30,scaling_factor=1) # check mgcg implementation! precond=false should give good convergence
+mgcg_CUDA(mg_struct_CUDA,nx=64,ny=64,nz=64,n_levels=6,precond=true,max_mg_iterations=1, v1=5, v2=10, v3=5, max_cg_iter=30,scaling_factor=1, print_results=true, rel_tol=1e-6) # check mgcg implementation! precond=false should give good convergence
+
 x_out, history = cg(mg_struct_CUDA.A_mg[1], mg_struct_CUDA.b_mg[1], log=true)
 history.data
 
@@ -160,3 +157,12 @@ u1_ans4_reshaped = reshape(u1_ans4, 5,5,5)
 ans5 = mg_struct_CUDA.H_inv_mg[end-2] * mg_struct_CUDA.b_mg[end-2]
 u1_ans5 = get_u1(9,9,9) * Array(ans5)  
 u1_ans5_reshaped = reshape(u1_ans5, 9, 9, 9)
+
+
+############################# Test AMG #################################
+clear_mg_struct_CUDA(mg_struct_CUDA)
+initialize_amg_struct_CUDA(mg_struct_CUDA, 64, 64, 64, 5)
+f_in = mg_struct_CUDA.b_mg[1]
+amg_solver_CUDA(mg_struct_CUDA, nx = 64, ny = 64, nz=64, f_in; max_mg_iterations=10, n_levels=2, v1=10, v2 = 10, v3 = 10, print_results=true, scaling_factor=1, iter_algo_num=1)
+mg_struct_CUDA.x_CUDA[1] .= 0
+amgcg_CUDA(mg_struct_CUDA,nx=64,ny=64,nz=64,n_levels=4,precond=true,max_mg_iterations=1, v1=5, v2=10, v3=5, max_cg_iter=30,scaling_factor=1, print_results=true, rel_tol=1e-6) # check mgcg implementation! precond=false should give good convergence
