@@ -3,6 +3,7 @@ include("utils_MG.jl")
 
 clear_mg_struct_CUDA(mg_struct_CUDA)
 initialize_mg_struct_CUDA(mg_struct_CUDA, 128, 128, 128, 6)
+initialize_amg_struct_CUDA(mg_struct_CUDA, 32, 32, 32, 4)
 
 # u_direct_1 = mg_struct_CUDA.A_CPU_mg[1] \ Array(mg_struct_CUDA.b_mg[1])
 # extrema((u_direct_1 - mg_struct_CUDA.u_exact[1]))

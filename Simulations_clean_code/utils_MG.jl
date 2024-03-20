@@ -386,6 +386,8 @@ function initialize_amg_struct_CUDA(mg_struct_CUDA, nx, ny, nz, n_levels)
     u_mg = mg_struct_CUDA.u_mg
     r_mg = mg_struct_CUDA.r_mg
     prol_fine_mg = mg_struct_CUDA.prol_fine_mg
+    rest_CPU_mg = mg_struct_CUDA.rest_CPU_mg
+    prol_CPU_mg = mg_struct_CUDA.prol_CPU_mg
     rest_mg = mg_struct_CUDA.rest_mg
     prol_mg = mg_struct_CUDA.prol_mg
     lnx_mg = mg_struct_CUDA.lnx_mg
@@ -411,12 +413,16 @@ function initialize_amg_struct_CUDA(mg_struct_CUDA, nx, ny, nz, n_levels)
                 push!(u_mg, CuArray(zeros(size(b))))
                 push!(u_exact, analy_sol)
                 push!(prol_fine_mg, CuArray(zeros(size(b))))
+                push!(rest_CPU_mg, kron(restriction_matrix_v0(nx,ny,nz,div(nx,2),div(ny,2),div(nz,2)),sparse(I,3,3)))
+                push!(prol_CPU_mg, kron(prolongation_matrix_v0(nx,ny,nz,div(nx,2),div(ny,2),div(nz,2)),sparse(I,3,3)))
                 push!(rest_mg, CUDA.CUSPARSE.CuSparseMatrixCSR(kron(restriction_matrix_v0(nx,ny,nz,div(nx,2),div(ny,2),div(nz,2)),sparse(I,3,3))))
                 push!(prol_mg, CUDA.CUSPARSE.CuSparseMatrixCSR(kron(prolongation_matrix_v0(nx,ny,nz,div(nx,2),div(ny,2),div(nz,2)),sparse(I,3,3))))
             else
-                # A, b, H_tilde, HI_tilde, analy_sol = Assembling_3D_matrices(nx,ny,nz)
-                push!(A_CPU_mg, A)
-                push!(A_mg, CUDA.CUSPARSE.CuSparseMatrixCSR(A))
+                A, b, H_tilde, HI_tilde, analy_sol = Assembling_3D_matrices(nx,ny,nz)
+                # push!(A_CPU_mg, A)
+                # push!(A_mg, CUDA.CUSPARSE.CuSparseMatrixCSR(A))
+                push!(A_CPU_mg, rest_CPU_mg[k-1] * A_CPU_mg[k-1] * prol_CPU_mg[k-1])
+                push!(A_mg, CUDA.CUSPARSE.CuSparseMatrixCSR(A_CPU_mg[k]))
                 push!(b_CPU_mg, b)
                 push!(b_mg, CuArray(b))
                 push!(H_mg, CUDA.CUSPARSE.CuSparseMatrixCSR(kron(H_tilde, sparse(I,3,3))))
@@ -426,6 +432,8 @@ function initialize_amg_struct_CUDA(mg_struct_CUDA, nx, ny, nz, n_levels)
                 push!(u_mg, CuArray(zeros(size(b))))
                 push!(u_exact, analy_sol)
                 push!(prol_fine_mg, CuArray(zeros(size(b))))
+                push!(rest_CPU_mg, kron(restriction_matrix_v0(nx,ny,nz,div(nx,2),div(ny,2),div(nz,2)),sparse(I,3,3)))
+                push!(prol_CPU_mg, kron(prolongation_matrix_v0(nx,ny,nz,div(nx,2),div(ny,2),div(nz,2)),sparse(I,3,3)))
                 push!(rest_mg, CUDA.CUSPARSE.CuSparseMatrixCSR(kron(restriction_matrix_v0(nx,ny,nz,div(nx,2),div(ny,2),div(nz,2)),sparse(I,3,3))))
                 push!(prol_mg, CUDA.CUSPARSE.CuSparseMatrixCSR(kron(prolongation_matrix_v0(nx,ny,nz,div(nx,2),div(ny,2),div(nz,2)),sparse(I,3,3))))
             end
