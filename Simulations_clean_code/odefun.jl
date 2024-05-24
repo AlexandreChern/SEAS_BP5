@@ -9,7 +9,7 @@ include("helper.jl")
 
 global const ctr = Ref{Int64}(1)
 
-initialize_mg_struct_CUDA(mg_struct_CUDA, Nx, Ny, Nz, 7)
+initialize_mg_struct_CUDA(mg_struct_CUDA, N_x, N_y, N_z, 7)
 
 odeparam = (
     reject_step = [false],                          # to reject a step or not
@@ -80,6 +80,12 @@ function odefun(dψV, ψδ, odeparam, t)
     # Solving linear system using iterative methods
     u_GPU, history = cg!(CuArray(u),M_GPU, CuArray(RHS), abstol=abstol_, log=true);    # solving with non preconditioned cg
     @show t, history.iters
+
+    # test MGCG
+    mg_struct_CUDA.b_mg[1] .= CuArray(RHS)
+    mg_struct_CUDA.x_CUDA[1] .= CuArray(u)
+    mgcg_CUDA(mg_struct_CUDA)
+    # end MGCG
 
     u[:] .= Array(u_GPU)
     # End of solving 
