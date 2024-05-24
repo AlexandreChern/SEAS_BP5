@@ -181,7 +181,7 @@ function get_lams(mg_struct_CUDA)
     empty!(mg_struct_CUDA.λ_mins)
     empty!(mg_struct_CUDA.λ_maxs)
     reverse_Amg = reverse(mg_struct_CUDA.A_CPU_mg)
-    if size(reverse_Amg[1])[1] > 289
+    if size(reverse_Amg[1])[1] > 375
         println("The minimal A matrix is too large for λ_min calculation")
         return 0
     end
@@ -292,7 +292,6 @@ function mg_solver_CUDA(mg_struct_CUDA, f_in;
             ω_richardson = 2 / (mg_struct_CUDA.λ_mins[k-1] + mg_struct_CUDA.λ_maxs[k-1])
             mg_struct_CUDA.prol_fine_mg[k-1] = mg_struct_CUDA.prol_mg[k-1] * mg_struct_CUDA.u_mg[k]
             mg_struct_CUDA.u_mg[k-1] .+= mg_struct_CUDA.prol_fine_mg[k-1]
-            ω_richardson = 2 / (mg_struct_CUDA.λ_mins[k-1] + mg_struct_CUDA.λ_maxs[k-1])
             if iter_algo == "Richardson"
                 for i in 1:v3
                     mg_struct_CUDA.u_mg[k-1][:] .+= ω_richardson * (mg_struct_CUDA.f_mg[k-1][:] .- mg_struct_CUDA.A_mg[k-1] * mg_struct_CUDA.u_mg[k-1][:])    

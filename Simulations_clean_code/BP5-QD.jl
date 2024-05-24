@@ -5,8 +5,9 @@ domain_file = "domain.jl"
 include(domain_file)
 
 # loading odefun defined for ODEProblem
-include("odefun.jl")
 include("utils_MG.jl")
+include("odefun.jl")
+
 
 CUDA.allowscalar(false)
 
@@ -19,7 +20,6 @@ function main()
     Vzero = 1e-20
 
     @unpack_namedtuple odeparam
-
 
     # calling create_ψVδ to create variables used for odefun, create_ψVδ defined in domain.jl
     dψV, ψδ = create_ψVδ()

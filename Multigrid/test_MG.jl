@@ -28,6 +28,29 @@ dot(mg_struct_CUDA.b_mg[1],mg_struct_CUDA.b_mg[1]) / dot(mg_struct_CUDA.b_mg[1],
 mg_struct_CUDA
 
 
+############################### N = 64 ######################################
+clear_mg_struct_CUDA(mg_struct_CUDA)
+initialize_mg_struct_CUDA(mg_struct_CUDA, 64, 64, 64, 6)
+get_lams(mg_struct_CUDA)
+
+f_in = mg_struct_CUDA.b_mg[1]
+mg_solver_CUDA(mg_struct_CUDA, nx = 64, ny = 64, nz=64, f_in; max_mg_iterations=10, n_levels=6, v1=10, v2 = 10, v3 = 10, print_results=true, scaling_factor=1, iter_algo_num=1)
+mg_struct_CUDA.x_CUDA[1] .= 0
+mgcg_CUDA(mg_struct_CUDA,nx=64,ny=64,nz=64,n_levels=6,precond=true,max_mg_iterations=1, v1=5, v2=10, v3=5, max_cg_iter=30,scaling_factor=1,print_results=true) 
+
+mg_struct_CUDA.A_CPU_mg[1]
+
+@benchmark for _ in 1:1
+    mg_struct_CUDA.x_CUDA[1] .= 0
+    mgcg_CUDA(mg_struct_CUDA,nx=64,ny=64,nz=64,n_levels=6,precond=true,max_mg_iterations=1, v1=5, v2=100, v3=5, max_cg_iter=30,scaling_factor=1, rel_tol=1e-6) 
+end
+
+@benchmark for _ in 1:1
+    mg_struct_CUDA.x_CUDA[1] .= 0
+    mgcg_CUDA(mg_struct_CUDA,nx=64,ny=64,nz=64,n_levels=6,precond=true,max_mg_iterations=1, v1=5, v2=100, v3=5, max_cg_iter=30,scaling_factor=1, rel_tol=1e-7) 
+end
+
+
 
 ############################### N = 128 ######################################
 clear_mg_struct_CUDA(mg_struct_CUDA)
