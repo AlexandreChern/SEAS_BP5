@@ -78,14 +78,18 @@ function odefun(dψV, ψδ, odeparam, t)
     abstol_ = norm(RHS) * sqrt(eps(Float64))
 
     # Solving linear system using iterative methods
-    u_GPU, history = cg!(CuArray(u),M_GPU, CuArray(RHS), abstol=abstol_, log=true);    # solving with non preconditioned cg
-    @show t, history.iters
 
-    # test MGCG
+    # u_GPU, history = cg!(CuArray(u),M_GPU, CuArray(RHS), abstol=abstol_, log=true);    # solving with non preconditioned cg
+    # @show t, history.iters
+
+    # End solving with cg!
+
+    # Test solving with MGCG
     mg_struct_CUDA.b_mg[1] .= CuArray(RHS)
     mg_struct_CUDA.x_CUDA[1] .= CuArray(u)
-    mgcg_CUDA(mg_struct_CUDA)
-    # end MGCG
+    mgcg_CUDA(mg_struct_CUDA,nx=N_x,ny=N_y,nz=N_z,n_levels=7,precond=true,max_mg_iterations=1, v1=10, v2=10, v3=10, max_cg_iter=20, print_results=true, scaling_factor=1, rel_tol=1e-6)
+    u_GPU = mg_struct_CUDA.x_CUDA[1]
+    # End testing with MGCG test
 
     u[:] .= Array(u_GPU)
     # End of solving 
