@@ -7,20 +7,11 @@ initialize_mg_struct_CUDA(mg_struct_CUDA, 128, 128, 128, 7)
 # u_direct_1 = mg_struct_CUDA.A_CPU_mg[1] \ Array(mg_struct_CUDA.b_mg[1])
 # extrema((u_direct_1 - mg_struct_CUDA.u_exact[1]))
 
-<<<<<<< HEAD
-=======
 clear_mg_struct_CUDA(mg_struct_CUDA)
->>>>>>> 7116cdf97b9bca4fbc1fa2945f5b9c99a8acfede
 initialize_mg_struct_CUDA(mg_struct_CUDA, 64, 64, 64, 6)
 get_lams(mg_struct_CUDA)
 f_in = mg_struct_CUDA.b_mg[1]
-<<<<<<< HEAD
-
-mg_solver_CUDA(mg_struct_CUDA, nx = 64, ny = 64, nz=64, f_in; max_mg_iterations=10, n_levels=2, v1=10, v2 = 10, v3 = 10, print_results=true, scaling_factor=4, iter_algo_num=1)
-
-=======
 mg_solver_CUDA(mg_struct_CUDA, nx = 64, ny = 64, nz=64, f_in; max_mg_iterations=10, n_levels=3, v1=10, v2 = 10, v3 = 10, print_results=true, scaling_factor=1, iter_algo_num=1)
->>>>>>> 7116cdf97b9bca4fbc1fa2945f5b9c99a8acfede
 mg_struct_CUDA.x_CUDA[1] .= 0
 mgcg_CUDA(mg_struct_CUDA,nx=64,ny=64,nz=64,n_levels=6,precond=true,max_mg_iterations=1, v1=5, v2=10, v3=5, max_cg_iter=30,scaling_factor=1, print_results=true, rel_tol=1e-6) # check mgcg implementation! precond=false should give good convergence
 
