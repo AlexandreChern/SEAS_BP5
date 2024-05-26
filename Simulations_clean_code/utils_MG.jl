@@ -322,7 +322,9 @@ function mgcg_CUDA(mg_struct_CUDA;nx=64,ny=64,nz=64,n_levels=3,v1=5,v2=5,v3=5, Ï
     mg_struct_CUDA.r_CUDA[1][:] .= mg_struct_CUDA.b_mg[1][:] .- mg_struct_CUDA.A_mg[1] * mg_struct_CUDA.x_CUDA[1][:]
 
     init_rms = norm(mg_struct_CUDA.b_mg[1][:])
-    @show init_rms
+    if print_results
+        @show init_rms
+    end
 
     if precond == true
         mg_solver_CUDA(mg_struct_CUDA, mg_struct_CUDA.r_CUDA[1], nx=nx, ny=ny, nz=nz, n_levels = n_levels, v1 = v1, v2 = v2, v3 = v3, max_mg_iterations=max_mg_iterations,scaling_factor=scaling_factor)
