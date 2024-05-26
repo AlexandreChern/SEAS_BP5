@@ -9,7 +9,7 @@ include("helper.jl")
 
 global const ctr = Ref{Int64}(1)
 
-initialize_mg_struct_CUDA(mg_struct_CUDA, N_x, N_y, N_z, 7)
+initialize_mg_struct_CUDA(mg_struct_CUDA, N_x, N_y, N_z, n_levels)
 
 odeparam = (
     reject_step = [false],                          # to reject a step or not
@@ -89,7 +89,7 @@ function odefun(dψV, ψδ, odeparam, t)
         mg_struct_CUDA.b_mg[1] .= CuArray(RHS)
         @assert norm(mg_struct_CUDA.b_mg[1]) != 0
         mg_struct_CUDA.x_CUDA[1] .= CuArray(u)
-        mgcg_CUDA(mg_struct_CUDA,nx=N_x,ny=N_y,nz=N_z,n_levels=7,precond=true,max_mg_iterations=1, v1=10, v2=10, v3=10, max_cg_iter=20, scaling_factor=1, rel_tol=1e-6, print_results=false)
+        mgcg_CUDA(mg_struct_CUDA,nx=N_x,ny=N_y,nz=N_z,n_levels=n_levels,precond=true,max_mg_iterations=1, v1=10, v2=10, v3=10, max_cg_iter=20, scaling_factor=1, rel_tol=1e-6, print_results=false)
         u_GPU = mg_struct_CUDA.x_CUDA[1]
     # End testing with MGCG test
     end
