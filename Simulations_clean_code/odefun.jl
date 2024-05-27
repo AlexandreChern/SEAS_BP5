@@ -87,11 +87,11 @@ function odefun(dψV, ψδ, odeparam, t)
 
     # Test solving with MGCG
         mg_struct_CUDA.b_mg[1] .= CuArray(RHS)
-        # @assert norm(mg_struct_CUDA.b_mg[1]) != 0
         mg_struct_CUDA.x_CUDA[1] .= CuArray(u)
-        mgcg_CUDA(mg_struct_CUDA,nx=N_x,ny=N_y,nz=N_z,n_levels=n_levels,precond=true,max_mg_iterations=1, v1=5, v2=5, v3=5, max_cg_iter=20, scaling_factor=1, rel_tol=1e-6, print_results=false)
+        mgcg_CUDA(mg_struct_CUDA,nx=N_x,ny=N_y,nz=N_z,n_levels=n_levels,precond=true,max_mg_iterations=1, v1=5, v2=5, v3=5, max_cg_iter=20, scaling_factor=1, rel_tol=1e-8, print_results=true)
         u_GPU = mg_struct_CUDA.x_CUDA[1]
     # End testing with MGCG test
+        # u_GPU, history = cg!(CuArray(u),M_GPU, CuArray(RHS), abstol=abstol_, log=true);    # solving with non preconditioned cg
     end
 
     u[:] .= Array(u_GPU)

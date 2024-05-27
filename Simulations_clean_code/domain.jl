@@ -93,7 +93,7 @@ fNz_VW_VS = (fNz_VW_VS_start, fNz_VW_VS_start + fN3_VW_VS - 1)
 # fNy_VW_VS and fNz_VW represents the indices of the fault region
 
 # Assembling matrices for 3D SBP-SAT
-SBPp = 2                # SBPp order
+SBPp = 4                # SBPp order
 (M, RHS, H_tilde, HI_tilde, analy_sol, source, traction_operators, 
     u_filters, Face_operators, sigmas, updators) = Assembling_3D_matrices(N_x, N_y, N_z;SBPp=SBPp,Lx=Lx,Ly=Ly,Lz=Lz);
 M_GPU = CUDA.CUSPARSE.CuSparseMatrixCSR(M);

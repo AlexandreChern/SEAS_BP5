@@ -41,6 +41,7 @@ N_x = N_y = N_z = Int(Lx / (BP5_coeff.Δz / 1000))
 Nx = N_x + 1
 Ny = N_y + 1
 Nz = N_z + 1
+n_levels = Int(log(2, N_x))
 
 u1_filter_matrix = get_u1(Nx, Ny, Nz)
 u2_filter_matrix = get_u2(Nx, Ny, Nz)
