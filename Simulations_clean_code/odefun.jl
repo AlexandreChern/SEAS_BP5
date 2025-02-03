@@ -76,6 +76,7 @@ function odefun(dψV, ψδ, odeparam, t)
 
     # End updating RHS using δ
     abstol_ = norm(RHS) * sqrt(eps(Float64))
+    rel_tol_ = sqrt(eps(Float64))
 
     # Solving linear system using iterative methods
     if t == 0
@@ -86,12 +87,16 @@ function odefun(dψV, ψδ, odeparam, t)
     # End solving with cg!
 
     # Test solving with MGCG
-        mg_struct_CUDA.b_mg[1] .= CuArray(RHS)
-        mg_struct_CUDA.x_CUDA[1] .= CuArray(u)
-        mgcg_CUDA(mg_struct_CUDA,nx=N_x,ny=N_y,nz=N_z,n_levels=n_levels,precond=true,max_mg_iterations=1, v1=5, v2=5, v3=5, max_cg_iter=20, scaling_factor=1, rel_tol=1e-8, print_results=true)
-        u_GPU = mg_struct_CUDA.x_CUDA[1]
+        # mg_struct_CUDA.b_mg[1] .= CuArray(RHS)
+        # mg_struct_CUDA.x_CUDA[1] .= CuArray(u)
+        # mgcg_CUDA(mg_struct_CUDA,nx=N_x,ny=N_y,nz=N_z,n_levels=n_levels,precond=true,max_mg_iterations=1, v1=5, v2=5, v3=5, max_cg_iter=20, scaling_factor=1, rel_tol=1e-8, print_results=true)
+        # u_GPU = mg_struct_CUDA.x_CUDA[1]
+
+        # mg_struct_CUDA.x_CUDA[1] .= 0
+        # mgcg_CUDA(mg_struct_CUDA,nx=N_x,ny=N_y,nz=N_z,n_levels=n_levels,precond=false,max_mg_iterations=1, v1=5, v2=5, v3=5, max_cg_iter=2000, scaling_factor=1, rel_tol=5e-9, print_results=true)
+        
     # End testing with MGCG test
-        # u_GPU, history = cg!(CuArray(u),M_GPU, CuArray(RHS), abstol=abstol_, log=true);    # solving with non preconditioned cg
+        u_GPU, history = cg!(CuArray(u),M_GPU, CuArray(RHS), abstol=abstol_, log=true);    # solving with non preconditioned cg
     end
 
     u[:] .= Array(u_GPU)
@@ -120,7 +125,7 @@ function odefun(dψV, ψδ, odeparam, t)
     xL = fill(0.0, length(τ_v))
     xR = τ_v ./ η
     (V_v_tmp, f_v, iter) = newtbndv_vectorized(rateandstate_vectorized, xL, xR, V_v, ψ, σn, τ_v, η,
-                                    RSas, RSV0; ftol=1e-6, maxiter=500, minchange=0, atolx = 1e-4, rtolx=1e-4)
+                                    RSas, RSV0; ftol=1e-6, maxiter=500, minchange=0, atolx = 1e-6, rtolx=1e-6)
 
     # end of bisection guarded newton's method
 

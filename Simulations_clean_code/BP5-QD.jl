@@ -63,10 +63,11 @@ function main()
             τ[tau_index] = τ0 * BP5_coeff.Vinit / V_norm
             τz[tau_index] = τ0 * Vzero / V_norm
 
-            θ0 = BP5_coeff.L / BP5_coeff.V0 * exp(RSas[index] / BP5_coeff.b0 *
-                                                  log(2 * BP5_coeff.V0 / BP5_coeff.Vinit * sinh((τ0 - η * BP5_coeff.Vinit) / (RSas[index] * BP5_coeff.σn)))
-                                                  -
-                                                  BP5_coeff.f0 / BP5_coeff.b0)
+            #θ0 = BP5_coeff.L / BP5_coeff.V0 * exp(RSas[index] / BP5_coeff.b0 *
+            #                                      log(2 * BP5_coeff.V0 / BP5_coeff.Vinit * sinh((τ0 - η * BP5_coeff.Vinit) / (RSas[index] * BP5_coeff.σn)))
+            #                                      -
+            #                                      BP5_coeff.f0 / BP5_coeff.b0)
+            θ0 = BP5_coeff.L / BP5_coeff.V0 
             ψ0 = BP5_coeff.f0 + BP5_coeff.b0 * log(BP5_coeff.V0 * θ0 / BP5_coeff.L)
             ψ[index] = ψ0
             θ[index] = θ0
@@ -142,7 +143,7 @@ function main()
     # sol = solve(prob, Tsit5(); isoutofdomain=stepcheck, dt=0.001, dtmin=1e-8, abstol=1e-6, reltol=1e-8, gamma = 0.8, save_everystep=false,
     #     callback=callback_func) 
 
-    sol = solve(prob, Tsit5(); isoutofdomain=stepcheck, dt=0.001, dtmin=1e-8, abstol=1e-8, reltol=1e-8, save_everystep=false,
+    sol = solve(prob, Tsit5(); isoutofdomain=stepcheck, dt=0.001, dtmin=1e-8, abstol=1e-8, reltol=1e-10, save_everystep=false,
         callback=callback_func) 
 end
 
